@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import api from '../services/api';
 import { Application } from '../types';
-import { getFileUrl } from '../utils/fileUrl';
+import FileViewer from '../components/FileViewer';
 import {
   DocumentTextIcon,
   ArrowLeftIcon,
@@ -16,7 +16,7 @@ import {
   PhoneIcon,
   AcademicCapIcon,
   PhotoIcon,
-  DocumentArrowDownIcon,
+
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
 
@@ -66,22 +66,7 @@ const ApplicationDetail: React.FC = () => {
     );
   };
 
-  const renderFileLink = (filePath: string | undefined, label: string) => {
-    const fileUrl = getFileUrl(filePath);
-    if (!fileUrl) return <span className="text-gray-400">未上传</span>;
-    
-    return (
-      <a
-        href={fileUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-primary-600 hover:text-primary-900 flex items-center"
-      >
-        <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-        查看{label}
-      </a>
-    );
-  };
+
 
   if (loading) {
     return (
@@ -187,40 +172,31 @@ const ApplicationDetail: React.FC = () => {
           <PhotoIcon className="w-6 h-6 mr-2 text-primary-600" />
           上传文件
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">个人照片</label>
-            {renderFileLink(application.personalPhoto, '个人照片')}
+            <label className="block text-sm font-medium text-gray-700 mb-3">个人照片</label>
+            <FileViewer filePath={application.personalPhoto} label="个人照片" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">学生证照片</label>
-            {renderFileLink(application.studentCardPhoto, '学生证')}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">佐证材料</label>
-            {application.experienceAttachments && application.experienceAttachments.length > 0 ? (
-              <div className="space-y-1">
-                {application.experienceAttachments.map((filePath, index) => {
-                  const fileUrl = getFileUrl(filePath);
-                  return fileUrl ? (
-                    <a
-                      key={index}
-                      href={fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary-600 hover:text-primary-900 flex items-center text-sm"
-                    >
-                      <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-                      佐证材料 {index + 1}
-                    </a>
-                  ) : null;
-                })}
-              </div>
-            ) : (
-              <span className="text-gray-400">未上传</span>
-            )}
+            <label className="block text-sm font-medium text-gray-700 mb-3">学生证照片</label>
+            <FileViewer filePath={application.studentCardPhoto} label="学生证照片" />
           </div>
         </div>
+        
+        {application.experienceAttachments && application.experienceAttachments.length > 0 && (
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">佐证材料</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {application.experienceAttachments.map((filePath, index) => (
+                <FileViewer 
+                  key={index}
+                  filePath={filePath} 
+                  label={`佐证材料 ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 申请内容 */}
