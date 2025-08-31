@@ -33,19 +33,27 @@ export const sendEmailVerificationCode = async (
 ) => {
   try {
     const { email } = req.body;
+    console.log('=== 发送验证码请求 ===');
+    console.log('请求邮箱:', email);
+    
     const userRepository = AppDataSource.getRepository(User);
 
     // 检查邮箱是否已注册
+    console.log('检查邮箱是否已注册...');
     const existingUser = await userRepository.findOne({ where: { email } });
     if (existingUser) {
+      console.log('邮箱已注册:', email);
       throw new AppError('该邮箱已注册', 400);
     }
+    console.log('邮箱可用');
 
     // 生成验证码
     const verificationCode = generateVerificationCode();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10分钟后过期
+    console.log('生成验证码:', verificationCode);
 
     // 将验证码存储在 Redis 中
+    console.log('存储验证码到 Redis...');
     await redisClient.setEx(
       `email_verification:${email}`,
       600, // 10分钟
@@ -55,15 +63,19 @@ export const sendEmailVerificationCode = async (
         attempts: 0,
       })
     );
+    console.log('验证码存储成功');
 
     // 发送验证码邮件
+    console.log('开始发送验证码邮件...');
     await sendVerificationCode(email, verificationCode);
+    console.log('验证码邮件发送成功');
 
     res.json({
       message: '验证码已发送到您的邮箱，有效期10分钟',
       expiresAt,
     });
   } catch (error) {
+    console.error('发送验证码失败:', error);
     next(error);
   }
 };

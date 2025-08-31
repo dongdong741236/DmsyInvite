@@ -50,7 +50,9 @@ services:
     env_file:
       - .env
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
+      DEBUG: "*"
+      LOG_LEVEL: debug
       DB_HOST: mysql
       REDIS_HOST: redis
     ports:
@@ -60,6 +62,14 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    restart: unless-stopped
+    # 添加启动延迟，确保依赖服务完全就绪
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     networks:
       - recruitment-network
     volumes:

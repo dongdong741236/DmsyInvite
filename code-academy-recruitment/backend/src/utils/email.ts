@@ -19,6 +19,15 @@ const transporter = nodemailer.createTransport({
 
 export const sendEmail = async (options: EmailOptions) => {
   try {
+    console.log('=== 开始发送邮件 ===');
+    console.log('邮件配置:');
+    console.log('EMAIL_HOST:', process.env.EMAIL_HOST);
+    console.log('EMAIL_PORT:', process.env.EMAIL_PORT);
+    console.log('EMAIL_USER:', process.env.EMAIL_USER);
+    console.log('EMAIL_FROM:', process.env.EMAIL_FROM);
+    console.log('收件人:', options.to);
+    console.log('主题:', options.subject);
+
     const mailOptions = {
       from: process.env.EMAIL_FROM || 'Code Academy Lab <noreply@codeacademy.edu.cn>',
       to: options.to,
@@ -26,10 +35,15 @@ export const sendEmail = async (options: EmailOptions) => {
       html: options.html,
     };
 
+    console.log('邮件选项:', mailOptions);
+    logger.debug('Sending email with options:', mailOptions);
+
     const info = await transporter.sendMail(mailOptions);
+    console.log('✅ 邮件发送成功:', info.messageId);
     logger.info('Email sent successfully', { messageId: info.messageId, to: options.to });
     return info;
   } catch (error) {
+    console.error('❌ 邮件发送失败:', error);
     logger.error('Email sending failed', { error, to: options.to });
     throw error;
   }
