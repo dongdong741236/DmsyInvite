@@ -92,13 +92,13 @@ certbot --nginx -d yourdomain.com
 #### 备份数据库
 
 ```bash
-docker exec recruitment-postgres pg_dump -U recruitment_user recruitment_db > backup.sql
+docker exec recruitment-mysql mysqldump -u recruitment_user -p recruitment_db > backup.sql
 ```
 
 #### 恢复数据库
 
 ```bash
-docker exec -i recruitment-postgres psql -U recruitment_user recruitment_db < backup.sql
+docker exec -i recruitment-mysql mysql -u recruitment_user -p recruitment_db < backup.sql
 ```
 
 ## 故障排除
@@ -141,16 +141,11 @@ docker-compose build --no-cache
 
 ### 数据库优化
 
-编辑 `docker-compose.yml`，添加 PostgreSQL 优化参数：
+编辑 `docker-compose.yml`，添加 MySQL 优化参数：
 
 ```yaml
-postgres:
-  command: 
-    - postgres
-    - -c
-    - shared_buffers=256MB
-    - -c
-    - max_connections=200
+mysql:
+  command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-buffer-pool-size=512M --max-connections=200
 ```
 
 ### Redis 持久化

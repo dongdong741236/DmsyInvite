@@ -46,13 +46,13 @@ clean:
 # 备份数据库
 backup:
 	@mkdir -p backups
-	@docker exec recruitment-postgres pg_dump -U recruitment_user recruitment_db > backups/backup_$$(date +%Y%m%d_%H%M%S).sql
+	@docker exec recruitment-mysql mysqldump -u recruitment_user -p$$MYSQL_PASSWORD recruitment_db > backups/backup_$$(date +%Y%m%d_%H%M%S).sql
 	@echo "数据库备份完成: backups/backup_$$(date +%Y%m%d_%H%M%S).sql"
 
 # 恢复数据库
 restore:
 	@read -p "输入备份文件路径: " backup_file; \
-	docker exec -i recruitment-postgres psql -U recruitment_user recruitment_db < $$backup_file
+	docker exec -i recruitment-mysql mysql -u recruitment_user -p$$MYSQL_PASSWORD recruitment_db < $$backup_file
 
 # 开发模式
 dev:

@@ -96,6 +96,13 @@ deploy_services() {
 health_check() {
     print_message "执行健康检查..."
     
+    # 检查MySQL
+    if docker exec recruitment-mysql mysqladmin ping -h localhost -u recruitment_user -p$DB_PASSWORD --silent > /dev/null 2>&1; then
+        print_message "MySQL 数据库健康 ✓"
+    else
+        print_error "MySQL 数据库不可用"
+    fi
+    
     # 检查后端
     if curl -f http://localhost:5000/health > /dev/null 2>&1; then
         print_message "后端服务健康 ✓"

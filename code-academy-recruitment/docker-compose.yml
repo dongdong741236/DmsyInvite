@@ -1,22 +1,28 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: recruitment-postgres
+  mysql:
+    image: mysql:8.0
+    container_name: recruitment-mysql
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME:-recruitment_db}
-      POSTGRES_USER: ${DB_USER:-recruitment_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-your_secure_password}
+      MYSQL_DATABASE: ${DB_NAME:-recruitment_db}
+      MYSQL_USER: ${DB_USER:-recruitment_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-your_secure_password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
     ports:
-      - "5432:5432"
+      - "3306:3306"
     networks:
       - recruitment-network
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-buffer-pool-size=256M
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-recruitment_user}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER:-recruitment_user}", "-p${DB_PASSWORD:-your_secure_password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,12 +54,12 @@ services:
       - .env
     environment:
       NODE_ENV: production
-      DB_HOST: postgres
+      DB_HOST: mysql
       REDIS_HOST: redis
     ports:
       - "5000:5000"
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -83,5 +89,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
+  mysql_data:
   redis_data:

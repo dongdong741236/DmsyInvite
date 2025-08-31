@@ -21,7 +21,7 @@
 
 - **前端**: React + TypeScript + Tailwind CSS（新拟态设计）
 - **后端**: Node.js + Express + TypeScript
-- **数据库**: PostgreSQL
+- **数据库**: MySQL 8.0
 - **缓存**: Redis
 - **邮件服务**: Nodemailer
 - **容器化**: Docker + Docker Compose
