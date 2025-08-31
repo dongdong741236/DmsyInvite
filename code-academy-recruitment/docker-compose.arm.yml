@@ -14,8 +14,7 @@ services:
       # 不使用 MYSQL_USER 和 MYSQL_PASSWORD，通过初始化脚本创建用户
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-      - ./docker/mysql/optimize.sql:/docker-entrypoint-initdb.d/02-optimize.sql:ro
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "43306:3306"
     networks:

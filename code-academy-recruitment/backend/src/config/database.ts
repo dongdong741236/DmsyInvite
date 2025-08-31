@@ -15,8 +15,8 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'root_password',
   database: process.env.DB_NAME || 'recruitment_db',
-  synchronize: process.env.NODE_ENV === 'development',
-  logging: process.env.NODE_ENV === 'development',
+  synchronize: true,  // 始终同步，确保表结构正确
+  logging: false,     // 关闭日志避免干扰
   entities: [User, Application, Interview, InterviewRoom, SystemConfig],
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscribers/*.ts'],
