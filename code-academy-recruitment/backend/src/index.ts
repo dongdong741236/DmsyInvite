@@ -1,91 +1,47 @@
 import express from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
-import compression from 'compression';
 import dotenv from 'dotenv';
-import { AppDataSource } from './config/database';
-import { connectRedis } from './config/redis';
-import { errorHandler } from './middlewares/errorHandler';
-import { logger } from './utils/logger';
-import routes from './routes';
-import { createDefaultAdmin } from './utils/initAdmin';
-import { ConfigService } from './services/config.service';
 
 // Load environment variables
 dotenv.config();
 
+console.log('=== 后端启动开始 ===');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_USER:', process.env.DB_USER);
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(helmet());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:43000',
-  credentials: true
-}));
-app.use(compression());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+try {
+  // Basic middleware
+  app.use(cors());
+  app.use(express.json());
+  
+  console.log('中间件加载完成');
 
-// Routes
-app.use('/api', routes);
+  // Health check
+  app.get('/health', (_req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
 
-// Health check
-app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+  app.get('/api/health', (_req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+  
+  console.log('路由设置完成');
 
-// Error handling
-app.use(errorHandler);
+  // Start server
+  app.listen(PORT, () => {
+    console.log(`=== 服务器启动成功，端口: ${PORT} ===`);
+  });
+  
+  console.log('监听端口设置完成');
 
-// Initialize database and Redis, then start server
-async function startServer() {
-  try {
-    logger.info('Initializing database connection...');
-    await AppDataSource.initialize();
-    logger.info('Database connection established');
-    
-    logger.info('Initializing Redis connection...');
-    await connectRedis();
-    logger.info('Redis connection established');
-    
-    // Create default admin user
-    logger.info('Creating default admin user...');
-    await createDefaultAdmin();
-    logger.info('Default admin user created');
-    
-    // Start HTTP server
-    app.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
-    });
-    
-    // Initialize system configurations after server starts (non-blocking)
-    setTimeout(async () => {
-      try {
-        logger.info('Initializing system configurations...');
-        await ConfigService.initializeDefaults();
-        logger.info('System configurations initialized');
-      } catch (error) {
-        logger.error('Failed to initialize system configurations:', error);
-        // Don't exit, just log the error
-      }
-    }, 5000);
-    
-  } catch (error) {
-    logger.error('Server startup failed:', error);
-    process.exit(1);
-  }
+} catch (error) {
+  console.error('=== 启动失败 ===', error);
+  process.exit(1);
 }
 
-startServer();
-
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  logger.info('SIGTERM signal received: closing HTTP server');
-  if (AppDataSource.isInitialized) {
-    await AppDataSource.destroy();
-  }
-  process.exit(0);
-});
-
-export default app;
+console.log('=== 启动脚本执行完成 ===');
