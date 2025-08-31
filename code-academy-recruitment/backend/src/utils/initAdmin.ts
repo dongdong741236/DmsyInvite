@@ -1,7 +1,6 @@
 import { AppDataSource } from '../config/database';
 import { User, UserRole } from '../models/User';
 import { logger } from './logger';
-import bcrypt from 'bcryptjs';
 
 export const createDefaultAdmin = async () => {
   try {
@@ -21,11 +20,10 @@ export const createDefaultAdmin = async () => {
     if (!existingAdmin) {
       console.log('管理员用户不存在，开始创建...');
       
-      const hashedPassword = await bcrypt.hash(adminPassword, 10);
-
+      // 不要手动哈希密码，让 @BeforeInsert() 钩子处理
       const admin = userRepository.create({
         email: adminEmail,
-        password: hashedPassword,
+        password: adminPassword,  // 使用原始密码，@BeforeInsert 会自动哈希
         name: 'System Admin',
         role: UserRole.ADMIN,
         isEmailVerified: true,
