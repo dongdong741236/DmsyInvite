@@ -42,8 +42,9 @@ build:
 up:
 	docker-compose -f $(COMPOSE_FILE) up -d
 	@echo "服务已启动!"
-	@echo "前端: http://localhost:3000"
-	@echo "后端: http://localhost:5000"
+	@echo "前端: http://localhost:43000"
+	@echo "后端: http://localhost:45000"
+	@echo "MySQL: localhost:43306"
 	@echo "架构: $(ARCH)"
 
 # 停止服务
@@ -98,5 +99,5 @@ prod:
 # 检查服务健康状态
 health:
 	@echo "检查服务健康状态..."
-	@curl -s http://localhost:5000/health > /dev/null && echo "✓ 后端服务正常" || echo "✗ 后端服务异常"
-	@curl -s http://localhost:3000/health > /dev/null && echo "✓ 前端服务正常" || echo "✗ 前端服务异常"
+	@curl -s http://localhost:45000/health > /dev/null && echo "✓ 后端服务正常" || echo "✗ 后端服务异常"
+	@curl -s http://localhost:43000/health > /dev/null && echo "✓ 前端服务正常" || echo "✗ 前端服务异常"

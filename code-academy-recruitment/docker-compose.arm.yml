@@ -22,7 +22,7 @@ services:
       - ./docker/mysql/optimize.sql:/docker-entrypoint-initdb.d/optimize.sql:ro
       - ./docker/mysql/my-arm.cnf:/etc/mysql/conf.d/custom.cnf:ro
     ports:
-      - "3306:3306"
+      - "43306:3306"
     networks:
       - recruitment-network
     # ARM 优化的 MySQL 命令参数
@@ -43,7 +43,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - "46379:6379"
     networks:
       - recruitment-network
     healthcheck:
@@ -69,7 +69,7 @@ services:
       # ARM 架构 Node.js 优化
       NODE_OPTIONS: "--max-old-space-size=512"
     ports:
-      - "5000:5000"
+      - "45000:5000"
     depends_on:
       mysql:
         condition: service_healthy
@@ -94,12 +94,12 @@ services:
       platforms:
         - linux/arm64
       args:
-        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:5000/api}
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:45000/api}
         REACT_APP_ALLOWED_EMAIL_DOMAIN: ${ALLOWED_EMAIL_DOMAIN:-@stu.example.edu.cn}
     container_name: recruitment-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "43000:80"
     depends_on:
       - backend
     networks:

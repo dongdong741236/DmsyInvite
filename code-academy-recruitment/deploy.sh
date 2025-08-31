@@ -131,14 +131,14 @@ health_check() {
     fi
     
     # 检查后端
-    if curl -f http://localhost:5000/health > /dev/null 2>&1; then
+    if curl -f http://localhost:45000/health > /dev/null 2>&1; then
         print_message "后端服务健康 ✓"
     else
         print_error "后端服务不可用"
     fi
     
     # 检查前端
-    if curl -f http://localhost:3000/health > /dev/null 2>&1; then
+    if curl -f http://localhost:43000/health > /dev/null 2>&1; then
         print_message "前端服务健康 ✓"
     else
         print_error "前端服务不可用"
@@ -151,8 +151,10 @@ show_access_info() {
     echo ""
     echo "========================================="
     echo "访问地址："
-    echo "前端界面: http://localhost:3000"
-    echo "后端 API: http://localhost:5000"
+    echo "前端界面: http://localhost:43000"
+    echo "后端 API: http://localhost:45000"
+    echo "MySQL 数据库: localhost:43306"
+    echo "Redis 缓存: localhost:46379"
     echo ""
     echo "默认管理员账号："
     echo "邮箱: admin@codeacademy.edu.cn"

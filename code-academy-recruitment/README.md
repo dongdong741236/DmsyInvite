@@ -42,8 +42,10 @@ docker-compose up -d
 ```
 
 访问地址：
-- 前端：http://localhost:3000
-- 后端API：http://localhost:5000
+- 前端：http://localhost:43000
+- 后端API：http://localhost:45000
+- MySQL：localhost:43306
+- Redis：localhost:46379
 
 ## 环境配置
 
