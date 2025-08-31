@@ -59,12 +59,20 @@ router.post('/upload', uploadApplicationFiles, async (req, res) => {
         if (files[fieldname] && files[fieldname].length > 0) {
           if (fieldname === 'experienceAttachments') {
             // 多文件字段，返回数组
-            uploadedFiles[fieldname] = files[fieldname].map(
-              file => file.path.replace(/^uploads\//, '')
-            );
+            uploadedFiles[fieldname] = files[fieldname].map(file => {
+              // 提取相对于uploads目录的路径
+              const relativePath = file.path.split('/uploads/')[1] || file.filename;
+              console.log('多文件路径处理:', file.path, '->', relativePath);
+              return relativePath;
+            });
           } else {
             // 单文件字段，返回字符串
-            uploadedFiles[fieldname] = files[fieldname][0]?.path.replace(/^uploads\//, '') || '';
+            const file = files[fieldname][0];
+            if (file) {
+              const relativePath = file.path.split('/uploads/')[1] || file.filename;
+              console.log('单文件路径处理:', file.path, '->', relativePath);
+              uploadedFiles[fieldname] = relativePath;
+            }
           }
         }
       });
