@@ -50,18 +50,20 @@ const ApplicationFormNew: React.FC = () => {
     }
   };
 
-  // 大二学生验证逻辑（OR关系）
+  // 大二学生验证逻辑
   const validateSophomoreInfo = (data: ApplicationFormData): string | null => {
     if (data.grade !== '大二') return null;
     
     const sophomoreInfo = data.gradeSpecificInfo?.sophomoreInfo;
     
-    // 检查是否至少满足一个条件
-    const hasTransferInfo = sophomoreInfo?.isTransferStudent && sophomoreInfo?.originalMajor;
-    const hasProgrammingGrade = sophomoreInfo?.programmingGrade && sophomoreInfo.programmingGrade !== '未修读';
+    // C/C++成绩是必填的
+    if (!sophomoreInfo?.programmingGrade || sophomoreInfo.programmingGrade === '未修读') {
+      return '大二学生必须填写C/C++编程课程成绩';
+    }
     
-    if (!hasTransferInfo && !hasProgrammingGrade) {
-      return '大二学生请至少填写以下信息之一：转专业信息或C/C++课程成绩';
+    // 如果选择了转专业，必须填写原专业
+    if (sophomoreInfo?.isTransferStudent && !sophomoreInfo?.originalMajor) {
+      return '转专业学生必须填写原专业信息';
     }
     
     return null;
@@ -474,14 +476,21 @@ const ApplicationFormNew: React.FC = () => {
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        原专业
+                        原专业 <span className="text-red-500">*</span>
                       </label>
                       <input
-                        {...register('gradeSpecificInfo.sophomoreInfo.originalMajor')}
+                        {...register('gradeSpecificInfo.sophomoreInfo.originalMajor', {
+                          required: watch('gradeSpecificInfo.sophomoreInfo.isTransferStudent') ? '请输入原专业' : false
+                        })}
                         type="text"
                         className="neumorphic-input"
                         placeholder="请输入转专业前的专业"
                       />
+                      {errors.gradeSpecificInfo?.sophomoreInfo?.originalMajor && (
+                        <p className="mt-1 text-sm text-red-600">
+                          {errors.gradeSpecificInfo.sophomoreInfo.originalMajor.message}
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -498,28 +507,21 @@ const ApplicationFormNew: React.FC = () => {
                   </>
                 )}
 
-                {/* 提示信息 */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex">
-                    <InformationCircleIcon className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-blue-800">
-                      <p className="font-medium mb-1">大二学生申请要求：</p>
-                      <p>请至少填写以下信息之一（满足其中一项即可）：</p>
-                      <ul className="list-disc list-inside mt-2 space-y-1">
-                        <li>转专业相关信息</li>
-                        <li>C/C++编程课程成绩</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-
-                {/* C/C++课程成绩 - 独立显示 */}
+                {/* C/C++课程成绩 - 必填 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    C/C++编程课程成绩
+                    C/C++编程课程成绩 <span className="text-red-500">*</span>
                   </label>
                   <select
-                    {...register('gradeSpecificInfo.sophomoreInfo.programmingGrade')}
+                    {...register('gradeSpecificInfo.sophomoreInfo.programmingGrade', {
+                      required: selectedGrade === '大二' ? 'C/C++编程课程成绩为必填项' : false,
+                      validate: (value) => {
+                        if (selectedGrade === '大二' && (!value || value === '未修读')) {
+                          return '大二学生必须提供C/C++编程课程成绩';
+                        }
+                        return true;
+                      }
+                    })}
                     className="neumorphic-input"
                   >
                     <option value="">请选择</option>
@@ -533,6 +535,11 @@ const ApplicationFormNew: React.FC = () => {
                   <p className="mt-1 text-sm text-gray-500">
                     包括C语言程序设计、C++程序设计等编程相关课程
                   </p>
+                  {errors.gradeSpecificInfo?.sophomoreInfo?.programmingGrade && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.gradeSpecificInfo.sophomoreInfo.programmingGrade.message}
+                    </p>
+                  )}
                 </div>
               </div>
             )}

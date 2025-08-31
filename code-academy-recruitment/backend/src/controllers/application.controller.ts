@@ -76,15 +76,18 @@ export const createApplication = async (
       throw new AppError(`您已达到最大申请数量限制（${maxApplications}个）`, 400);
     }
 
-    // 大二学生特殊验证（OR关系）
+    // 大二学生特殊验证
     if (req.body.grade === '大二') {
       const sophomoreInfo = req.body.gradeSpecificInfo?.sophomoreInfo;
       
-      const hasTransferInfo = sophomoreInfo?.isTransferStudent && sophomoreInfo?.originalMajor;
-      const hasProgrammingGrade = sophomoreInfo?.programmingGrade && sophomoreInfo.programmingGrade !== '未修读';
+      // C/C++成绩是必填的
+      if (!sophomoreInfo?.programmingGrade || sophomoreInfo.programmingGrade === '未修读') {
+        throw new AppError('大二学生必须提供C/C++编程课程成绩', 400);
+      }
       
-      if (!hasTransferInfo && !hasProgrammingGrade) {
-        throw new AppError('大二学生请至少填写以下信息之一：转专业信息或C/C++编程课程成绩', 400);
+      // 如果选择了转专业，必须填写原专业
+      if (sophomoreInfo?.isTransferStudent && !sophomoreInfo?.originalMajor) {
+        throw new AppError('转专业学生必须填写原专业信息', 400);
       }
     }
 
