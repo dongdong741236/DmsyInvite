@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToOne,
-  JoinColumn,
 } from 'typeorm';
 import { User } from './User';
 import { Interview } from './Interview';

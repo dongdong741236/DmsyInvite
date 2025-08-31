@@ -50,7 +50,12 @@ echo "📦 停止旧服务..."
 docker compose -f $COMPOSE_FILE down 2>/dev/null || true
 
 echo "🔨 构建镜像..."
-docker compose -f $COMPOSE_FILE build
+if ! docker compose -f $COMPOSE_FILE build; then
+    echo "❌ 构建失败！"
+    echo "请检查代码是否有错误，或运行："
+    echo "./test-build.sh"
+    exit 1
+fi
 
 echo "🚀 启动服务..."
 docker compose -f $COMPOSE_FILE up -d

@@ -1,14 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from '../config/database';
-import { User } from '../models/User';
+import { User, UserRole } from '../models/User';
 import { Application, ApplicationStatus } from '../models/Application';
-import { Interview, InterviewResult } from '../models/Interview';
+import { Interview } from '../models/Interview';
 import { InterviewRoom } from '../models/InterviewRoom';
 import { AppError } from '../middlewares/errorHandler';
 import { sendInterviewNotification as sendInterviewEmail, sendResultNotification as sendResultEmail } from '../utils/email';
 
 export const getDashboardStats = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -30,7 +30,7 @@ export const getDashboardStats = async (
       interviewRepository.count({ where: { isCompleted: false } }),
       interviewRepository.count({ where: { isCompleted: true } }),
       applicationRepository.count({ where: { status: ApplicationStatus.ACCEPTED } }),
-      userRepository.count({ where: { role: 'applicant' } }),
+      userRepository.count({ where: { role: UserRole.APPLICANT } }),
     ]);
 
     res.json({
@@ -207,7 +207,7 @@ export const updateApplicationStatus = async (
 };
 
 export const getRooms = async (
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) => {

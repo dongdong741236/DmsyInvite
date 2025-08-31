@@ -1,6 +1,5 @@
 import { AppDataSource } from '../config/database';
 import { Application } from '../models/Application';
-import { User } from '../models/User';
 
 export class SearchService {
   /**

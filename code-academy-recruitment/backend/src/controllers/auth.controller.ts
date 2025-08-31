@@ -8,17 +8,18 @@ import { sendVerificationEmail } from '../utils/email';
 import redisClient from '../config/redis';
 
 const generateToken = (user: User): string => {
-  return jwt.sign(
-    {
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-    },
-    process.env.JWT_SECRET || 'secret',
-    {
-      expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-    }
-  );
+  const payload = {
+    userId: user.id,
+    email: user.email,
+    role: user.role,
+  };
+  
+  const secret = process.env.JWT_SECRET || 'secret';
+  const options = {
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  };
+  
+  return jwt.sign(payload, secret, options);
 };
 
 export const register = async (
