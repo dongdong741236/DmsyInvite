@@ -41,8 +41,10 @@ const ApplicationFormNew: React.FC = () => {
 
   const loadConfig = async () => {
     try {
+      console.log('=== 加载申请配置 ===');
       const response = await fetch('/api/applications/config');
       const configData = await response.json();
+      console.log('申请配置数据:', configData);
       setConfig(configData);
     } catch (error) {
       console.error('Failed to load config:', error);
@@ -127,6 +129,14 @@ const ApplicationFormNew: React.FC = () => {
   }
 
   // 检查申请是否开放
+  console.log('=== 检查申请开放状态 ===');
+  console.log('配置对象:', config);
+  if (config) {
+    console.log('大一开放状态:', config.freshmanEnabled);
+    console.log('大二开放状态:', config.sophomoreEnabled);
+    console.log('判断结果:', !config.freshmanEnabled && !config.sophomoreEnabled);
+  }
+  
   if (config && !config.freshmanEnabled && !config.sophomoreEnabled) {
     return (
       <div className="max-w-3xl mx-auto">
@@ -136,6 +146,11 @@ const ApplicationFormNew: React.FC = () => {
           <p className="text-gray-600">
             当前申请通道暂未开放，请关注后续通知。
           </p>
+          <div className="mt-4 text-sm text-gray-500">
+            <p>调试信息：</p>
+            <p>大一开放: {config.freshmanEnabled ? '是' : '否'}</p>
+            <p>大二开放: {config.sophomoreEnabled ? '是' : '否'}</p>
+          </div>
         </div>
       </div>
     );
