@@ -35,7 +35,7 @@ export class Interview {
   @Column({ type: 'text', nullable: true })
   interviewerNotes?: string;
 
-  @Column({ type: 'jsonb', nullable: true })
+  @Column({ type: 'json', nullable: true })
   evaluationScores?: {
     technical?: number;
     communication?: number;
