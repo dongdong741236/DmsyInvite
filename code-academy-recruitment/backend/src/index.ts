@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import compression from 'compression';
 import dotenv from 'dotenv';
 import { AppDataSource } from './config/database';
+import { connectRedis } from './config/redis';
 import { errorHandler } from './middlewares/errorHandler';
 import { logger } from './utils/logger';
 import routes from './routes';
@@ -36,10 +37,13 @@ app.get('/health', (_req, res) => {
 // Error handling
 app.use(errorHandler);
 
-// Initialize database and start server
-AppDataSource.initialize()
+// Initialize database and Redis, then start server
+Promise.all([
+  AppDataSource.initialize(),
+  connectRedis()
+])
   .then(async () => {
-    logger.info('Database connection established');
+    logger.info('Database and Redis connections established');
     
     // Create default admin user
     await createDefaultAdmin();
@@ -49,7 +53,7 @@ AppDataSource.initialize()
     });
   })
   .catch((error) => {
-    logger.error('Database connection failed:', error);
+    logger.error('Database or Redis connection failed:', error);
     process.exit(1);
   });
 
