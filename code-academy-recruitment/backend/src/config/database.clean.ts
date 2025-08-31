@@ -19,7 +19,7 @@ export const AppDataSource = new DataSource({
   entities: [User, Application, Interview, InterviewRoom],
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscribers/*.ts'],
-  // MySQL 8.0 基础配置，无额外选项避免警告
+  // 最基础的 MySQL 配置，无任何额外选项
   charset: 'utf8mb4',
   timezone: '+08:00',
 });
