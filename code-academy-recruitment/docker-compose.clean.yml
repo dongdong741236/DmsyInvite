@@ -1,0 +1,83 @@
+# 纯净的 MySQL 配置，无任何自定义脚本
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: recruitment-mysql-clean
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-recruitment_db}
+      MYSQL_USER: ${DB_USER:-recruitment_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-your_secure_password}
+    volumes:
+      - mysql_clean_data:/var/lib/mysql
+    ports:
+      - "43306:3306"
+    networks:
+      - recruitment-network
+    # 最基础的配置，不添加任何自定义参数
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-root_password}"]
+      interval: 30s
+      timeout: 20s
+      retries: 10
+      start_period: 180s  # 给 MySQL 充足的启动时间
+
+  redis:
+    image: redis:7-alpine
+    container_name: recruitment-redis-clean
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-your_redis_password}
+    volumes:
+      - redis_clean_data:/data
+    ports:
+      - "46379:6379"
+    networks:
+      - recruitment-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: recruitment-backend-clean
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql
+      REDIS_HOST: redis
+    ports:
+      - "45000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - recruitment-network
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:45000/api}
+        REACT_APP_ALLOWED_EMAIL_DOMAIN: ${ALLOWED_EMAIL_DOMAIN:-@stu.example.edu.cn}
+    container_name: recruitment-frontend-clean
+    restart: unless-stopped
+    ports:
+      - "43000:80"
+    depends_on:
+      - backend
+    networks:
+      - recruitment-network
+
+networks:
+  recruitment-network:
+    driver: bridge
+
+volumes:
+  mysql_clean_data:
+  redis_clean_data:
