@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
       subDir = 'photos/personal';
     } else if (file.fieldname === 'studentCardPhoto') {
       subDir = 'photos/student-cards';
-    } else if (file.fieldname === 'experienceAttachment') {
+    } else if (file.fieldname === 'experienceAttachments') {
       subDir = 'attachments';
     }
     
@@ -46,7 +46,7 @@ const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterC
     } else {
       cb(new Error('只允许上传图片文件'));
     }
-  } else if (file.fieldname === 'experienceAttachment') {
+  } else if (file.fieldname === 'experienceAttachments') {
     // 附件文件：允许常见文档格式
     const allowedMimes = [
       'application/pdf',
@@ -72,8 +72,8 @@ export const upload = multer({
   storage,
   fileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024, // 5MB
-    files: 3, // 最多3个文件
+    fileSize: 10 * 1024 * 1024, // 10MB
+    files: 7, // 最多7个文件 (个人照片1 + 学生证1 + 佐证材料5)
   },
 });
 
@@ -81,5 +81,5 @@ export const upload = multer({
 export const uploadApplicationFiles = upload.fields([
   { name: 'personalPhoto', maxCount: 1 },
   { name: 'studentCardPhoto', maxCount: 1 },
-  { name: 'experienceAttachment', maxCount: 1 },
+  { name: 'experienceAttachments', maxCount: 5 },
 ]);

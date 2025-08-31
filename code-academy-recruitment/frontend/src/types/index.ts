@@ -20,7 +20,7 @@ export interface Application {
   introduction: string;
   skills: string;
   experience: string;
-  experienceAttachment?: string;
+  experienceAttachments?: string[];
   motivation: string;
   portfolio?: string;
   gradeSpecificInfo?: any;
@@ -79,7 +79,7 @@ export interface ApplicationFormData {
   introduction: string;
   skills: string;
   experience: string;
-  experienceAttachment?: File;
+  experienceAttachments?: File[]; // 改为多文件
   motivation: string;
   portfolio?: string;
   gradeSpecificInfo?: {

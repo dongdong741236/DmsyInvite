@@ -55,8 +55,8 @@ export class Application {
   @Column({ type: 'text' })
   experience!: string;
 
-  @Column({ type: 'text', nullable: true })
-  experienceAttachment?: string;
+  @Column({ type: 'json', nullable: true })
+  experienceAttachments?: string[]; // 存储多个文件路径
 
   @Column({ type: 'text' })
   motivation!: string;

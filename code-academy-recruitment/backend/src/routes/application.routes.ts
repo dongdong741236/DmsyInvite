@@ -52,13 +52,20 @@ router.get('/:id', applicationController.getApplication);
 router.post('/upload', uploadApplicationFiles, async (req, res) => {
   try {
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-    const uploadedFiles: { [key: string]: string } = {};
+    const uploadedFiles: { [key: string]: string | string[] } = {};
 
     if (files) {
       Object.keys(files).forEach((fieldname) => {
-        if (files[fieldname] && files[fieldname][0]) {
-          // 只存储相对路径
-          uploadedFiles[fieldname] = files[fieldname][0].path.replace(/^uploads\//, '');
+        if (files[fieldname] && files[fieldname].length > 0) {
+          if (fieldname === 'experienceAttachments') {
+            // 多文件字段，返回数组
+            uploadedFiles[fieldname] = files[fieldname].map(
+              file => file.path.replace(/^uploads\//, '')
+            );
+          } else {
+            // 单文件字段，返回字符串
+            uploadedFiles[fieldname] = files[fieldname][0]?.path.replace(/^uploads\//, '') || '';
+          }
         }
       });
     }

@@ -111,8 +111,10 @@ export const createApplication = async (
       if (files.studentCardPhoto && files.studentCardPhoto[0]) {
         applicationData.studentCardPhoto = files.studentCardPhoto[0].path.replace(/^uploads\//, '');
       }
-      if (files.experienceAttachment && files.experienceAttachment[0]) {
-        applicationData.experienceAttachment = files.experienceAttachment[0].path.replace(/^uploads\//, '');
+      if (files.experienceAttachments && files.experienceAttachments.length > 0) {
+        applicationData.experienceAttachments = files.experienceAttachments.map(
+          file => file.path.replace(/^uploads\//, '')
+        );
       }
     }
 

@@ -3,10 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import api from '../services/api';
 import { ApplicationFormData, ApplicationConfig } from '../types';
+import FileUpload from '../components/FileUpload';
 import { 
   ExclamationCircleIcon,
-  PhotoIcon,
-  DocumentArrowUpIcon,
   InformationCircleIcon,
   CheckCircleIcon
 } from '@heroicons/react/24/outline';
@@ -109,8 +108,12 @@ const ApplicationFormNew: React.FC = () => {
       if (data.studentCardPhoto) {
         formData.append('studentCardPhoto', data.studentCardPhoto);
       }
-      if (data.experienceAttachment) {
-        formData.append('experienceAttachment', data.experienceAttachment);
+      
+      // 处理多个佐证材料文件
+      if (data.experienceAttachments && data.experienceAttachments.length > 0) {
+        data.experienceAttachments.forEach((file, index) => {
+          formData.append(`experienceAttachments`, file);
+        });
       }
 
       // 使用 fetch 发送 FormData
@@ -138,11 +141,7 @@ const ApplicationFormNew: React.FC = () => {
     }
   };
 
-  const handleFileChange = (fieldName: string, file: File | null) => {
-    if (file) {
-      setValue(fieldName as keyof ApplicationFormData, file as any);
-    }
-  };
+
 
   // 申请提交成功页面
   if (success) {
@@ -307,41 +306,29 @@ const ApplicationFormNew: React.FC = () => {
           <h2 className="text-xl font-semibold mb-6">照片信息</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                个人照片 <span className="text-red-500">*</span>
-              </label>
-              <div className="neumorphic-input p-4">
-                <div className="flex items-center justify-center">
-                  <PhotoIcon className="w-8 h-8 text-gray-400 mr-2" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange('personalPhoto', e.target.files?.[0] || null)}
-                    className="text-sm text-gray-500"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-2">支持 JPG、PNG 格式，大小不超过 5MB</p>
-              </div>
-            </div>
+            <FileUpload
+              label="个人照片"
+              accept="image/*"
+              maxSize={5}
+              required={true}
+              preview={true}
+              description="请上传清晰的个人近照，支持 JPG、PNG 格式"
+              value={watch('personalPhoto')}
+              onChange={(file) => setValue('personalPhoto', file as File)}
+              error={errors.personalPhoto?.message}
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                一卡通照片 <span className="text-red-500">*</span>
-              </label>
-              <div className="neumorphic-input p-4">
-                <div className="flex items-center justify-center">
-                  <PhotoIcon className="w-8 h-8 text-gray-400 mr-2" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleFileChange('studentCardPhoto', e.target.files?.[0] || null)}
-                    className="text-sm text-gray-500"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-2">请上传清晰的一卡通照片</p>
-              </div>
-            </div>
+            <FileUpload
+              label="一卡通照片"
+              accept="image/*"
+              maxSize={5}
+              required={true}
+              preview={true}
+              description="请上传清晰的一卡通照片，确保信息可见"
+              value={watch('studentCardPhoto')}
+              onChange={(file) => setValue('studentCardPhoto', file as File)}
+              error={errors.studentCardPhoto?.message}
+            />
           </div>
         </div>
 
@@ -615,23 +602,17 @@ const ApplicationFormNew: React.FC = () => {
               )}
               
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  佐证材料（可选）
-                </label>
-                <div className="neumorphic-input p-4">
-                  <div className="flex items-center justify-center">
-                    <DocumentArrowUpIcon className="w-8 h-8 text-gray-400 mr-2" />
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.jpg,.png,.gif"
-                      onChange={(e) => handleFileChange('experienceAttachment', e.target.files?.[0] || null)}
-                      className="text-sm text-gray-500"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    支持 PDF、Word 文档或图片，用于证明您的项目经验
-                  </p>
-                </div>
+                <FileUpload
+                  label="佐证材料"
+                  accept=".pdf,.doc,.docx,.jpg,.png,.gif,.zip,.rar"
+                  multiple={true}
+                  maxSize={10}
+                  maxFiles={5}
+                  description="上传项目截图、代码片段、证书等材料，支持多文件上传"
+                  value={watch('experienceAttachments')}
+                  onChange={(files) => setValue('experienceAttachments', files as File[])}
+                  error={errors.experienceAttachments?.message}
+                />
               </div>
             </div>
 

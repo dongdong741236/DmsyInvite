@@ -153,8 +153,25 @@ const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                 {renderFileLink(application.studentCardPhoto, '学生证')}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">经验附件</label>
-                {renderFileLink(application.experienceAttachment, '经验附件')}
+                <label className="block text-sm font-medium text-gray-700 mb-1">佐证材料</label>
+                {application.experienceAttachments && application.experienceAttachments.length > 0 ? (
+                  <div className="space-y-1">
+                    {application.experienceAttachments.map((filePath, index) => (
+                      <a
+                        key={index}
+                        href={`/uploads/${filePath}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 hover:text-primary-900 flex items-center text-sm"
+                      >
+                        <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                        佐证材料 {index + 1}
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <span className="text-gray-400">未上传</span>
+                )}
               </div>
             </div>
           </div>
