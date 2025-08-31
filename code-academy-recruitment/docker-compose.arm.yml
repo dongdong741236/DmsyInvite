@@ -1,9 +1,12 @@
 version: '3.8'
 
+# ARM 架构优化的 Docker Compose 配置
+# 适用于树莓派、Apple Silicon 等 ARM 设备
+
 services:
   mysql:
     image: mysql:8.0
-    platform: linux/amd64,linux/arm64
+    platform: linux/arm64
     container_name: recruitment-mysql
     restart: unless-stopped
     environment:
@@ -17,26 +20,26 @@ services:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
       - ./docker/mysql/optimize.sql:/docker-entrypoint-initdb.d/optimize.sql:ro
-      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
-      - ./docker/mysql/my-arm.cnf:/docker-entrypoint-initdb.d/my-arm.cnf:ro
-      - ./docker/mysql/setup-config.sh:/docker-entrypoint-initdb.d/setup-config.sh:ro
+      - ./docker/mysql/my-arm.cnf:/etc/mysql/conf.d/custom.cnf:ro
     ports:
       - "3306:3306"
     networks:
       - recruitment-network
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-buffer-pool-size=256M
+    # ARM 优化的 MySQL 命令参数
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-buffer-pool-size=128M --innodb-io-capacity=100
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${DB_USER:-recruitment_user}", "-p${DB_PASSWORD:-your_secure_password}"]
-      interval: 10s
-      timeout: 5s
+      interval: 15s
+      timeout: 10s
       retries: 5
+      start_period: 60s
 
   redis:
     image: redis:7-alpine
-    platform: linux/amd64,linux/arm64
+    platform: linux/arm64
     container_name: recruitment-redis
     restart: unless-stopped
-    command: redis-server --requirepass ${REDIS_PASSWORD:-your_redis_password}
+    command: redis-server --requirepass ${REDIS_PASSWORD:-your_redis_password} --maxmemory 64mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     ports:
@@ -53,6 +56,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      platforms:
+        - linux/arm64
     container_name: recruitment-backend
     restart: unless-stopped
     env_file:
@@ -61,6 +66,8 @@ services:
       NODE_ENV: production
       DB_HOST: mysql
       REDIS_HOST: redis
+      # ARM 架构 Node.js 优化
+      NODE_OPTIONS: "--max-old-space-size=512"
     ports:
       - "5000:5000"
     depends_on:
@@ -72,11 +79,20 @@ services:
       - recruitment-network
     volumes:
       - ./backend/uploads:/app/uploads
+    # ARM 设备资源限制
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      platforms:
+        - linux/arm64
       args:
         REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:5000/api}
         REACT_APP_ALLOWED_EMAIL_DOMAIN: ${ALLOWED_EMAIL_DOMAIN:-@stu.example.edu.cn}
@@ -88,6 +104,13 @@ services:
       - backend
     networks:
       - recruitment-network
+    # ARM 设备资源限制
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
 
 networks:
   recruitment-network:

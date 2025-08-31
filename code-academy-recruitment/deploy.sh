@@ -46,13 +46,28 @@ check_architecture() {
     ARCH=$(uname -m)
     print_message "检测到系统架构: $ARCH"
     
-    if [[ "$ARCH" == "arm64" ]] || [[ "$ARCH" == "aarch64" ]]; then
-        print_message "ARM 架构确认 ✓"
-    elif [[ "$ARCH" == "x86_64" ]]; then
-        print_message "x86_64 架构确认 ✓"
-    else
-        print_warning "未知架构: $ARCH，可能会遇到兼容性问题"
-    fi
+    case $ARCH in
+        x86_64)
+            print_message "x86_64 架构确认 ✓"
+            PLATFORM_CONFIG="标准配置"
+            ;;
+        aarch64|arm64)
+            print_message "ARM64 架构确认 ✓"
+            PLATFORM_CONFIG="ARM 优化配置"
+            print_message "将使用 ARM 优化的 MySQL 配置"
+            ;;
+        armv7l)
+            print_message "ARMv7 架构确认 ✓"
+            PLATFORM_CONFIG="ARM 优化配置"
+            print_message "将使用 ARM 优化的 MySQL 配置"
+            ;;
+        *)
+            print_warning "未知架构: $ARCH，使用默认配置"
+            PLATFORM_CONFIG="默认配置"
+            ;;
+    esac
+    
+    print_message "平台配置: $PLATFORM_CONFIG"
 }
 
 # 创建环境文件
@@ -72,24 +87,36 @@ create_env_file() {
 deploy_services() {
     print_message "开始构建和部署服务..."
     
+    # 选择合适的 docker-compose 文件
+    COMPOSE_FILE="docker-compose.yml"
+    if [[ "$ARCH" == "aarch64" ]] || [[ "$ARCH" == "arm64" ]] || [[ "$ARCH" == "armv7l" ]]; then
+        print_message "使用 ARM 优化的 Docker Compose 配置"
+        COMPOSE_FILE="docker-compose.arm.yml"
+    fi
+    
     # 停止旧容器（如果存在）
-    docker-compose down
+    docker-compose -f $COMPOSE_FILE down
     
     # 构建镜像
     print_message "构建 Docker 镜像..."
-    docker-compose build --no-cache
+    docker-compose -f $COMPOSE_FILE build --no-cache
     
     # 启动服务
     print_message "启动服务..."
-    docker-compose up -d
+    docker-compose -f $COMPOSE_FILE up -d
     
-    # 等待服务启动
-    print_message "等待服务启动..."
-    sleep 10
+    # 等待服务启动（ARM 设备启动较慢）
+    if [[ "$ARCH" == "aarch64" ]] || [[ "$ARCH" == "arm64" ]] || [[ "$ARCH" == "armv7l" ]]; then
+        print_message "ARM 设备启动中，请稍候..."
+        sleep 30
+    else
+        print_message "等待服务启动..."
+        sleep 15
+    fi
     
     # 检查服务状态
     print_message "检查服务状态..."
-    docker-compose ps
+    docker-compose -f $COMPOSE_FILE ps
 }
 
 # 健康检查
