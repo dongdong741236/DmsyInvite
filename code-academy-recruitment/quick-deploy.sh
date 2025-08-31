@@ -8,9 +8,15 @@ set -e
 echo "🚀 代码书院实验室纳新系统 - 快速部署"
 echo "========================================="
 
-# 检查 Docker
+# 检查 Docker 和 Docker Compose
 if ! command -v docker &> /dev/null; then
     echo "❌ Docker 未安装，请先运行: ./server-setup.sh"
+    exit 1
+fi
+
+if ! docker compose version &> /dev/null; then
+    echo "❌ Docker Compose V2 未安装，请先运行: ./server-setup.sh"
+    echo "   或手动安装: sudo apt install docker-compose-plugin"
     exit 1
 fi
 

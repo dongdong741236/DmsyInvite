@@ -33,8 +33,9 @@ check_dependencies() {
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null; then
-        print_error "Docker Compose 未安装，请先安装 Docker Compose"
+    if ! docker compose version &> /dev/null; then
+        print_error "Docker Compose V2 未安装，请先安装 Docker Compose V2"
+        print_message "安装方法: sudo apt install docker-compose-plugin"
         exit 1
     fi
     

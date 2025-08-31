@@ -28,16 +28,47 @@
 
 ## 快速开始
 
-### 使用Docker一键部署
+### 方式1: 一键自动部署（推荐）
 
 ```bash
-# 克隆项目
+# 1. 克隆项目
 git clone <repository-url>
-
-# 进入项目目录
 cd code-academy-recruitment
 
-# 启动服务
+# 2. 检查环境
+./check-env.sh
+
+# 3. 自动部署（包含 Docker 安装）
+./server-setup.sh
+```
+
+### 方式2: 快速部署（已有 Docker 环境）
+
+```bash
+# 1. 克隆项目
+git clone <repository-url>
+cd code-academy-recruitment
+
+# 2. 配置环境
+cp .env.example .env
+nano .env  # 编辑必要配置
+
+# 3. 快速部署
+./quick-deploy.sh
+```
+
+### 方式3: 手动部署
+
+```bash
+# 1. 克隆项目
+git clone <repository-url>
+cd code-academy-recruitment
+
+# 2. 配置环境
+cp .env.example .env
+nano .env
+
+# 3. 启动服务
 docker compose up -d
 ```
 

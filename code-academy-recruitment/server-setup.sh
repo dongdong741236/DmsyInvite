@@ -66,8 +66,8 @@ detect_arch() {
 
 # 安装 Docker
 install_docker() {
-    if command -v docker &> /dev/null; then
-        print_message "Docker 已安装"
+    if command -v docker &> /dev/null && docker compose version &> /dev/null; then
+        print_message "Docker 和 Docker Compose V2 已安装"
         return
     fi
     
@@ -105,8 +105,16 @@ install_docker() {
     # 添加用户到 docker 组
     sudo usermod -aG docker $USER
     
-    print_message "Docker 安装完成"
+    print_message "Docker 和 Docker Compose V2 安装完成"
     print_warning "请重新登录以应用 docker 组权限"
+    
+    # 验证安装
+    if docker compose version &> /dev/null; then
+        print_message "Docker Compose V2 验证成功 ✓"
+    else
+        print_error "Docker Compose V2 安装失败"
+        exit 1
+    fi
 }
 
 # 配置防火墙
