@@ -7,6 +7,12 @@ interface EmailOptions {
   html: string;
 }
 
+console.log('=== 创建邮件传输器 ===');
+console.log('EMAIL_HOST:', process.env.EMAIL_HOST);
+console.log('EMAIL_PORT:', process.env.EMAIL_PORT);
+console.log('EMAIL_SECURE:', process.env.EMAIL_SECURE);
+console.log('EMAIL_USER:', process.env.EMAIL_USER);
+
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
   port: parseInt(process.env.EMAIL_PORT || '587'),
@@ -15,7 +21,12 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+  // 添加调试选项
+  debug: true,
+  logger: true,
 });
+
+console.log('邮件传输器创建完成');
 
 export const sendEmail = async (options: EmailOptions) => {
   try {
