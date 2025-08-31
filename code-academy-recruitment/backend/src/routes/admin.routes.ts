@@ -56,6 +56,19 @@ router.post(
   validateRequest,
   adminController.scheduleInterview
 );
+
+// Batch interview scheduling
+router.post(
+  '/interviews/batch',
+  [
+    body('interviews').isArray().withMessage('interviews must be an array'),
+    body('interviews.*.applicationId').isUUID().withMessage('Invalid application ID'),
+    body('interviews.*.roomId').isUUID().withMessage('Invalid room ID'),
+    body('interviews.*.scheduledAt').isISO8601().withMessage('Invalid scheduled time'),
+  ],
+  validateRequest,
+  adminController.createBatchInterviews
+);
 router.put(
   '/interviews/:id',
   [

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import api from '../../services/api';
 import { Interview, InterviewRoom, Application } from '../../types';
 import InterviewScoringModal from '../../components/admin/InterviewScoringModal';
+import BatchInterviewModal from '../../components/admin/BatchInterviewModal';
 import {
   CalendarIcon,
   PlusIcon,
@@ -14,6 +15,7 @@ import {
   EnvelopeIcon,
   ExclamationCircleIcon,
   StarIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 
 interface InterviewsResponse {
@@ -43,6 +45,7 @@ const InterviewManagement: React.FC = () => {
   const [error, setError] = useState('');
   const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
   const [showScoringModal, setShowScoringModal] = useState(false);
+  const [showBatchModal, setShowBatchModal] = useState(false);
 
   const {
     register,
@@ -169,7 +172,14 @@ const InterviewManagement: React.FC = () => {
             className="neumorphic-button bg-primary-600 text-white hover:bg-primary-700 flex items-center"
           >
             <PlusIcon className="w-5 h-5 mr-2" />
-            安排面试
+            单个安排
+          </button>
+          <button
+            onClick={() => setShowBatchModal(true)}
+            className="neumorphic-button bg-green-600 text-white hover:bg-green-700 flex items-center"
+          >
+            <UserGroupIcon className="w-5 h-5 mr-2" />
+            批量安排
           </button>
         </div>
       </div>
@@ -392,6 +402,16 @@ const InterviewManagement: React.FC = () => {
           setSelectedInterview(null);
         }}
         onSaved={handleScoringComplete}
+      />
+
+      {/* 批量安排面试模态框 */}
+      <BatchInterviewModal
+        isOpen={showBatchModal}
+        onClose={() => setShowBatchModal(false)}
+        onSuccess={() => {
+          setMessage('批量面试安排成功');
+          loadInterviews();
+        }}
       />
     </div>
   );

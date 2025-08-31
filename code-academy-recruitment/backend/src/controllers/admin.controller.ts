@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from '../config/database';
 import { User, UserRole } from '../models/User';
 import { Application, ApplicationStatus } from '../models/Application';
-import { Interview } from '../models/Interview';
+import { Interview, InterviewResult } from '../models/Interview';
 import { InterviewRoom } from '../models/InterviewRoom';
 import { AppError } from '../middlewares/errorHandler';
 import { sendInterviewNotification as sendInterviewEmail, sendResultNotification as sendResultEmail, sendPasswordResetNotification } from '../utils/email';
@@ -642,6 +642,84 @@ export const updateInterviewEvaluation = async (
     res.json({
       message: 'Interview evaluation saved successfully',
       interview,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Batch interview scheduling
+export const createBatchInterviews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { interviews } = req.body;
+    const interviewRepository = AppDataSource.getRepository(Interview);
+    const applicationRepository = AppDataSource.getRepository(Application);
+
+    if (!interviews || !Array.isArray(interviews) || interviews.length === 0) {
+      throw new AppError('Invalid interviews data', 400);
+    }
+
+    console.log('=== 批量创建面试 ===');
+    console.log('面试数据:', interviews);
+
+    const createdInterviews = [];
+
+    for (const interviewData of interviews) {
+      const { applicationId, roomId, scheduledAt } = interviewData;
+
+      // 检查申请是否存在且状态正确
+      const application = await applicationRepository.findOne({
+        where: { id: applicationId },
+        relations: ['user'],
+      });
+
+      if (!application) {
+        console.error(`Application not found: ${applicationId}`);
+        continue;
+      }
+
+      if (application.status !== ApplicationStatus.REVIEWING) {
+        console.error(`Application ${applicationId} is not in reviewing status`);
+        continue;
+      }
+
+      // 检查是否已有面试安排
+      const existingInterview = await interviewRepository.findOne({
+        where: { application: { id: applicationId } },
+      });
+
+      if (existingInterview) {
+        console.error(`Interview already exists for application ${applicationId}`);
+        continue;
+      }
+
+      // 创建面试记录
+      const interview = interviewRepository.create({
+        application: { id: applicationId },
+        room: { id: roomId },
+        scheduledAt: new Date(scheduledAt),
+        result: InterviewResult.PENDING,
+        isCompleted: false,
+        notificationSent: false,
+      });
+
+      const savedInterview = await interviewRepository.save(interview);
+      createdInterviews.push(savedInterview);
+
+      // 更新申请状态
+      application.status = ApplicationStatus.INTERVIEW_SCHEDULED;
+      await applicationRepository.save(application);
+    }
+
+    console.log(`成功创建 ${createdInterviews.length} 个面试`);
+
+    res.json({
+      message: `Successfully scheduled ${createdInterviews.length} interviews`,
+      interviews: createdInterviews,
     });
   } catch (error) {
     next(error);
