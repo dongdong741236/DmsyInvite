@@ -213,7 +213,7 @@ export const login = async (
     const user = await userRepository.findOne({ where: { email } });
     if (!user) {
       console.log('❌ 用户不存在:', email);
-      throw new AppError('Invalid credentials', 401);
+      throw new AppError('邮箱地址不存在，请检查输入或先注册账号', 401);
     }
     
     console.log('✅ 找到用户:', user.email);
@@ -227,7 +227,7 @@ export const login = async (
     
     if (!isValidPassword) {
       console.log('❌ 密码验证失败');
-      throw new AppError('Invalid credentials', 401);
+      throw new AppError('密码错误，请检查输入或联系管理员重置密码', 401);
     }
     
     console.log('✅ 密码验证成功');

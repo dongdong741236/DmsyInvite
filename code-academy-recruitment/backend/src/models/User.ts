@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import bcrypt from 'bcryptjs';
 import { Application } from './Application';
@@ -67,9 +68,15 @@ export class User {
   updatedAt!: Date;
 
   @BeforeInsert()
+  @BeforeUpdate()
   async hashPassword() {
     if (this.password) {
-      this.password = await bcrypt.hash(this.password, 10);
+      // 检查密码是否已经被hash过（避免重复hash）
+      const isHashed = this.password.startsWith('$2b$') || this.password.startsWith('$2a$');
+      if (!isHashed) {
+        this.password = await bcrypt.hash(this.password, 10);
+        console.log('密码已hash处理');
+      }
     }
   }
 

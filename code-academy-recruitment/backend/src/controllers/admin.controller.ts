@@ -590,9 +590,14 @@ export const resetUserPassword = async (
 
     // 生成新密码
     const newPassword = Math.random().toString(36).slice(-8);
-    user.password = newPassword; // @BeforeInsert hook will hash it
+    console.log('=== 重置密码 ===');
+    console.log('用户:', user.email);
+    console.log('新密码（明文）:', newPassword);
+    
+    user.password = newPassword; // @BeforeUpdate hook will hash it
 
     await userRepository.save(user);
+    console.log('密码重置完成，已保存到数据库');
 
     // 发送新密码到用户邮箱
     try {
