@@ -14,14 +14,19 @@ export interface Application {
   phone: string;
   major: string;
   grade: string;
+  personalPhoto?: string;
+  studentCardPhoto?: string;
   introduction: string;
   skills: string;
   experience: string;
+  experienceAttachment?: string;
   motivation: string;
   portfolio?: string;
+  gradeSpecificInfo?: any;
   status: 'pending' | 'reviewing' | 'interview_scheduled' | 'interviewed' | 'accepted' | 'rejected';
   reviewNotes?: string;
   interview?: Interview;
+  user?: User;
   createdAt: string;
   updatedAt: string;
 }
@@ -30,6 +35,7 @@ export interface Interview {
   id: string;
   scheduledAt: string;
   room: InterviewRoom;
+  application?: Application;
   interviewerNotes?: string;
   evaluationScores?: {
     technical?: number;

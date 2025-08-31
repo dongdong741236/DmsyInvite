@@ -10,6 +10,10 @@ import ApplicationList from './pages/ApplicationList';
 import ApplicationFormNew from './pages/ApplicationFormNew';
 import AdminDashboard from './pages/admin/Dashboard';
 import ConfigManagement from './pages/admin/ConfigManagement';
+import UserManagement from './pages/admin/UserManagement';
+import ApplicationManagement from './pages/admin/ApplicationManagement';
+import RoomManagement from './pages/admin/RoomManagement';
+import InterviewManagement from './pages/admin/InterviewManagement';
 
 function App() {
   return (
@@ -62,6 +66,42 @@ function App() {
               element={
                 <PrivateRoute adminOnly>
                   <ConfigManagement />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="admin/users"
+              element={
+                <PrivateRoute adminOnly>
+                  <UserManagement />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="admin/applications"
+              element={
+                <PrivateRoute adminOnly>
+                  <ApplicationManagement />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="admin/rooms"
+              element={
+                <PrivateRoute adminOnly>
+                  <RoomManagement />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="admin/interviews"
+              element={
+                <PrivateRoute adminOnly>
+                  <InterviewManagement />
                 </PrivateRoute>
               }
             />
