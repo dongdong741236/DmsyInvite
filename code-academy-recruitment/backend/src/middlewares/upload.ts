@@ -2,11 +2,16 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// 确保上传目录存在
+// 确保上传目录存在（延迟创建，避免启动时权限问题）
 const uploadDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+
+const ensureUploadDir = (subPath: string) => {
+  const fullPath = path.join(uploadDir, subPath);
+  if (!fs.existsSync(fullPath)) {
+    fs.mkdirSync(fullPath, { recursive: true });
+  }
+  return fullPath;
+};
 
 // 配置存储
 const storage = multer.diskStorage({
@@ -21,11 +26,7 @@ const storage = multer.diskStorage({
       subDir = 'attachments';
     }
     
-    const fullPath = path.join(uploadDir, subDir);
-    if (!fs.existsSync(fullPath)) {
-      fs.mkdirSync(fullPath, { recursive: true });
-    }
-    
+    const fullPath = ensureUploadDir(subDir);
     cb(null, fullPath);
   },
   filename: (_req, file, cb) => {
