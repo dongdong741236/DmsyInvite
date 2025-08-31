@@ -10,19 +10,34 @@ const router = Router();
 // Get application config
 router.get('/config', async (_req, res, next) => {
   try {
+    console.log('=== 获取申请配置 ===');
+    
     const freshmanEnabled = await ConfigService.get('recruitment.freshman.enabled', 'true');
     const sophomoreEnabled = await ConfigService.get('recruitment.sophomore.enabled', 'true');
     const deadline = await ConfigService.get('recruitment.application.deadline');
     const startTime = await ConfigService.get('recruitment.application.start_time');
 
-    res.json({
+    console.log('从数据库读取的配置:');
+    console.log('freshman.enabled (原始值):', freshmanEnabled);
+    console.log('sophomore.enabled (原始值):', sophomoreEnabled);
+    console.log('deadline:', deadline);
+    console.log('startTime:', startTime);
+
+    const responseData = {
       freshmanEnabled: freshmanEnabled === 'true',
       sophomoreEnabled: sophomoreEnabled === 'true',
       deadline,
       startTime,
       allowedGrades: ['大一', '大二'],
-    });
+    };
+
+    console.log('返回给前端的配置:');
+    console.log('freshmanEnabled (布尔值):', responseData.freshmanEnabled);
+    console.log('sophomoreEnabled (布尔值):', responseData.sophomoreEnabled);
+
+    res.json(responseData);
   } catch (error) {
+    console.error('获取申请配置失败:', error);
     next(error);
   }
 });
