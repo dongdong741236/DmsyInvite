@@ -11,10 +11,8 @@ const router = Router();
 // Public routes
 router.use('/auth', authRoutes);
 
-// Application config route (public)
-router.use('/applications', applicationRoutes);
-
 // Protected routes
+router.use('/applications', authenticate, applicationRoutes);
 router.use('/interviews', authenticate, interviewRoutes);
 
 // Admin routes

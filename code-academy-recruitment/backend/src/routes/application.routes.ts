@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { validateRequest } from '../middlewares/validation';
 import { uploadApplicationFiles } from '../middlewares/upload';
-import { authenticate } from '../middlewares/auth';
 import * as applicationController from '../controllers/application.controller';
 import { ConfigService } from '../services/config.service';
 
@@ -43,16 +42,15 @@ router.get('/config', async (_req, res, next) => {
   }
 });
 
-// Get user's applications (需要认证)
-router.get('/my', authenticate, applicationController.getMyApplications);
+// Get user's applications
+router.get('/my', applicationController.getMyApplications);
 
-// Get single application (需要认证)
-router.get('/:id', authenticate, applicationController.getApplication);
+// Get single application
+router.get('/:id', applicationController.getApplication);
 
-// Create application (需要认证)
+// Create application
 router.post(
   '/',
-  authenticate,
   uploadApplicationFiles,
   [
     body('studentId').notEmpty().withMessage('学号不能为空'),

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { applicationService } from '../services/application.service';
+import api from '../services/api';
 import { ApplicationFormData, ApplicationConfig } from '../types';
 import { 
   ExclamationCircleIcon,
@@ -42,10 +43,9 @@ const ApplicationFormNew: React.FC = () => {
   const loadConfig = async () => {
     try {
       console.log('=== 加载申请配置 ===');
-      const response = await fetch('/api/applications/config');
-      const configData = await response.json();
-      console.log('申请配置数据:', configData);
-      setConfig(configData);
+      const response = await api.get('/applications/config');
+      console.log('申请配置数据:', response.data);
+      setConfig(response.data);
     } catch (error) {
       console.error('Failed to load config:', error);
     }
