@@ -9,6 +9,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import { logger } from './utils/logger';
 import routes from './routes';
 import { createDefaultAdmin } from './utils/initAdmin';
+import { ConfigService } from './services/config.service';
 
 // Load environment variables
 dotenv.config();
@@ -44,6 +45,10 @@ Promise.all([
 ])
   .then(async () => {
     logger.info('Database and Redis connections established');
+    
+    // Initialize system configurations
+    await ConfigService.initializeDefaults();
+    logger.info('System configurations initialized');
     
     // Create default admin user
     await createDefaultAdmin();

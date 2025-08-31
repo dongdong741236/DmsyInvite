@@ -7,8 +7,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import RegisterWithCode from './pages/RegisterWithCode';
 import ApplicationList from './pages/ApplicationList';
-import ApplicationForm from './pages/ApplicationForm';
+import ApplicationFormNew from './pages/ApplicationFormNew';
 import AdminDashboard from './pages/admin/Dashboard';
+import ConfigManagement from './pages/admin/ConfigManagement';
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
               path="applications/new"
               element={
                 <PrivateRoute>
-                  <ApplicationForm />
+                  <ApplicationFormNew />
                 </PrivateRoute>
               }
             />
@@ -52,6 +53,15 @@ function App() {
               element={
                 <PrivateRoute adminOnly>
                   <AdminDashboard />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="admin/config"
+              element={
+                <PrivateRoute adminOnly>
+                  <ConfigManagement />
                 </PrivateRoute>
               }
             />

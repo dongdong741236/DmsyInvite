@@ -11,6 +11,8 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  const allowedDomain = process.env.REACT_APP_ALLOWED_EMAIL_DOMAIN || '@stu.example.edu.cn';
 
   const {
     register,
@@ -61,7 +63,7 @@ const Login: React.FC = () => {
                 })}
                 type="email"
                 className="neumorphic-input"
-                placeholder="your.email@stu.example.edu.cn"
+                placeholder={`your.email${allowedDomain}`}
               />
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>

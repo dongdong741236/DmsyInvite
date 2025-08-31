@@ -67,9 +67,38 @@ export interface ApplicationFormData {
   phone: string;
   major: string;
   grade: string;
+  personalPhoto?: File;
+  studentCardPhoto?: File;
   introduction: string;
   skills: string;
   experience: string;
+  experienceAttachment?: File;
   motivation: string;
   portfolio?: string;
+  gradeSpecificInfo?: {
+    // 大一学生信息
+    highSchoolInfo?: {
+      highSchoolName?: string;
+      gaokaoScore?: number;
+      hasCodeExperience?: boolean;
+      codeExperienceDesc?: string;
+    };
+    // 大二学生信息
+    sophomoreInfo?: {
+      gpa?: number;
+      isTransferStudent?: boolean;
+      originalMajor?: string;
+      newMajor?: string;
+      cLanguageGrade?: string;
+      cppLanguageGrade?: string;
+    };
+  };
+}
+
+export interface ApplicationConfig {
+  freshmanEnabled: boolean;
+  sophomoreEnabled: boolean;
+  deadline: string;
+  startTime: string;
+  allowedGrades: string[];
 }

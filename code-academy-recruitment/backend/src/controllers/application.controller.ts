@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AppDataSource } from '../config/database';
 import { Application, ApplicationStatus } from '../models/Application';
 import { AppError } from '../middlewares/errorHandler';
+import { ConfigService } from '../services/config.service';
 
 export const getMyApplications = async (
   req: Request,
@@ -57,28 +58,48 @@ export const createApplication = async (
   try {
     const userId = req.user!.id;
     const applicationRepository = AppDataSource.getRepository(Application);
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
-    // Check if user already has an application for current recruitment
-    const existingApplication = await applicationRepository.findOne({
-      where: {
-        user: { id: userId },
-        createdAt: new Date(new Date().getFullYear(), 0, 1), // Current year
-      },
+    // 检查申请是否开放
+    const { open, reason } = await ConfigService.isApplicationOpen(req.body.grade);
+    if (!open) {
+      throw new AppError(reason || '申请暂不开放', 400);
+    }
+
+    // 检查用户是否已有申请
+    const maxApplications = parseInt(await ConfigService.get('recruitment.max_applications_per_user', '1'));
+    const existingApplicationsCount = await applicationRepository.count({
+      where: { user: { id: userId } },
     });
 
-    if (existingApplication) {
-      throw new AppError('You already have an application for this recruitment period', 400);
+    if (existingApplicationsCount >= maxApplications) {
+      throw new AppError(`您已达到最大申请数量限制（${maxApplications}个）`, 400);
+    }
+
+    // 处理文件上传
+    const applicationData: any = { ...req.body };
+    
+    if (files) {
+      if (files.personalPhoto && files.personalPhoto[0]) {
+        applicationData.personalPhoto = `/uploads/photos/personal/${files.personalPhoto[0].filename}`;
+      }
+      if (files.studentCardPhoto && files.studentCardPhoto[0]) {
+        applicationData.studentCardPhoto = `/uploads/photos/student-cards/${files.studentCardPhoto[0].filename}`;
+      }
+      if (files.experienceAttachment && files.experienceAttachment[0]) {
+        applicationData.experienceAttachment = `/uploads/attachments/${files.experienceAttachment[0].filename}`;
+      }
     }
 
     const application = applicationRepository.create({
-      ...req.body,
+      ...applicationData,
       user: { id: userId },
     });
 
     await applicationRepository.save(application);
 
     res.status(201).json({
-      message: 'Application submitted successfully',
+      message: '申请提交成功',
       application,
     });
   } catch (error) {

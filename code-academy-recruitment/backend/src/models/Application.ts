@@ -39,6 +39,13 @@ export class Application {
   @Column()
   grade!: string;
 
+  // 照片字段
+  @Column({ nullable: true })
+  personalPhoto?: string;
+
+  @Column({ nullable: true })
+  studentCardPhoto?: string;
+
   @Column({ type: 'text' })
   introduction!: string;
 
@@ -48,11 +55,35 @@ export class Application {
   @Column({ type: 'text' })
   experience!: string;
 
+  @Column({ type: 'text', nullable: true })
+  experienceAttachment?: string;
+
   @Column({ type: 'text' })
   motivation!: string;
 
   @Column({ type: 'text', nullable: true })
   portfolio?: string;
+
+  // 年级相关详细信息
+  @Column({ type: 'json', nullable: true })
+  gradeSpecificInfo?: {
+    // 大一学生信息
+    highSchoolInfo?: {
+      highSchoolName?: string;
+      gaokaoScore?: number;
+      hasCodeExperience?: boolean;
+      codeExperienceDesc?: string;
+    };
+    // 大二学生信息
+    sophomoreInfo?: {
+      gpa?: number;
+      isTransferStudent?: boolean;
+      originalMajor?: string;
+      newMajor?: string;
+      cLanguageGrade?: string;
+      cppLanguageGrade?: string;
+    };
+  };
 
   @Column({
     type: 'enum',

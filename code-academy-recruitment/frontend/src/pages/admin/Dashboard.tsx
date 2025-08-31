@@ -7,6 +7,7 @@ import {
   CheckCircleIcon,
   ChartBarIcon,
   ClockIcon,
+  CogIcon,
 } from '@heroicons/react/24/outline';
 import api from '../../services/api';
 
@@ -151,6 +152,15 @@ const AdminDashboard: React.FC = () => {
           <UserGroupIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold">用户管理</h3>
           <p className="text-gray-600 mt-2">查看注册用户</p>
+        </Link>
+
+        <Link
+          to="/admin/config"
+          className="neumorphic-card hover:shadow-neumorphic-hover text-center py-8"
+        >
+          <CogIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold">系统配置</h3>
+          <p className="text-gray-600 mt-2">纳新开关和时间设置</p>
         </Link>
       </div>
     </div>

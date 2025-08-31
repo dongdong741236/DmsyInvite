@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { body } from 'express-validator';
 import { validateRequest } from '../middlewares/validation';
 import * as adminController from '../controllers/admin.controller';
+import * as configController from '../controllers/config.controller';
 
 const router = Router();
 
@@ -78,5 +79,24 @@ router.post(
   validateRequest,
   adminController.sendResultNotification
 );
+
+// System configuration management
+router.get('/configs', configController.getConfigs);
+router.put('/configs/:key', 
+  [
+    body('value').notEmpty().withMessage('配置值不能为空'),
+    body('description').optional().isString(),
+  ],
+  validateRequest,
+  configController.updateConfig
+);
+router.put('/configs', 
+  [
+    body('configs').isArray().withMessage('配置数据必须是数组'),
+  ],
+  validateRequest,
+  configController.updateConfigs
+);
+router.get('/recruitment-status', configController.getRecruitmentStatus);
 
 export default router;
