@@ -87,8 +87,6 @@ router.post(
     body('motivation')
       .isLength({ min: 50 })
       .withMessage('加入动机至少需要50个字符'),
-    // 年级特定信息验证
-    body('gradeSpecificInfo').optional().isObject(),
   ],
   validateRequest,
   applicationController.createApplication

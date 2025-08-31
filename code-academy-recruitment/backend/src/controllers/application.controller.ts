@@ -76,9 +76,21 @@ export const createApplication = async (
       throw new AppError(`您已达到最大申请数量限制（${maxApplications}个）`, 400);
     }
 
-    // 大二学生特殊验证
-    if (req.body.grade === '大二') {
-      const sophomoreInfo = req.body.gradeSpecificInfo?.sophomoreInfo;
+    // 处理文件上传和数据解析
+    const applicationData: any = { ...req.body };
+    
+    // 解析 JSON 字符串字段
+    if (typeof applicationData.gradeSpecificInfo === 'string') {
+      try {
+        applicationData.gradeSpecificInfo = JSON.parse(applicationData.gradeSpecificInfo);
+      } catch (error) {
+        console.error('Failed to parse gradeSpecificInfo:', error);
+      }
+    }
+
+    // 大二学生特殊验证（在数据解析后）
+    if (applicationData.grade === '大二') {
+      const sophomoreInfo = applicationData.gradeSpecificInfo?.sophomoreInfo;
       
       // C/C++成绩是必填的
       if (!sophomoreInfo?.programmingGrade || sophomoreInfo.programmingGrade === '未修读') {
@@ -90,9 +102,6 @@ export const createApplication = async (
         throw new AppError('转专业学生必须填写原专业信息', 400);
       }
     }
-
-    // 处理文件上传
-    const applicationData: any = { ...req.body };
     
     if (files) {
       if (files.personalPhoto && files.personalPhoto[0]) {

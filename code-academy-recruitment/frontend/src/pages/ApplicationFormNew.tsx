@@ -83,6 +83,11 @@ const ApplicationFormNew: React.FC = () => {
         return;
       }
 
+      // 调试：打印提交的数据
+      console.log('=== 提交申请数据 ===');
+      console.log('完整数据:', data);
+      console.log('gradeSpecificInfo:', data.gradeSpecificInfo);
+
       // 创建 FormData 以支持文件上传
       const formData = new FormData();
       
