@@ -39,6 +39,9 @@ console.log('中间件配置完成');
 // Routes
 app.use('/api', routes);
 
+// Static file serving for uploads
+app.use('/uploads', express.static('uploads'));
+
 // Health check
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

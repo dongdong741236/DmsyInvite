@@ -48,6 +48,28 @@ router.get('/my', applicationController.getMyApplications);
 // Get single application
 router.get('/:id', applicationController.getApplication);
 
+// Upload files
+router.post('/upload', uploadApplicationFiles, async (req, res) => {
+  try {
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    const uploadedFiles: { [key: string]: string } = {};
+
+    if (files) {
+      Object.keys(files).forEach((fieldname) => {
+        if (files[fieldname] && files[fieldname][0]) {
+          // 只存储相对路径
+          uploadedFiles[fieldname] = files[fieldname][0].path.replace(/^uploads\//, '');
+        }
+      });
+    }
+
+    res.json({ files: uploadedFiles });
+  } catch (error) {
+    console.error('File upload error:', error);
+    res.status(500).json({ error: '文件上传失败' });
+  }
+});
+
 // Create application
 router.post(
   '/',

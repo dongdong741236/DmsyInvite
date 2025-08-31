@@ -76,18 +76,32 @@ export const createApplication = async (
       throw new AppError(`您已达到最大申请数量限制（${maxApplications}个）`, 400);
     }
 
+    // 大二学生特殊验证（OR关系）
+    if (req.body.grade === '大二') {
+      const sophomoreInfo = req.body.gradeSpecificInfo?.sophomoreInfo;
+      
+      const hasTransferInfo = sophomoreInfo?.isTransferStudent && sophomoreInfo?.originalMajor;
+      const hasCLanguageGrade = sophomoreInfo?.cLanguageGrade && sophomoreInfo.cLanguageGrade !== '未修读';
+      const hasCppLanguageGrade = sophomoreInfo?.cppLanguageGrade && sophomoreInfo.cppLanguageGrade !== '未修读';
+      
+      if (!hasTransferInfo && !hasCLanguageGrade && !hasCppLanguageGrade) {
+        throw new AppError('大二学生请至少填写以下信息之一：转专业信息、C语言成绩或C++成绩', 400);
+      }
+    }
+
     // 处理文件上传
     const applicationData: any = { ...req.body };
     
     if (files) {
       if (files.personalPhoto && files.personalPhoto[0]) {
-        applicationData.personalPhoto = `/uploads/photos/personal/${files.personalPhoto[0].filename}`;
+        // 只存储相对路径
+        applicationData.personalPhoto = files.personalPhoto[0].path.replace(/^uploads\//, '');
       }
       if (files.studentCardPhoto && files.studentCardPhoto[0]) {
-        applicationData.studentCardPhoto = `/uploads/photos/student-cards/${files.studentCardPhoto[0].filename}`;
+        applicationData.studentCardPhoto = files.studentCardPhoto[0].path.replace(/^uploads\//, '');
       }
       if (files.experienceAttachment && files.experienceAttachment[0]) {
-        applicationData.experienceAttachment = `/uploads/attachments/${files.experienceAttachment[0].filename}`;
+        applicationData.experienceAttachment = files.experienceAttachment[0].path.replace(/^uploads\//, '');
       }
     }
 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { applicationService } from '../services/application.service';
 import api from '../services/api';
 import { ApplicationFormData, ApplicationConfig } from '../types';
 import { 
@@ -51,10 +50,36 @@ const ApplicationFormNew: React.FC = () => {
     }
   };
 
+  // 大二学生验证逻辑（OR关系）
+  const validateSophomoreInfo = (data: ApplicationFormData): string | null => {
+    if (data.grade !== '大二') return null;
+    
+    const sophomoreInfo = data.gradeSpecificInfo?.sophomoreInfo;
+    
+    // 检查是否至少满足一个条件
+    const hasTransferInfo = sophomoreInfo?.isTransferStudent && sophomoreInfo?.originalMajor;
+    const hasCLanguageGrade = sophomoreInfo?.cLanguageGrade && sophomoreInfo.cLanguageGrade !== '未修读';
+    const hasCppLanguageGrade = sophomoreInfo?.cppLanguageGrade && sophomoreInfo.cppLanguageGrade !== '未修读';
+    
+    if (!hasTransferInfo && !hasCLanguageGrade && !hasCppLanguageGrade) {
+      return '大二学生请至少填写以下信息之一：转专业信息、C语言成绩或C++成绩';
+    }
+    
+    return null;
+  };
+
   const onSubmit = async (data: ApplicationFormData) => {
     try {
       setError('');
       setLoading(true);
+
+      // 大二学生特殊验证
+      const sophomoreValidationError = validateSophomoreInfo(data);
+      if (sophomoreValidationError) {
+        setError(sophomoreValidationError);
+        setLoading(false);
+        return;
+      }
 
       // 创建 FormData 以支持文件上传
       const formData = new FormData();
@@ -473,6 +498,22 @@ const ApplicationFormNew: React.FC = () => {
                     </div>
                   </>
                 )}
+
+                {/* 提示信息 */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex">
+                    <InformationCircleIcon className="w-5 h-5 text-blue-500 mr-2 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-blue-800">
+                      <p className="font-medium mb-1">大二学生申请要求：</p>
+                      <p>请至少填写以下信息之一（满足其中一项即可）：</p>
+                      <ul className="list-disc list-inside mt-2 space-y-1">
+                        <li>如果是转专业学生，请填写原专业信息</li>
+                        <li>如果修读过C语言课程，请填写成绩</li>
+                        <li>如果修读过C++课程，请填写成绩</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
