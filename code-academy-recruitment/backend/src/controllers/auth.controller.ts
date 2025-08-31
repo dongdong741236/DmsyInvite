@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
 import { AppError } from '../middlewares/errorHandler';
-import { sendVerificationEmail, sendVerificationCode } from '../utils/email';
+import { sendVerificationCode } from '../utils/email';
 import redisClient from '../config/redis';
 
 const generateToken = (user: User): string => {

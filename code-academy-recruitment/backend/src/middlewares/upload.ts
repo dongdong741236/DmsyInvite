@@ -10,7 +10,7 @@ if (!fs.existsSync(uploadDir)) {
 
 // 配置存储
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (_req, file, cb) => {
     let subDir = 'others';
     
     if (file.fieldname === 'personalPhoto') {
@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
     
     cb(null, fullPath);
   },
-  filename: (req, file, cb) => {
+  filename: (_req, file, cb) => {
     // 生成唯一文件名
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     const ext = path.extname(file.originalname);
@@ -37,7 +37,7 @@ const storage = multer.diskStorage({
 });
 
 // 文件过滤器
-const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const fileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (file.fieldname === 'personalPhoto' || file.fieldname === 'studentCardPhoto') {
     // 照片文件：只允许图片
     if (file.mimetype.startsWith('image/')) {

@@ -8,7 +8,7 @@ import { ConfigService } from '../services/config.service';
 const router = Router();
 
 // Get application config
-router.get('/config', async (req, res, next) => {
+router.get('/config', async (_req, res, next) => {
   try {
     const freshmanEnabled = await ConfigService.get('recruitment.freshman.enabled', 'true');
     const sophomoreEnabled = await ConfigService.get('recruitment.sophomore.enabled', 'true');

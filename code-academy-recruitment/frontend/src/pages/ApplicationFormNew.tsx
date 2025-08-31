@@ -7,13 +7,15 @@ import {
   ExclamationCircleIcon,
   PhotoIcon,
   DocumentArrowUpIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
 
 const ApplicationFormNew: React.FC = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [config, setConfig] = useState<ApplicationConfig | null>(null);
   const [selectedGrade, setSelectedGrade] = useState<string>('');
 
@@ -91,7 +93,10 @@ const ApplicationFormNew: React.FC = () => {
         throw new Error(errorData.error || '提交失败');
       }
 
-      navigate('/applications');
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/applications');
+      }, 2000);
     } catch (err: any) {
       setError(err.message || '提交失败，请稍后重试');
     } finally {
@@ -104,6 +109,22 @@ const ApplicationFormNew: React.FC = () => {
       setValue(fieldName as keyof ApplicationFormData, file as any);
     }
   };
+
+  // 申请提交成功页面
+  if (success) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="neumorphic-card p-8 max-w-md text-center">
+          <CheckCircleIcon className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-4">申请提交成功！</h2>
+          <p className="text-gray-600 mb-4">
+            您的申请已成功提交，我们会尽快审核。
+          </p>
+          <p className="text-sm text-gray-500">2秒后自动跳转到申请列表...</p>
+        </div>
+      </div>
+    );
+  }
 
   // 检查申请是否开放
   if (config && !config.freshmanEnabled && !config.sophomoreEnabled) {
@@ -323,7 +344,9 @@ const ApplicationFormNew: React.FC = () => {
                   <div className="space-y-2">
                     <label className="flex items-center">
                       <input
-                        {...register('gradeSpecificInfo.highSchoolInfo.hasCodeExperience')}
+                        {...register('gradeSpecificInfo.highSchoolInfo.hasCodeExperience', {
+                          setValueAs: (value) => value === 'true'
+                        })}
                         type="radio"
                         value="true"
                         className="mr-2"
@@ -332,7 +355,9 @@ const ApplicationFormNew: React.FC = () => {
                     </label>
                     <label className="flex items-center">
                       <input
-                        {...register('gradeSpecificInfo.highSchoolInfo.hasCodeExperience')}
+                        {...register('gradeSpecificInfo.highSchoolInfo.hasCodeExperience', {
+                          setValueAs: (value) => value === 'false'
+                        })}
                         type="radio"
                         value="false"
                         className="mr-2"
@@ -383,7 +408,9 @@ const ApplicationFormNew: React.FC = () => {
                   <div className="space-y-2">
                     <label className="flex items-center">
                       <input
-                        {...register('gradeSpecificInfo.sophomoreInfo.isTransferStudent')}
+                        {...register('gradeSpecificInfo.sophomoreInfo.isTransferStudent', {
+                          setValueAs: (value) => value === 'true'
+                        })}
                         type="radio"
                         value="true"
                         className="mr-2"
@@ -392,7 +419,9 @@ const ApplicationFormNew: React.FC = () => {
                     </label>
                     <label className="flex items-center">
                       <input
-                        {...register('gradeSpecificInfo.sophomoreInfo.isTransferStudent')}
+                        {...register('gradeSpecificInfo.sophomoreInfo.isTransferStudent', {
+                          setValueAs: (value) => value === 'false'
+                        })}
                         type="radio"
                         value="false"
                         className="mr-2"
@@ -402,7 +431,7 @@ const ApplicationFormNew: React.FC = () => {
                   </div>
                 </div>
 
-                {watch('gradeSpecificInfo.sophomoreInfo.isTransferStudent') === 'true' && (
+                {watch('gradeSpecificInfo.sophomoreInfo.isTransferStudent') === true && (
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">

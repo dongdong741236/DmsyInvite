@@ -29,6 +29,7 @@ const RegisterWithCode: React.FC = () => {
   const { register: registerUser } = useAuth();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [step, setStep] = useState<'email' | 'verify' | 'register'>('email');
   const [email, setEmail] = useState('');
   const [countdown, setCountdown] = useState(0);
@@ -115,7 +116,10 @@ const RegisterWithCode: React.FC = () => {
       setError('');
       setLoading(true);
       await registerUser(email, data.password, data.name);
-      navigate('/');
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
     } catch (err: any) {
       setError(err.response?.data?.error || '注册失败');
     } finally {
