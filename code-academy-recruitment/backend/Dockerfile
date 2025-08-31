@@ -39,16 +39,13 @@ RUN npm ci --only=production && \
 COPY --from=builder /app/dist ./dist
 
 # Create uploads directory
-RUN mkdir -p uploads && chown nodejs:nodejs uploads
+RUN mkdir -p uploads
 
-# Switch to non-root user
-USER nodejs
+# Keep running as root for now to avoid permission issues
+# USER nodejs
 
 # Expose port
 EXPOSE 5000
 
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["dumb-init", "--"]
-
-# Start the application
-CMD ["node", "dist/index.js"]
+# Start the application with verbose output
+CMD ["node", "--trace-warnings", "dist/index.js"]
