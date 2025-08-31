@@ -41,19 +41,19 @@ if [[ "$ARCH" == "aarch64" ]] || [[ "$ARCH" == "arm64" ]] || [[ "$ARCH" == "armv
 fi
 
 echo "📦 停止旧服务..."
-docker-compose -f $COMPOSE_FILE down 2>/dev/null || true
+docker compose -f $COMPOSE_FILE down 2>/dev/null || true
 
 echo "🔨 构建镜像..."
-docker-compose -f $COMPOSE_FILE build
+docker compose -f $COMPOSE_FILE build
 
 echo "🚀 启动服务..."
-docker-compose -f $COMPOSE_FILE up -d
+docker compose -f $COMPOSE_FILE up -d
 
 echo "⏳ 等待服务启动..."
 sleep 20
 
 echo "🔍 检查服务状态..."
-docker-compose -f $COMPOSE_FILE ps
+docker compose -f $COMPOSE_FILE ps
 
 echo ""
 echo "✅ 部署完成！"
@@ -63,10 +63,10 @@ echo "前端界面: http://$(hostname -I | awk '{print $1}'):43000"
 echo "后端 API: http://$(hostname -I | awk '{print $1}'):45000"
 echo ""
 echo "📊 服务状态："
-docker-compose -f $COMPOSE_FILE ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
+docker compose -f $COMPOSE_FILE ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
 echo ""
 echo "📋 管理命令："
-echo "查看日志: docker-compose -f $COMPOSE_FILE logs -f"
-echo "重启服务: docker-compose -f $COMPOSE_FILE restart"
-echo "停止服务: docker-compose -f $COMPOSE_FILE down"
+echo "查看日志: docker compose -f $COMPOSE_FILE logs -f"
+echo "重启服务: docker compose -f $COMPOSE_FILE restart"
+echo "停止服务: docker compose -f $COMPOSE_FILE down"
 echo "========================================="

@@ -107,34 +107,34 @@ docker exec -i recruitment-mysql mysql -u recruitment_user -p recruitment_db < b
 
 ```bash
 # 查看所有服务日志
-docker-compose logs -f
+docker compose logs -f
 
 # 查看特定服务日志
-docker-compose logs -f backend
-docker-compose logs -f frontend
+docker compose logs -f backend
+docker compose logs -f frontend
 ```
 
 ### 重启服务
 
 ```bash
 # 重启所有服务
-docker-compose restart
+docker compose restart
 
 # 重启特定服务
-docker-compose restart backend
+docker compose restart backend
 ```
 
 ### 清理和重建
 
 ```bash
 # 停止并删除容器
-docker-compose down
+docker compose down
 
 # 清理数据卷（注意：会删除所有数据）
-docker-compose down -v
+docker compose down -v
 
 # 重新构建镜像
-docker-compose build --no-cache
+docker compose build --no-cache
 ```
 
 ## 性能优化
@@ -188,6 +188,6 @@ curl http://localhost:3000/health
 git pull
 
 # 重新构建和部署
-docker-compose build
-docker-compose up -d
+docker compose build
+docker compose up -d
 ```

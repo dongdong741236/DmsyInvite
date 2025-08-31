@@ -112,7 +112,7 @@ build_single_arch() {
     # 构建前端
     print_message "构建前端镜像..."
     docker build --platform $DOCKER_ARCH \
-        --build-arg REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:5000/api} \
+        --build-arg REACT_APP_API_URL=${REACT_APP_API_URL:-http://localhost:45000/api} \
         --build-arg REACT_APP_ALLOWED_EMAIL_DOMAIN=${ALLOWED_EMAIL_DOMAIN:-@stu.example.edu.cn} \
         -t recruitment-frontend:latest ./frontend
     
@@ -124,10 +124,10 @@ start_services() {
     print_step "启动服务..."
     
     # 停止旧容器
-    docker-compose down
+    docker compose down
     
     # 启动新服务
-    docker-compose up -d
+    docker compose up -d
     
     print_message "服务启动完成！"
     
@@ -137,7 +137,7 @@ start_services() {
     
     # 检查服务状态
     print_step "检查服务状态..."
-    docker-compose ps
+    docker compose ps
 }
 
 # 显示架构信息
@@ -193,8 +193,8 @@ main() {
     print_message "构建完成！"
     echo ""
     echo "访问地址："
-    echo "前端: http://localhost:3000"
-    echo "后端: http://localhost:5000"
+    echo "前端: http://localhost:43000"
+    echo "后端: http://localhost:45000"
     echo "MySQL: localhost:3306"
 }
 

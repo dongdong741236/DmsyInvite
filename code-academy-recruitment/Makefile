@@ -36,11 +36,11 @@ help:
 
 # 构建镜像
 build:
-	docker-compose -f $(COMPOSE_FILE) build
+	docker compose -f $(COMPOSE_FILE) build
 
 # 启动服务
 up:
-	docker-compose -f $(COMPOSE_FILE) up -d
+	docker compose -f $(COMPOSE_FILE) up -d
 	@echo "服务已启动!"
 	@echo "前端: http://localhost:43000"
 	@echo "后端: http://localhost:45000"
@@ -49,29 +49,29 @@ up:
 
 # 停止服务
 down:
-	docker-compose -f $(COMPOSE_FILE) down
+	docker compose -f $(COMPOSE_FILE) down
 
 # 重启服务
 restart:
-	docker-compose -f $(COMPOSE_FILE) restart
+	docker compose -f $(COMPOSE_FILE) restart
 
 # 查看日志
 logs:
-	docker-compose -f $(COMPOSE_FILE) logs -f
+	docker compose -f $(COMPOSE_FILE) logs -f
 
 # 清理
 clean:
-	docker-compose -f $(COMPOSE_FILE) down -v
+	docker compose -f $(COMPOSE_FILE) down -v
 	docker system prune -f
 
 # 强制使用ARM配置
 arm:
-	docker-compose -f docker-compose.arm.yml up -d
+	docker compose -f docker-compose.arm.yml up -d
 	@echo "强制使用ARM配置启动"
 
 # 强制使用x86配置  
 x86:
-	docker-compose -f docker-compose.yml up -d
+	docker compose -f docker-compose.yml up -d
 	@echo "强制使用x86配置启动"
 
 # 备份数据库

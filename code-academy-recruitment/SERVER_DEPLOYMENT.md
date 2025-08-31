@@ -240,7 +240,7 @@ REACT_APP_API_URL=http://your-domain.com:45000/api
 make prod
 
 # 方式3：手动执行
-docker-compose up -d
+docker compose up -d
 ```
 
 ## 🌐 域名和反向代理配置
@@ -361,14 +361,14 @@ sudo systemctl restart docker
 ```bash
 # 查看服务状态
 make health
-docker-compose ps
+docker compose ps
 
 # 查看资源使用
 docker stats
 
 # 查看日志
 make logs
-docker-compose logs -f backend
+docker compose logs -f backend
 ```
 
 ### 定期维护
@@ -400,8 +400,8 @@ After=docker.service
 Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=/path/to/code-academy-recruitment
-ExecStart=/usr/local/bin/docker-compose up -d
-ExecStop=/usr/local/bin/docker-compose down
+ExecStart=/usr/local/bin/docker compose up -d
+ExecStop=/usr/local/bin/docker compose down
 TimeoutStartSec=0
 
 [Install]
@@ -580,7 +580,7 @@ REACT_APP_API_URL=https://recruitment.your-domain.com/api
 
 如果遇到问题，请检查：
 
-1. **服务状态**: `docker-compose ps`
+1. **服务状态**: `docker compose ps`
 2. **服务日志**: `make logs`
 3. **系统资源**: `htop` 或 `docker stats`
 4. **网络连接**: `curl http://localhost:45000/health`

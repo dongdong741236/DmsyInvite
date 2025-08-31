@@ -38,7 +38,7 @@ git clone <repository-url>
 cd code-academy-recruitment
 
 # 启动服务
-docker-compose up -d
+docker compose up -d
 ```
 
 访问地址：

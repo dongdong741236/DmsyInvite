@@ -95,15 +95,15 @@ deploy_services() {
     fi
     
     # 停止旧容器（如果存在）
-    docker-compose -f $COMPOSE_FILE down
+    docker compose -f $COMPOSE_FILE down
     
     # 构建镜像
     print_message "构建 Docker 镜像..."
-    docker-compose -f $COMPOSE_FILE build --no-cache
+    docker compose -f $COMPOSE_FILE build --no-cache
     
     # 启动服务
     print_message "启动服务..."
-    docker-compose -f $COMPOSE_FILE up -d
+    docker compose -f $COMPOSE_FILE up -d
     
     # 等待服务启动（ARM 设备启动较慢）
     if [[ "$ARCH" == "aarch64" ]] || [[ "$ARCH" == "arm64" ]] || [[ "$ARCH" == "armv7l" ]]; then
@@ -116,7 +116,7 @@ deploy_services() {
     
     # 检查服务状态
     print_message "检查服务状态..."
-    docker-compose -f $COMPOSE_FILE ps
+    docker compose -f $COMPOSE_FILE ps
 }
 
 # 健康检查
@@ -162,10 +162,10 @@ show_access_info() {
     echo "========================================="
     echo ""
     echo "常用命令："
-    echo "查看日志: docker-compose logs -f [service_name]"
-    echo "停止服务: docker-compose down"
-    echo "重启服务: docker-compose restart"
-    echo "查看状态: docker-compose ps"
+    echo "查看日志: docker compose logs -f [service_name]"
+    echo "停止服务: docker compose down"
+    echo "重启服务: docker compose restart"
+    echo "查看状态: docker compose ps"
 }
 
 # 主函数

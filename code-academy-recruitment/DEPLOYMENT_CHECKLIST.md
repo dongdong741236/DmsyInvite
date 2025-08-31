@@ -59,7 +59,7 @@ cd code-academy-recruitment
 
 # 或手动安装 Docker
 sudo apt update
-sudo apt install docker.io docker-compose-plugin
+sudo apt install docker.io docker compose-plugin
 sudo systemctl start docker
 sudo usermod -aG docker $USER
 ```
@@ -112,7 +112,7 @@ make prod
 make health
 
 # 查看容器状态
-docker-compose ps
+docker compose ps
 
 # 测试访问
 curl http://localhost:45000/health
@@ -210,11 +210,11 @@ sudo systemctl reload nginx
 ```bash
 # 查看服务状态
 make health
-docker-compose ps
+docker compose ps
 
 # 查看日志
 make logs
-docker-compose logs -f backend
+docker compose logs -f backend
 
 # 重启服务
 make restart
@@ -246,11 +246,11 @@ sudo kill -9 <PID>
 ### 服务启动失败
 ```bash
 # 查看详细日志
-docker-compose logs backend
-docker-compose logs mysql
+docker compose logs backend
+docker compose logs mysql
 
 # 重新构建
-docker-compose build --no-cache
+docker compose build --no-cache
 ```
 
 ### 内存不足
@@ -270,7 +270,7 @@ sudo swapon /swapfile
 
 如果遇到问题：
 
-1. 检查 `docker-compose logs`
+1. 检查 `docker compose logs`
 2. 查看 `SERVER_DEPLOYMENT.md` 详细文档
 3. 确认 `.env` 配置正确
 4. 检查服务器资源使用情况
