@@ -203,19 +203,34 @@ export const login = async (
 ) => {
   try {
     const { email, password } = req.body;
+    console.log('=== 用户登录请求 ===');
+    console.log('登录邮箱:', email);
+    console.log('登录密码长度:', password ? password.length : 0);
+    
     const userRepository = AppDataSource.getRepository(User);
 
     // Find user
     const user = await userRepository.findOne({ where: { email } });
     if (!user) {
+      console.log('❌ 用户不存在:', email);
       throw new AppError('Invalid credentials', 401);
     }
+    
+    console.log('✅ 找到用户:', user.email);
+    console.log('用户角色:', user.role);
+    console.log('邮箱验证状态:', user.isEmailVerified);
 
     // Check password
+    console.log('开始验证密码...');
     const isValidPassword = await user.comparePassword(password);
+    console.log('密码验证结果:', isValidPassword);
+    
     if (!isValidPassword) {
+      console.log('❌ 密码验证失败');
       throw new AppError('Invalid credentials', 401);
     }
+    
+    console.log('✅ 密码验证成功');
 
     // Generate token
     const token = generateToken(user);
