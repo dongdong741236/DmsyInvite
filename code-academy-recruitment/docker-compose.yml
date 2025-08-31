@@ -6,11 +6,10 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: ${DB_NAME:-recruitment_db}
-      MYSQL_USER: ${DB_USER:-recruitment_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-your_secure_password}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
       MYSQL_CHARSET: utf8mb4
       MYSQL_COLLATION: utf8mb4_unicode_ci
+      # 不使用 MYSQL_USER 和 MYSQL_PASSWORD，通过初始化脚本创建用户
     volumes:
       - mysql_data:/var/lib/mysql
       - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro

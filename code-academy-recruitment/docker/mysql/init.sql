@@ -26,11 +26,16 @@ SET GLOBAL performance_schema = ON;
 SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO';
 
 -- 修复用户权限问题：确保应用用户可以从容器网络连接
--- 删除可能存在的限制性用户
+-- 删除可能存在的限制性用户（如果存在）
 DROP USER IF EXISTS 'recruitment_user'@'localhost';
+DROP USER IF EXISTS 'recruitment_user'@'127.0.0.1';
 
--- 重新创建用户，允许从任何 IP 连接（容器网络需要）
--- 注意：这里不能直接使用环境变量，需要通过 Docker 的初始化机制
+-- 创建允许从任何 IP 连接的用户
+-- 注意：这里的密码需要与 .env 文件中的 DB_PASSWORD 一致
+CREATE USER IF NOT EXISTS 'recruitment_user'@'%' IDENTIFIED BY 'your_secure_password';
+
+-- 赋予完整的数据库权限
+GRANT ALL PRIVILEGES ON recruitment_db.* TO 'recruitment_user'@'%';
 
 -- 刷新权限
 FLUSH PRIVILEGES;

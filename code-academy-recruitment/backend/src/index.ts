@@ -46,16 +46,24 @@ Promise.all([
   .then(async () => {
     logger.info('Database and Redis connections established');
     
-    // Initialize system configurations
-    await ConfigService.initializeDefaults();
-    logger.info('System configurations initialized');
-    
-    // Create default admin user
+    // Create default admin user first
     await createDefaultAdmin();
+    logger.info('Default admin user created');
     
+    // Start server
     app.listen(PORT, () => {
       logger.info(`Server running on port ${PORT}`);
     });
+    
+    // Initialize system configurations after server starts
+    setTimeout(async () => {
+      try {
+        await ConfigService.initializeDefaults();
+        logger.info('System configurations initialized');
+      } catch (error) {
+        logger.error('Failed to initialize system configurations:', error);
+      }
+    }, 5000);
   })
   .catch((error) => {
     logger.error('Database or Redis connection failed:', error);
