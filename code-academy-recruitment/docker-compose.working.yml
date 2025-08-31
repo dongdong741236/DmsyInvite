@@ -71,7 +71,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:45000/api}
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-/api}
         REACT_APP_ALLOWED_EMAIL_DOMAIN: ${ALLOWED_EMAIL_DOMAIN:-@stu.example.edu.cn}
     container_name: recruitment-frontend
     restart: unless-stopped
