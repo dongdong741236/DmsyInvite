@@ -17,6 +17,29 @@ const emailDomainValidator = body('email')
     return true;
   });
 
+// Send email verification code
+router.post(
+  '/send-verification-code',
+  [emailDomainValidator],
+  validateRequest,
+  authController.sendEmailVerificationCode
+);
+
+// Verify email code
+router.post(
+  '/verify-email-code',
+  [
+    body('email').isEmail().withMessage('Invalid email'),
+    body('code')
+      .isLength({ min: 6, max: 6 })
+      .withMessage('Verification code must be 6 digits')
+      .isNumeric()
+      .withMessage('Verification code must be numeric'),
+  ],
+  validateRequest,
+  authController.verifyEmailCode
+);
+
 // Register
 router.post(
   '/register',

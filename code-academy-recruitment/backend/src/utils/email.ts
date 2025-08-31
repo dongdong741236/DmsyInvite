@@ -35,6 +35,29 @@ export const sendEmail = async (options: EmailOptions) => {
   }
 };
 
+export const sendVerificationCode = async (email: string, code: string) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">代码书院 - 邮箱验证码</h2>
+      <p>您好！</p>
+      <p>您正在注册代码书院实验室纳新系统，您的邮箱验证码是：</p>
+      <div style="text-align: center; margin: 24px 0;">
+        <span style="display: inline-block; padding: 16px 32px; background-color: #f3f4f6; border: 2px solid #2563eb; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 4px; color: #2563eb;">${code}</span>
+      </div>
+      <p><strong>验证码有效期为 10 分钟</strong>，请及时使用。</p>
+      <p>如果您没有进行此操作，请忽略此邮件。</p>
+      <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+      <p style="color: #6b7280; font-size: 14px;">此邮件由系统自动发送，请勿回复。</p>
+    </div>
+  `;
+
+  await sendEmail({
+    to: email,
+    subject: '代码书院 - 邮箱验证码',
+    html,
+  });
+};
+
 export const sendVerificationEmail = async (email: string, token: string) => {
   const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${token}`;
   

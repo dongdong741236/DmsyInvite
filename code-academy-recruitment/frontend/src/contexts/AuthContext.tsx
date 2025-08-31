@@ -7,6 +7,8 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
+  sendVerificationCode: (email: string) => Promise<{ message: string; expiresAt: string }>;
+  verifyEmailCode: (email: string, code: string) => Promise<{ message: string; verified: boolean }>;
   logout: () => void;
   isAdmin: boolean;
 }
@@ -62,6 +64,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(user);
   };
 
+  const sendVerificationCode = async (email: string) => {
+    return await authService.sendVerificationCode(email);
+  };
+
+  const verifyEmailCode = async (email: string, code: string) => {
+    return await authService.verifyEmailCode(email, code);
+  };
+
   const logout = () => {
     authService.logout();
     setUser(null);
@@ -72,6 +82,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loading,
     login,
     register,
+    sendVerificationCode,
+    verifyEmailCode,
     logout,
     isAdmin: user?.role === 'admin',
   };

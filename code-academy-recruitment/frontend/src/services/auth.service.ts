@@ -2,6 +2,22 @@ import api from './api';
 import { LoginData, RegisterData, User } from '../types';
 
 export const authService = {
+  async sendVerificationCode(email: string) {
+    const response = await api.post<{
+      message: string;
+      expiresAt: string;
+    }>('/auth/send-verification-code', { email });
+    return response.data;
+  },
+
+  async verifyEmailCode(email: string, code: string) {
+    const response = await api.post<{
+      message: string;
+      verified: boolean;
+    }>('/auth/verify-email-code', { email, code });
+    return response.data;
+  },
+
   async login(data: LoginData) {
     const response = await api.post<{
       message: string;
