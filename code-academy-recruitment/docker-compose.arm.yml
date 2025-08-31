@@ -1,5 +1,3 @@
-version: '3.8'
-
 # ARM 架构优化的 Docker Compose 配置
 # 适用于树莓派、Apple Silicon 等 ARM 设备
 
