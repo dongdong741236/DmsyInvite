@@ -25,20 +25,8 @@ SET GLOBAL performance_schema = ON;
 -- 设置 SQL 模式（更严格的数据验证）
 SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO';
 
--- 修复用户权限问题：确保应用用户可以从容器网络连接
--- 删除可能存在的限制性用户（如果存在）
-DROP USER IF EXISTS 'recruitment_user'@'localhost';
-DROP USER IF EXISTS 'recruitment_user'@'127.0.0.1';
-
--- 创建允许从任何 IP 连接的用户
--- 注意：这里的密码需要与 .env 文件中的 DB_PASSWORD 一致
-CREATE USER IF NOT EXISTS 'recruitment_user'@'%' IDENTIFIED BY 'your_secure_password';
-
--- 赋予完整的数据库权限
-GRANT ALL PRIVILEGES ON recruitment_db.* TO 'recruitment_user'@'%';
-
--- 刷新权限
-FLUSH PRIVILEGES;
+-- 使用 root 用户，无需创建额外用户
+-- root 用户默认拥有所有权限，可以从任何地址连接
 
 -- 创建用于性能监控的存储过程
 DELIMITER $$
