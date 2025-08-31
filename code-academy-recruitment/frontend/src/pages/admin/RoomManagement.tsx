@@ -267,21 +267,23 @@ const RoomManagement: React.FC = () => {
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => handleEdit(room)}
-                      className="text-primary-600 hover:text-primary-900 flex items-center"
-                    >
-                      <PencilIcon className="w-4 h-4 mr-1" />
-                      编辑
-                    </button>
-                    <button
-                      onClick={() => handleDelete(room.id)}
-                      className="text-red-600 hover:text-red-900 flex items-center"
-                    >
-                      <TrashIcon className="w-4 h-4 mr-1" />
-                      删除
-                    </button>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex flex-wrap gap-1">
+                      <button
+                        onClick={() => handleEdit(room)}
+                        className="inline-flex items-center px-2 py-1 bg-primary-100 text-primary-700 rounded text-xs hover:bg-primary-200 transition-colors"
+                      >
+                        <PencilIcon className="w-3 h-3 mr-1" />
+                        编辑
+                      </button>
+                      <button
+                        onClick={() => handleDelete(room.id)}
+                        className="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors"
+                      >
+                        <TrashIcon className="w-3 h-3 mr-1" />
+                        删除
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

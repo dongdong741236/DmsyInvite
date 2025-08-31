@@ -6,6 +6,7 @@ import {
   EyeIcon,
   XMarkIcon,
   MagnifyingGlassIcon,
+  PhotoIcon,
 } from '@heroicons/react/24/outline';
 
 interface FileViewerProps {
@@ -81,7 +82,26 @@ const FileViewer: React.FC<FileViewerProps> = ({ filePath, label, className = ""
             alt={label}
             className="w-full max-w-xs h-32 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => setImageModalOpen(true)}
+            onError={(e) => {
+              console.error('图片加载失败:', fileUrl);
+              (e.target as HTMLImageElement).style.display = 'none';
+              (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+            }}
           />
+          <div className="hidden bg-gray-100 w-full max-w-xs h-32 rounded-lg border border-gray-200 flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <PhotoIcon className="w-8 h-8 mx-auto mb-2" />
+              <p className="text-xs">图片加载失败</p>
+              <a 
+                href={fileUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs text-primary-600 hover:text-primary-800"
+              >
+                点击查看原图
+              </a>
+            </div>
+          </div>
           <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 rounded-lg flex items-center justify-center">
             <MagnifyingGlassIcon className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
           </div>

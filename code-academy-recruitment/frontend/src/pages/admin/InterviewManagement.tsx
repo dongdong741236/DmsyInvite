@@ -6,6 +6,7 @@ import api from '../../services/api';
 import { Interview, InterviewRoom, Application } from '../../types';
 import InterviewScoringModal from '../../components/admin/InterviewScoringModal';
 import BatchInterviewModal from '../../components/admin/BatchInterviewModal';
+import ResultConfirmationModal from '../../components/admin/ResultConfirmationModal';
 import {
   CalendarIcon,
   PlusIcon,
@@ -16,6 +17,7 @@ import {
   ExclamationCircleIcon,
   StarIcon,
   UserGroupIcon,
+  PaperAirplaneIcon,
 } from '@heroicons/react/24/outline';
 
 interface InterviewsResponse {
@@ -46,6 +48,7 @@ const InterviewManagement: React.FC = () => {
   const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
   const [showScoringModal, setShowScoringModal] = useState(false);
   const [showBatchModal, setShowBatchModal] = useState(false);
+  const [showResultModal, setShowResultModal] = useState(false);
 
   const {
     register,
@@ -180,6 +183,13 @@ const InterviewManagement: React.FC = () => {
           >
             <UserGroupIcon className="w-5 h-5 mr-2" />
             批量安排
+          </button>
+          <button
+            onClick={() => setShowResultModal(true)}
+            className="neumorphic-button bg-purple-600 text-white hover:bg-purple-700 flex items-center"
+          >
+            <PaperAirplaneIcon className="w-5 h-5 mr-2" />
+            发送结果通知
           </button>
         </div>
       </div>
@@ -329,22 +339,22 @@ const InterviewManagement: React.FC = () => {
                     {getResultBadge(interview.result)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
+                    <div className="flex flex-wrap gap-1">
                       {!interview.notificationSent && (
                         <button
                           onClick={() => sendNotification(interview.id)}
-                          className="text-blue-600 hover:text-blue-900 flex items-center"
+                          className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
                         >
-                          <EnvelopeIcon className="w-4 h-4 mr-1" />
+                          <EnvelopeIcon className="w-3 h-3 mr-1" />
                           发送通知
                         </button>
                       )}
                       <button
                         onClick={() => handleScoring(interview)}
-                        className="text-primary-600 hover:text-primary-900 flex items-center"
+                        className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors"
                       >
-                        <StarIcon className="w-4 h-4 mr-1" />
-                        {interview.isCompleted ? '查看评分' : '评分'}
+                        <StarIcon className="w-3 h-3 mr-1" />
+                        {interview.isCompleted ? '查看评分' : '面试评分'}
                       </button>
                     </div>
                   </td>
@@ -410,6 +420,16 @@ const InterviewManagement: React.FC = () => {
         onClose={() => setShowBatchModal(false)}
         onSuccess={() => {
           setMessage('批量面试安排成功');
+          loadInterviews();
+        }}
+      />
+
+      {/* 面试结果确认模态框 */}
+      <ResultConfirmationModal
+        isOpen={showResultModal}
+        onClose={() => setShowResultModal(false)}
+        onComplete={() => {
+          setMessage('面试结果通知已发送');
           loadInterviews();
         }}
       />

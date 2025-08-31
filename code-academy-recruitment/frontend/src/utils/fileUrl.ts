@@ -12,8 +12,11 @@ export const getFileUrl = (filePath: string | undefined): string | null => {
   
   // 确保路径不以斜杠开头
   const cleanPath = filePath.startsWith('/') ? filePath.slice(1) : filePath;
+  const fullUrl = `${getBackendBaseUrl()}/uploads/${cleanPath}`;
   
-  return `${getBackendBaseUrl()}/uploads/${cleanPath}`;
+  console.log('文件URL生成:', filePath, '->', fullUrl);
+  
+  return fullUrl;
 };
 
 export const getFileUrls = (filePaths: string[] | undefined): string[] => {

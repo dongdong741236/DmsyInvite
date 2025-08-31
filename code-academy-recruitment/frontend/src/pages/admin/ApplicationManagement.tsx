@@ -231,36 +231,39 @@ const ApplicationManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {format(new Date(application.createdAt), 'MM-dd HH:mm', { locale: zhCN })}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button 
-                      onClick={() => handleViewApplication(application.id)}
-                      className="text-primary-600 hover:text-primary-900 flex items-center"
-                    >
-                      <EyeIcon className="w-4 h-4 mr-1" />
-                      查看
-                    </button>
-                    {application.status === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => updateApplicationStatus(application.id, 'reviewing')}
-                          className="text-blue-600 hover:text-blue-900"
-                        >
-                          开始审核
-                        </button>
-                        <button
-                          onClick={() => updateApplicationStatus(application.id, 'accepted')}
-                          className="text-green-600 hover:text-green-900"
-                        >
-                          直接录取
-                        </button>
-                        <button
-                          onClick={() => updateApplicationStatus(application.id, 'rejected')}
-                          className="text-red-600 hover:text-red-900"
-                        >
-                          拒绝
-                        </button>
-                      </>
-                    )}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex flex-wrap gap-1">
+                      <button 
+                        onClick={() => handleViewApplication(application.id)}
+                        className="inline-flex items-center px-2 py-1 bg-primary-100 text-primary-700 rounded text-xs hover:bg-primary-200 transition-colors"
+                      >
+                        <EyeIcon className="w-3 h-3 mr-1" />
+                        查看详情
+                      </button>
+                      
+                      {application.status === 'pending' && (
+                        <>
+                          <button
+                            onClick={() => updateApplicationStatus(application.id, 'reviewing')}
+                            className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                          >
+                            开始审核
+                          </button>
+                          <button
+                            onClick={() => updateApplicationStatus(application.id, 'accepted')}
+                            className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors"
+                          >
+                            直接录取
+                          </button>
+                          <button
+                            onClick={() => updateApplicationStatus(application.id, 'rejected')}
+                            className="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors"
+                          >
+                            拒绝申请
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

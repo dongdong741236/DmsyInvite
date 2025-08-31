@@ -243,13 +243,13 @@ const UserManagement: React.FC = () => {
                     {format(new Date(user.createdAt), 'yyyy-MM-dd HH:mm', { locale: zhCN })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
+                    <div className="flex flex-wrap gap-1">
                       <button
                         onClick={() => handleViewUser(user)}
-                        className="text-primary-600 hover:text-primary-900 flex items-center"
+                        className="inline-flex items-center px-2 py-1 bg-primary-100 text-primary-700 rounded text-xs hover:bg-primary-200 transition-colors"
                       >
-                        <EyeIcon className="w-4 h-4 mr-1" />
-                        查看
+                        <EyeIcon className="w-3 h-3 mr-1" />
+                        查看详情
                       </button>
                       
                       {user.role !== 'admin' && (
@@ -257,34 +257,34 @@ const UserManagement: React.FC = () => {
                           {user.isActive ? (
                             <button
                               onClick={() => handleToggleUserStatus(user.id, true)}
-                              className="text-yellow-600 hover:text-yellow-900 flex items-center"
+                              className="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs hover:bg-yellow-200 transition-colors"
                             >
-                              <LockClosedIcon className="w-4 h-4 mr-1" />
+                              <LockClosedIcon className="w-3 h-3 mr-1" />
                               禁用
                             </button>
                           ) : (
                             <button
                               onClick={() => handleToggleUserStatus(user.id, false)}
-                              className="text-green-600 hover:text-green-900 flex items-center"
+                              className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors"
                             >
-                              <LockOpenIcon className="w-4 h-4 mr-1" />
+                              <LockOpenIcon className="w-3 h-3 mr-1" />
                               启用
                             </button>
                           )}
                           
                           <button
                             onClick={() => handleResetPassword(user.id, user.name)}
-                            className="text-blue-600 hover:text-blue-900 flex items-center"
+                            className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
                           >
-                            <LockOpenIcon className="w-4 h-4 mr-1" />
+                            <LockOpenIcon className="w-3 h-3 mr-1" />
                             重置密码
                           </button>
                           
                           <button
                             onClick={() => handleDeleteUser(user.id, user.name)}
-                            className="text-red-600 hover:text-red-900 flex items-center"
+                            className="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors"
                           >
-                            <TrashIcon className="w-4 h-4 mr-1" />
+                            <TrashIcon className="w-3 h-3 mr-1" />
                             删除
                           </button>
                         </>
