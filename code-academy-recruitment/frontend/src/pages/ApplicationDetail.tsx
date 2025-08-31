@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import api from '../services/api';
 import { Application } from '../types';
+import { getFileUrl } from '../utils/fileUrl';
 import {
   DocumentTextIcon,
   ArrowLeftIcon,
@@ -66,11 +67,12 @@ const ApplicationDetail: React.FC = () => {
   };
 
   const renderFileLink = (filePath: string | undefined, label: string) => {
-    if (!filePath) return <span className="text-gray-400">未上传</span>;
+    const fileUrl = getFileUrl(filePath);
+    if (!fileUrl) return <span className="text-gray-400">未上传</span>;
     
     return (
       <a
-        href={`/uploads/${filePath}`}
+        href={fileUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="text-primary-600 hover:text-primary-900 flex items-center"
@@ -198,18 +200,21 @@ const ApplicationDetail: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">佐证材料</label>
             {application.experienceAttachments && application.experienceAttachments.length > 0 ? (
               <div className="space-y-1">
-                {application.experienceAttachments.map((filePath, index) => (
-                  <a
-                    key={index}
-                    href={`/uploads/${filePath}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary-600 hover:text-primary-900 flex items-center text-sm"
-                  >
-                    <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
-                    佐证材料 {index + 1}
-                  </a>
-                ))}
+                {application.experienceAttachments.map((filePath, index) => {
+                  const fileUrl = getFileUrl(filePath);
+                  return fileUrl ? (
+                    <a
+                      key={index}
+                      href={fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-600 hover:text-primary-900 flex items-center text-sm"
+                    >
+                      <DocumentArrowDownIcon className="w-4 h-4 mr-1" />
+                      佐证材料 {index + 1}
+                    </a>
+                  ) : null;
+                })}
               </div>
             ) : (
               <span className="text-gray-400">未上传</span>
