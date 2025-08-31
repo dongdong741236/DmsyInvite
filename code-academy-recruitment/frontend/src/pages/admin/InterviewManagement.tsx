@@ -4,6 +4,7 @@ import { zhCN } from 'date-fns/locale';
 import { useForm } from 'react-hook-form';
 import api from '../../services/api';
 import { Interview, InterviewRoom, Application } from '../../types';
+import InterviewScoringModal from '../../components/admin/InterviewScoringModal';
 import {
   CalendarIcon,
   PlusIcon,
@@ -12,6 +13,7 @@ import {
   XCircleIcon,
   EnvelopeIcon,
   ExclamationCircleIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
 
 interface InterviewsResponse {
@@ -39,6 +41,8 @@ const InterviewManagement: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [selectedInterview, setSelectedInterview] = useState<Interview | null>(null);
+  const [showScoringModal, setShowScoringModal] = useState(false);
 
   const {
     register,
@@ -114,6 +118,16 @@ const InterviewManagement: React.FC = () => {
     } catch (err: any) {
       setError(err.response?.data?.error || '发送通知失败');
     }
+  };
+
+  const handleScoring = (interview: Interview) => {
+    setSelectedInterview(interview);
+    setShowScoringModal(true);
+  };
+
+  const handleScoringComplete = () => {
+    setMessage('面试评分已保存');
+    loadInterviews();
   };
 
   const getResultBadge = (result: string) => {
@@ -304,19 +318,25 @@ const InterviewManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getResultBadge(interview.result)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    {!interview.notificationSent && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
+                      {!interview.notificationSent && (
+                        <button
+                          onClick={() => sendNotification(interview.id)}
+                          className="text-blue-600 hover:text-blue-900 flex items-center"
+                        >
+                          <EnvelopeIcon className="w-4 h-4 mr-1" />
+                          发送通知
+                        </button>
+                      )}
                       <button
-                        onClick={() => sendNotification(interview.id)}
-                        className="text-blue-600 hover:text-blue-900 flex items-center"
+                        onClick={() => handleScoring(interview)}
+                        className="text-primary-600 hover:text-primary-900 flex items-center"
                       >
-                        <EnvelopeIcon className="w-4 h-4 mr-1" />
-                        发送通知
+                        <StarIcon className="w-4 h-4 mr-1" />
+                        {interview.isCompleted ? '查看评分' : '评分'}
                       </button>
-                    )}
-                    <button className="text-primary-600 hover:text-primary-900">
-                      编辑评分
-                    </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -362,6 +382,17 @@ const InterviewManagement: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* 面试评分模态框 */}
+      <InterviewScoringModal
+        interview={selectedInterview}
+        isOpen={showScoringModal}
+        onClose={() => {
+          setShowScoringModal(false);
+          setSelectedInterview(null);
+        }}
+        onSaved={handleScoringComplete}
+      />
     </div>
   );
 };

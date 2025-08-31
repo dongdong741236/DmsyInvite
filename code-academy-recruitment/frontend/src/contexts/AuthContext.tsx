@@ -44,6 +44,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           name: payload.name || '',
           role: payload.role,
           isEmailVerified: true,
+          isActive: true,
           createdAt: '',
           updatedAt: '',
         });

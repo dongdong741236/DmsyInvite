@@ -3,11 +3,18 @@ import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import api from '../../services/api';
 import { User } from '../../types';
+import UserDetailModal from '../../components/admin/UserDetailModal';
 import {
   UserGroupIcon,
   MagnifyingGlassIcon,
   ShieldCheckIcon,
   UserIcon,
+  EyeIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+  TrashIcon,
+  ExclamationTriangleIcon,
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 
 interface UsersResponse {
@@ -24,6 +31,10 @@ const UserManagement: React.FC = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadUsers();
@@ -50,6 +61,52 @@ const UserManagement: React.FC = () => {
     e.preventDefault();
     setPage(1);
     loadUsers();
+  };
+
+  const handleViewUser = (user: User) => {
+    setSelectedUser(user);
+    setShowDetailModal(true);
+  };
+
+  const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
+    if (!window.confirm(`确定要${isActive ? '禁用' : '启用'}该用户吗？`)) {
+      return;
+    }
+
+    try {
+      await api.put(`/admin/users/${userId}/status`, { isActive: !isActive });
+      setMessage(`用户${isActive ? '禁用' : '启用'}成功`);
+      loadUsers();
+    } catch (err: any) {
+      setError(err.response?.data?.error || '操作失败');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string) => {
+    if (!window.confirm(`确定要删除用户"${userName}"吗？此操作不可恢复！`)) {
+      return;
+    }
+
+    try {
+      await api.delete(`/admin/users/${userId}`);
+      setMessage('用户删除成功');
+      loadUsers();
+    } catch (err: any) {
+      setError(err.response?.data?.error || '删除失败');
+    }
+  };
+
+  const handleResetPassword = async (userId: string, userName: string) => {
+    if (!window.confirm(`确定要重置用户"${userName}"的密码吗？新密码将发送到用户邮箱。`)) {
+      return;
+    }
+
+    try {
+      await api.post(`/admin/users/${userId}/reset-password`);
+      setMessage('密码重置成功，新密码已发送到用户邮箱');
+    } catch (err: any) {
+      setError(err.response?.data?.error || '密码重置失败');
+    }
   };
 
   const getRoleBadge = (role: string) => {
@@ -113,6 +170,20 @@ const UserManagement: React.FC = () => {
         </form>
       </div>
 
+      {message && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start">
+          <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+          <p className="text-green-800">{message}</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
+          <ExclamationTriangleIcon className="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
+          <p className="text-red-800">{error}</p>
+        </div>
+      )}
+
       {/* 用户列表 */}
       <div className="neumorphic-card">
         <div className="overflow-x-auto">
@@ -126,7 +197,7 @@ const UserManagement: React.FC = () => {
                   角色
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  邮箱验证
+                  状态
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   注册时间
@@ -153,19 +224,72 @@ const UserManagement: React.FC = () => {
                     {getRoleBadge(user.role)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {user.isEmailVerified ? (
-                      <span className="text-green-600 text-sm">已验证</span>
-                    ) : (
-                      <span className="text-red-600 text-sm">未验证</span>
-                    )}
+                    <div className="space-y-1">
+                      {user.isActive ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          正常
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          已禁用
+                        </span>
+                      )}
+                      <div className="text-xs text-gray-500">
+                        邮箱{user.isEmailVerified ? '已验证' : '未验证'}
+                      </div>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {format(new Date(user.createdAt), 'yyyy-MM-dd HH:mm', { locale: zhCN })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-primary-600 hover:text-primary-900">
-                      查看详情
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleViewUser(user)}
+                        className="text-primary-600 hover:text-primary-900 flex items-center"
+                      >
+                        <EyeIcon className="w-4 h-4 mr-1" />
+                        查看
+                      </button>
+                      
+                      {user.role !== 'admin' && (
+                        <>
+                          {user.isActive ? (
+                            <button
+                              onClick={() => handleToggleUserStatus(user.id, true)}
+                              className="text-yellow-600 hover:text-yellow-900 flex items-center"
+                            >
+                              <LockClosedIcon className="w-4 h-4 mr-1" />
+                              禁用
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleToggleUserStatus(user.id, false)}
+                              className="text-green-600 hover:text-green-900 flex items-center"
+                            >
+                              <LockOpenIcon className="w-4 h-4 mr-1" />
+                              启用
+                            </button>
+                          )}
+                          
+                          <button
+                            onClick={() => handleResetPassword(user.id, user.name)}
+                            className="text-blue-600 hover:text-blue-900 flex items-center"
+                          >
+                            <LockOpenIcon className="w-4 h-4 mr-1" />
+                            重置密码
+                          </button>
+                          
+                          <button
+                            onClick={() => handleDeleteUser(user.id, user.name)}
+                            className="text-red-600 hover:text-red-900 flex items-center"
+                          >
+                            <TrashIcon className="w-4 h-4 mr-1" />
+                            删除
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -198,6 +322,16 @@ const UserManagement: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* 用户详情模态框 */}
+      <UserDetailModal
+        user={selectedUser}
+        isOpen={showDetailModal}
+        onClose={() => {
+          setShowDetailModal(false);
+          setSelectedUser(null);
+        }}
+      />
     </div>
   );
 };

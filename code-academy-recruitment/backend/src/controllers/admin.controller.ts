@@ -5,7 +5,7 @@ import { Application, ApplicationStatus } from '../models/Application';
 import { Interview } from '../models/Interview';
 import { InterviewRoom } from '../models/InterviewRoom';
 import { AppError } from '../middlewares/errorHandler';
-import { sendInterviewNotification as sendInterviewEmail, sendResultNotification as sendResultEmail } from '../utils/email';
+import { sendInterviewNotification as sendInterviewEmail, sendResultNotification as sendResultEmail, sendPasswordResetNotification } from '../utils/email';
 
 export const getDashboardStats = async (
   _req: Request,
@@ -497,6 +497,151 @@ export const sendResultNotification = async (
 
     res.json({
       message: 'Result notification sent successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// User management functions
+export const updateUserStatus = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { isActive } = req.body;
+    const userRepository = AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    // 不能禁用管理员账户
+    if (user.role === UserRole.ADMIN) {
+      throw new AppError('Cannot disable admin user', 400);
+    }
+
+    // 更新用户状态
+    user.isActive = isActive;
+    await userRepository.save(user);
+
+    res.json({
+      message: `User ${isActive ? 'activated' : 'deactivated'} successfully`,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const userRepository = AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOne({ 
+      where: { id },
+      relations: ['applications']
+    });
+    
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    // 不能删除管理员账户
+    if (user.role === UserRole.ADMIN) {
+      throw new AppError('Cannot delete admin user', 400);
+    }
+
+    // 检查用户是否有申请记录
+    if (user.applications && user.applications.length > 0) {
+      throw new AppError('Cannot delete user with existing applications', 400);
+    }
+
+    await userRepository.remove(user);
+
+    res.json({
+      message: 'User deleted successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetUserPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const userRepository = AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    // 生成新密码
+    const newPassword = Math.random().toString(36).slice(-8);
+    user.password = newPassword; // @BeforeInsert hook will hash it
+
+    await userRepository.save(user);
+
+    // 发送新密码到用户邮箱
+    try {
+      await sendPasswordResetNotification(user.email, user.name, newPassword);
+      console.log(`Password reset email sent to ${user.email}`);
+    } catch (emailError) {
+      console.error('Failed to send password reset email:', emailError);
+      // 即使邮件发送失败，密码重置仍然成功
+    }
+
+    res.json({
+      message: 'Password reset successfully',
+      newPassword, // 临时返回新密码，生产环境中可以移除
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Interview evaluation
+export const updateInterviewEvaluation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { evaluationScores, interviewerNotes, result, isCompleted } = req.body;
+    const interviewRepository = AppDataSource.getRepository(Interview);
+
+    const interview = await interviewRepository.findOne({
+      where: { id },
+      relations: ['application', 'application.user'],
+    });
+
+    if (!interview) {
+      throw new AppError('Interview not found', 404);
+    }
+
+    interview.evaluationScores = evaluationScores;
+    interview.interviewerNotes = interviewerNotes;
+    interview.result = result;
+    interview.isCompleted = isCompleted;
+
+    await interviewRepository.save(interview);
+
+    res.json({
+      message: 'Interview evaluation saved successfully',
+      interview,
     });
   } catch (error) {
     next(error);

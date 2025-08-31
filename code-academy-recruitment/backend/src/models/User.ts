@@ -39,6 +39,9 @@ export class User {
   @Column({ default: false })
   isEmailVerified!: boolean;
 
+  @Column({ default: true })
+  isActive!: boolean;
+
   @Column({ nullable: true })
   emailVerificationToken?: string;
 

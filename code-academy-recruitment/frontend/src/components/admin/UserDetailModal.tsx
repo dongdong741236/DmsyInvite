@@ -85,19 +85,31 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                邮箱验证状态
+                用户状态
               </label>
-              <div className="flex items-center">
-                {user.isEmailVerified ? (
-                  <>
-                    <CheckCircleIcon className="w-4 h-4 text-green-600 mr-2" />
-                    <span className="text-green-600">已验证</span>
-                  </>
+              <div className="flex items-center space-x-4">
+                {user.isActive ? (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <CheckCircleIcon className="w-3 h-3 mr-1" />
+                    正常
+                  </span>
                 ) : (
-                  <>
-                    <XCircleIcon className="w-4 h-4 text-red-600 mr-2" />
-                    <span className="text-red-600">未验证</span>
-                  </>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    <XCircleIcon className="w-3 h-3 mr-1" />
+                    已禁用
+                  </span>
+                )}
+                
+                {user.isEmailVerified ? (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <CheckCircleIcon className="w-3 h-3 mr-1" />
+                    邮箱已验证
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    <XCircleIcon className="w-3 h-3 mr-1" />
+                    邮箱未验证
+                  </span>
                 )}
               </div>
             </div>

@@ -199,3 +199,31 @@ export const sendResultNotification = async (
     html,
   });
 };
+
+export const sendPasswordResetNotification = async (
+  email: string,
+  name: string,
+  newPassword: string
+) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #2563eb;">密码重置通知</h2>
+      <p>您好，${name}！</p>
+      <p>您的账户密码已被管理员重置。</p>
+      <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>新密码：</strong></p>
+        <code style="font-size: 18px; font-weight: bold; color: #dc2626;">${newPassword}</code>
+      </div>
+      <p>请使用新密码登录系统，并建议您登录后及时修改密码。</p>
+      <p>如有疑问，请联系管理员。</p>
+      <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;">
+      <p style="color: #6b7280; font-size: 14px;">代码书院实验室</p>
+    </div>
+  `;
+
+  await sendEmail({
+    to: email,
+    subject: '代码书院实验室 - 密码重置通知',
+    html,
+  });
+};

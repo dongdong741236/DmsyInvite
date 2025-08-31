@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
 import api from '../../services/api';
 import { Application } from '../../types';
+import ApplicationDetailModal from '../../components/admin/ApplicationDetailModal';
 import {
   DocumentTextIcon,
   MagnifyingGlassIcon,
@@ -11,6 +12,7 @@ import {
   XCircleIcon,
   ClockIcon,
   CalendarIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 
 interface ApplicationsResponse {
@@ -28,6 +30,10 @@ const ApplicationManagement: React.FC = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     loadApplications();
@@ -56,17 +62,31 @@ const ApplicationManagement: React.FC = () => {
     loadApplications();
   };
 
+  const handleViewApplication = async (applicationId: string) => {
+    try {
+      const response = await api.get<Application>(`/admin/applications/${applicationId}`);
+      setSelectedApplication(response.data);
+      setShowDetailModal(true);
+    } catch (err: any) {
+      setError(err.response?.data?.error || '获取申请详情失败');
+    }
+  };
+
   const updateApplicationStatus = async (id: string, status: string, reviewNotes?: string) => {
     try {
+      setError('');
+      setMessage('');
+      
       await api.put(`/admin/applications/${id}/status`, {
         status,
         reviewNotes,
       });
       
+      setMessage('申请状态更新成功');
       // 重新加载数据
       loadApplications();
-    } catch (error) {
-      console.error('Failed to update application status:', error);
+    } catch (err: any) {
+      setError(err.response?.data?.error || '更新申请状态失败');
     }
   };
 
@@ -148,6 +168,20 @@ const ApplicationManagement: React.FC = () => {
         </form>
       </div>
 
+      {message && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start">
+          <CheckCircleIcon className="w-5 h-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+          <p className="text-green-800">{message}</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
+          <ExclamationTriangleIcon className="w-5 h-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
+          <p className="text-red-800">{error}</p>
+        </div>
+      )}
+
       {/* 申请列表 */}
       <div className="neumorphic-card">
         <div className="overflow-x-auto">
@@ -198,7 +232,10 @@ const ApplicationManagement: React.FC = () => {
                     {format(new Date(application.createdAt), 'MM-dd HH:mm', { locale: zhCN })}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button className="text-primary-600 hover:text-primary-900 flex items-center">
+                    <button 
+                      onClick={() => handleViewApplication(application.id)}
+                      className="text-primary-600 hover:text-primary-900 flex items-center"
+                    >
                       <EyeIcon className="w-4 h-4 mr-1" />
                       查看
                     </button>
@@ -256,6 +293,16 @@ const ApplicationManagement: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* 申请详情模态框 */}
+      <ApplicationDetailModal
+        application={selectedApplication}
+        isOpen={showDetailModal}
+        onClose={() => {
+          setShowDetailModal(false);
+          setSelectedApplication(null);
+        }}
+      />
     </div>
   );
 };

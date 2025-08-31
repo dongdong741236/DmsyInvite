@@ -12,6 +12,9 @@ router.get('/stats', adminController.getDashboardStats);
 // User management
 router.get('/users', adminController.getUsers);
 router.get('/users/:id', adminController.getUser);
+router.put('/users/:id/status', adminController.updateUserStatus);
+router.delete('/users/:id', adminController.deleteUser);
+router.post('/users/:id/reset-password', adminController.resetUserPassword);
 
 // Application management
 router.get('/applications', adminController.getApplications);
@@ -79,6 +82,9 @@ router.post(
   validateRequest,
   adminController.sendResultNotification
 );
+
+// Interview evaluation
+router.put('/interviews/:id/evaluation', adminController.updateInterviewEvaluation);
 
 // System configuration management
 router.get('/configs', configController.getConfigs);
