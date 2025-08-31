@@ -28,6 +28,7 @@ const ApplicationFormNew: React.FC = () => {
   } = useForm<ApplicationFormData>();
 
   const watchedGrade = watch('grade');
+  const watchedIsTransfer = watch('gradeSpecificInfo.sophomoreInfo.isTransferStudent');
 
   // 加载申请配置
   useEffect(() => {
@@ -62,7 +63,7 @@ const ApplicationFormNew: React.FC = () => {
     }
     
     // 如果选择了转专业，必须填写原专业
-    if (sophomoreInfo?.isTransferStudent && !sophomoreInfo?.originalMajor) {
+    if (sophomoreInfo?.isTransferStudent === 'true' && !sophomoreInfo?.originalMajor) {
       return '转专业学生必须填写原专业信息';
     }
     
@@ -449,9 +450,7 @@ const ApplicationFormNew: React.FC = () => {
                   <div className="space-y-2">
                     <label className="flex items-center">
                       <input
-                        {...register('gradeSpecificInfo.sophomoreInfo.isTransferStudent', {
-                          setValueAs: (value) => value === 'true'
-                        })}
+                        {...register('gradeSpecificInfo.sophomoreInfo.isTransferStudent')}
                         type="radio"
                         value="true"
                         className="mr-2"
@@ -460,9 +459,7 @@ const ApplicationFormNew: React.FC = () => {
                     </label>
                     <label className="flex items-center">
                       <input
-                        {...register('gradeSpecificInfo.sophomoreInfo.isTransferStudent', {
-                          setValueAs: (value) => value === 'false'
-                        })}
+                        {...register('gradeSpecificInfo.sophomoreInfo.isTransferStudent')}
                         type="radio"
                         value="false"
                         className="mr-2"
@@ -472,7 +469,14 @@ const ApplicationFormNew: React.FC = () => {
                   </div>
                 </div>
 
-                {watch('gradeSpecificInfo.sophomoreInfo.isTransferStudent') === true && (
+                {/* 调试信息 */}
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="bg-yellow-50 p-2 text-xs">
+                    调试: watchedIsTransfer = {JSON.stringify(watchedIsTransfer)}
+                  </div>
+                )}
+
+                {watchedIsTransfer === 'true' && (
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -480,7 +484,7 @@ const ApplicationFormNew: React.FC = () => {
                       </label>
                       <input
                         {...register('gradeSpecificInfo.sophomoreInfo.originalMajor', {
-                          required: watch('gradeSpecificInfo.sophomoreInfo.isTransferStudent') ? '请输入原专业' : false
+                          required: watchedIsTransfer === 'true' ? '请输入原专业' : false
                         })}
                         type="text"
                         className="neumorphic-input"

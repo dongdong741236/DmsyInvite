@@ -92,7 +92,7 @@ export interface ApplicationFormData {
     // 大二学生信息
     sophomoreInfo?: {
       gpa?: number;
-      isTransferStudent?: boolean;
+      isTransferStudent?: string; // 'true' | 'false'
       originalMajor?: string;
       newMajor?: string;
       programmingGrade?: string; // 合并C/C++成绩

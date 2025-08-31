@@ -86,7 +86,7 @@ export const createApplication = async (
       }
       
       // 如果选择了转专业，必须填写原专业
-      if (sophomoreInfo?.isTransferStudent && !sophomoreInfo?.originalMajor) {
+      if (sophomoreInfo?.isTransferStudent === 'true' && !sophomoreInfo?.originalMajor) {
         throw new AppError('转专业学生必须填写原专业信息', 400);
       }
     }
