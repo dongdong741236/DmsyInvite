@@ -50,22 +50,20 @@ code-academy-recruitment/
 
 ## 🚀 部署方式
 
-### 一键部署
+### 推荐部署方式
 ```bash
-./deploy.sh install
+./deploy.sh install     # 首次部署
+./deploy.sh clean       # 完整重新部署（推荐）
 ```
 
-### 代码更新
+### 日常管理
 ```bash
-./deploy.sh update
+./deploy.sh status      # 查看状态
+./deploy.sh logs        # 查看日志
+./deploy.sh restart     # 重启服务
 ```
 
-### 服务管理
-```bash
-./deploy.sh restart    # 重启
-./deploy.sh status     # 状态
-./deploy.sh logs       # 日志
-```
+**重要**：建议使用 `./deploy.sh clean` 进行所有更新和问题修复，确保使用最新代码和配置。
 
 ## 🌐 访问地址
 

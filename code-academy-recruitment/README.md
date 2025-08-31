@@ -101,22 +101,28 @@ ALLOWED_EMAIL_DOMAIN=@stu.your-university.edu.cn
 
 ## 📋 管理命令
 
+### 主要部署命令
 ```bash
-# 部署和更新
 ./deploy.sh install     # 首次部署
 ./deploy.sh update      # 更新代码
-./deploy.sh restart     # 重启服务
-./deploy.sh clean       # 清理重建
+./deploy.sh clean       # 清理重建（推荐用于重大更新）
+```
 
-# 状态监控
+### 日常管理命令
+```bash
+./deploy.sh restart     # 重启服务
 ./deploy.sh status      # 查看状态
 ./deploy.sh logs        # 查看日志
-make health            # 健康检查
-
-# 数据管理
-make backup            # 备份数据库
-./deploy.sh stop       # 停止服务
+./deploy.sh stop        # 停止服务
 ```
+
+### 辅助命令
+```bash
+make health            # 健康检查
+make backup            # 备份数据库
+```
+
+**推荐**：遇到任何问题或更新代码时，直接使用 `./deploy.sh clean` 进行完整重新部署。
 
 ## 🔧 故障排除
 

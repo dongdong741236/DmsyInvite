@@ -108,12 +108,19 @@ EMAIL_FROM=代码书院 <noreply@your-domain.com>
 ./deploy.sh restart
 ```
 
-### 完全重置
+### 完全重置（推荐）
 
 ```bash
-# 清理并重新部署
+# 清理并重新部署（适用于所有更新和问题修复）
 ./deploy.sh clean
 ```
+
+**注意**：`./deploy.sh clean` 是推荐的部署方式，会：
+- 停止所有服务
+- 删除旧镜像
+- 清理 Docker 缓存
+- 重新构建所有镜像
+- 启动服务并进行健康检查
 
 ### 数据备份
 
