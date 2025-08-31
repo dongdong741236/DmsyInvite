@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import api from '../services/api';
 import {
   CloudArrowUpIcon,
   DocumentIcon,
@@ -6,6 +7,7 @@ import {
   XMarkIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 
 interface FileUploadProps {
@@ -16,10 +18,12 @@ interface FileUploadProps {
   maxFiles?: number;
   value?: File | File[];
   onChange: (files: File | File[] | null) => void;
+  onUploadComplete?: (filePaths: string | string[]) => void; // 上传完成回调
   error?: string;
   required?: boolean;
   description?: string;
   preview?: boolean;
+  fieldName: string; // 字段名，用于上传
 }
 
 const FileUpload: React.FC<FileUploadProps> = ({
@@ -30,13 +34,16 @@ const FileUpload: React.FC<FileUploadProps> = ({
   maxFiles = 1,
   value,
   onChange,
+  onUploadComplete,
   error,
   required = false,
   description,
   preview = false,
+  fieldName,
 }) => {
   const [dragOver, setDragOver] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const files = multiple 
@@ -48,6 +55,45 @@ const FileUpload: React.FC<FileUploadProps> = ({
       return `文件大小不能超过 ${maxSize}MB`;
     }
     return null;
+  };
+
+  const uploadFiles = async (filesToUpload: File[]) => {
+    if (filesToUpload.length === 0) return;
+
+    try {
+      setUploading(true);
+      setUploadError('');
+
+      const formData = new FormData();
+      filesToUpload.forEach(file => {
+        formData.append(fieldName, file);
+      });
+
+      console.log(`=== 上传文件到字段: ${fieldName} ===`);
+      console.log('上传的文件:', filesToUpload.map(f => f.name));
+
+      const response = await api.post('/applications/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('上传响应:', response.data);
+
+      if (response.data.files && response.data.files[fieldName]) {
+        const uploadedPaths = response.data.files[fieldName];
+        console.log('上传成功，文件路径:', uploadedPaths);
+        
+        if (onUploadComplete) {
+          onUploadComplete(uploadedPaths);
+        }
+      }
+    } catch (error) {
+      console.error('文件上传失败:', error);
+      setUploadError('文件上传失败，请重试');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleFileSelect = (selectedFiles: FileList | null) => {
@@ -83,8 +129,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
       }
       
       onChange(totalFiles);
+      // 立即上传多文件
+      uploadFiles(validFiles);
     } else {
       onChange(validFiles[0] || null);
+      // 立即上传单文件
+      uploadFiles([validFiles[0]]);
     }
   };
 
@@ -168,15 +218,26 @@ const FileUpload: React.FC<FileUploadProps> = ({
         />
 
         <div className="text-center">
-          <CloudArrowUpIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-lg font-medium text-gray-900 mb-2">
-            点击上传或拖拽文件到此处
-          </p>
-          <p className="text-sm text-gray-500">
-            支持 {accept === 'image/*' ? '图片格式' : '常见文件格式'}，
-            单个文件不超过 {maxSize}MB
-            {multiple && `，最多 ${maxFiles} 个文件`}
-          </p>
+          {uploading ? (
+            <>
+              <ArrowPathIcon className="w-12 h-12 text-primary-600 mx-auto mb-4 animate-spin" />
+              <p className="text-lg font-medium text-primary-600 mb-2">
+                正在上传文件...
+              </p>
+            </>
+          ) : (
+            <>
+              <CloudArrowUpIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-lg font-medium text-gray-900 mb-2">
+                点击上传或拖拽文件到此处
+              </p>
+              <p className="text-sm text-gray-500">
+                支持 {accept === 'image/*' ? '图片格式' : '常见文件格式'}，
+                单个文件不超过 {maxSize}MB
+                {multiple && `，最多 ${maxFiles} 个文件`}
+              </p>
+            </>
+          )}
         </div>
       </div>
 

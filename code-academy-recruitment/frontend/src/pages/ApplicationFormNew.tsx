@@ -17,6 +17,13 @@ const ApplicationFormNew: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [config, setConfig] = useState<ApplicationConfig | null>(null);
   const [selectedGrade, setSelectedGrade] = useState<string>('');
+  
+  // 存储上传后的文件路径
+  const [uploadedFiles, setUploadedFiles] = useState<{
+    personalPhoto?: string;
+    studentCardPhoto?: string;
+    experienceAttachments?: string[];
+  }>({});
 
   const {
     register,
@@ -102,48 +109,45 @@ const ApplicationFormNew: React.FC = () => {
       console.log('完整数据:', data);
       console.log('gradeSpecificInfo:', data.gradeSpecificInfo);
 
-      // 创建 FormData 以支持文件上传
-      const formData = new FormData();
-      
-      // 添加基本字段
-      Object.entries(data).forEach(([key, value]) => {
-        if (value !== undefined && value !== null && !(value instanceof File)) {
-          if (typeof value === 'object') {
-            formData.append(key, JSON.stringify(value));
-          } else {
-            formData.append(key, value.toString());
-          }
-        }
-      });
-
-      // 添加文件
-      if (data.personalPhoto) {
-        formData.append('personalPhoto', data.personalPhoto);
-      }
-      if (data.studentCardPhoto) {
-        formData.append('studentCardPhoto', data.studentCardPhoto);
+      // 检查文件是否已上传
+      if (!uploadedFiles.personalPhoto) {
+        setError('请先上传个人照片');
+        setLoading(false);
+        return;
       }
       
-      // 处理多个佐证材料文件
-      if (data.experienceAttachments && data.experienceAttachments.length > 0) {
-        data.experienceAttachments.forEach((file, index) => {
-          formData.append(`experienceAttachments`, file);
-        });
+      if (!uploadedFiles.studentCardPhoto) {
+        setError('请先上传一卡通照片');
+        setLoading(false);
+        return;
       }
 
-      // 使用 fetch 发送 FormData
-      const response = await fetch('/api/applications', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: formData,
+      // 准备提交数据（只包含文件路径，不包含File对象）
+      const submitData = {
+        ...data,
+        personalPhoto: uploadedFiles.personalPhoto,
+        studentCardPhoto: uploadedFiles.studentCardPhoto,
+        experienceAttachments: uploadedFiles.experienceAttachments || [],
+      };
+
+      // 移除File对象字段
+      delete (submitData as any).personalPhoto;
+      delete (submitData as any).studentCardPhoto;
+      delete (submitData as any).experienceAttachments;
+
+      console.log('=== 提交申请数据（最终） ===');
+      console.log('提交数据:', submitData);
+      console.log('文件路径:', uploadedFiles);
+
+      // 使用 api 发送 JSON 数据
+      const response = await api.post('/applications', {
+        ...submitData,
+        personalPhoto: uploadedFiles.personalPhoto,
+        studentCardPhoto: uploadedFiles.studentCardPhoto,
+        experienceAttachments: uploadedFiles.experienceAttachments,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || '提交失败');
-      }
+      console.log('申请提交响应:', response.data);
 
       setSuccess(true);
       setTimeout(() => {
@@ -328,13 +332,20 @@ const ApplicationFormNew: React.FC = () => {
               required={true}
               preview={true}
               description="请上传清晰的个人近照，支持 JPG、PNG 格式"
+              fieldName="personalPhoto"
               value={watch('personalPhoto')}
               onChange={(file) => {
                 setValue('personalPhoto', file as File);
-                // 手动触发验证
                 if (file) {
                   setError('');
                 }
+              }}
+              onUploadComplete={(filePath) => {
+                setUploadedFiles(prev => ({
+                  ...prev,
+                  personalPhoto: filePath as string
+                }));
+                console.log('个人照片上传完成:', filePath);
               }}
               error={errors.personalPhoto?.message}
             />
@@ -346,12 +357,20 @@ const ApplicationFormNew: React.FC = () => {
               required={true}
               preview={true}
               description="请上传清晰的一卡通照片，确保信息可见"
+              fieldName="studentCardPhoto"
               value={watch('studentCardPhoto')}
               onChange={(file) => {
                 setValue('studentCardPhoto', file as File);
                 if (file) {
                   setError('');
                 }
+              }}
+              onUploadComplete={(filePath) => {
+                setUploadedFiles(prev => ({
+                  ...prev,
+                  studentCardPhoto: filePath as string
+                }));
+                console.log('一卡通照片上传完成:', filePath);
               }}
               error={errors.studentCardPhoto?.message}
             />
@@ -635,10 +654,18 @@ const ApplicationFormNew: React.FC = () => {
                   maxSize={10}
                   maxFiles={5}
                   description="上传项目截图、代码片段、证书等材料，支持多文件上传"
+                  fieldName="experienceAttachments"
                   value={watch('experienceAttachments')}
                   onChange={(files) => {
                     setValue('experienceAttachments', files as File[]);
                     console.log('佐证材料文件已选择:', files);
+                  }}
+                  onUploadComplete={(filePaths) => {
+                    setUploadedFiles(prev => ({
+                      ...prev,
+                      experienceAttachments: filePaths as string[]
+                    }));
+                    console.log('佐证材料上传完成:', filePaths);
                   }}
                   error={errors.experienceAttachments?.message}
                 />

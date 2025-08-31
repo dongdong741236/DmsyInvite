@@ -58,7 +58,6 @@ export const createApplication = async (
   try {
     const userId = req.user!.id;
     const applicationRepository = AppDataSource.getRepository(Application);
-    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
     // 检查申请是否开放
     const { open, reason } = await ConfigService.isApplicationOpen(req.body.grade);
@@ -76,19 +75,13 @@ export const createApplication = async (
       throw new AppError(`您已达到最大申请数量限制（${maxApplications}个）`, 400);
     }
 
-    // 处理文件上传和数据解析
+    // 处理申请数据（文件路径已通过单独接口上传）
     const applicationData: any = { ...req.body };
     
-    // 解析 JSON 字符串字段
-    if (typeof applicationData.gradeSpecificInfo === 'string') {
-      try {
-        applicationData.gradeSpecificInfo = JSON.parse(applicationData.gradeSpecificInfo);
-      } catch (error) {
-        console.error('Failed to parse gradeSpecificInfo:', error);
-      }
-    }
+    console.log('=== 创建申请 ===');
+    console.log('接收到的数据:', applicationData);
 
-    // 大二学生特殊验证（在数据解析后）
+    // 大二学生特殊验证
     if (applicationData.grade === '大二') {
       const sophomoreInfo = applicationData.gradeSpecificInfo?.sophomoreInfo;
       
@@ -100,21 +93,6 @@ export const createApplication = async (
       // 如果选择了转专业，必须填写原专业
       if (sophomoreInfo?.isTransferStudent === 'true' && !sophomoreInfo?.originalMajor) {
         throw new AppError('转专业学生必须填写原专业信息', 400);
-      }
-    }
-    
-    if (files) {
-      if (files.personalPhoto && files.personalPhoto[0]) {
-        // 只存储相对路径
-        applicationData.personalPhoto = files.personalPhoto[0].path.replace(/^uploads\//, '');
-      }
-      if (files.studentCardPhoto && files.studentCardPhoto[0]) {
-        applicationData.studentCardPhoto = files.studentCardPhoto[0].path.replace(/^uploads\//, '');
-      }
-      if (files.experienceAttachments && files.experienceAttachments.length > 0) {
-        applicationData.experienceAttachments = files.experienceAttachments.map(
-          file => file.path.replace(/^uploads\//, '')
-        );
       }
     }
 

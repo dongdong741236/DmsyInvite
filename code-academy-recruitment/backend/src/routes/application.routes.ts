@@ -80,7 +80,6 @@ router.post('/upload', uploadApplicationFiles, async (req, res) => {
 // Create application
 router.post(
   '/',
-  uploadApplicationFiles,
   [
     body('studentId').notEmpty().withMessage('学号不能为空'),
     body('phone').isMobilePhone('zh-CN').withMessage('请输入有效的手机号'),
