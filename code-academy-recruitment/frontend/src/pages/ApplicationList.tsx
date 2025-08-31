@@ -127,3 +127,5 @@ const ApplicationList: React.FC = () => {
     </div>
   );
 };
+
+export default ApplicationList;

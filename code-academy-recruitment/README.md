@@ -28,7 +28,18 @@
 
 ## 快速开始
 
-### 方式1: 一键自动部署（推荐）
+### 方式1: 最终部署脚本（推荐，已修复所有问题）
+
+```bash
+# 1. 克隆项目
+git clone <repository-url>
+cd code-academy-recruitment
+
+# 2. 一键部署（包含环境检查、编译测试、构建部署）
+./final-deploy.sh
+```
+
+### 方式2: 自动安装部署
 
 ```bash
 # 1. 克隆项目
@@ -42,7 +53,7 @@ cd code-academy-recruitment
 ./server-setup.sh
 ```
 
-### 方式2: 快速部署（已有 Docker 环境）
+### 方式3: 快速部署（已有 Docker 环境）
 
 ```bash
 # 1. 克隆项目
@@ -57,7 +68,7 @@ nano .env  # 编辑必要配置
 ./quick-deploy.sh
 ```
 
-### 方式3: 手动部署
+### 方式4: 手动部署
 
 ```bash
 # 1. 克隆项目

@@ -28,10 +28,11 @@ export const errorHandler = (
       method: req.method,
     });
 
-    return res.status(err.statusCode).json({
+    res.status(err.statusCode).json({
       error: err.message,
       ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
     });
+    return;
   }
 
   // Unexpected errors

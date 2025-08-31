@@ -244,3 +244,5 @@ const ApplicationForm: React.FC = () => {
     </div>
   );
 };
+
+export default ApplicationForm;

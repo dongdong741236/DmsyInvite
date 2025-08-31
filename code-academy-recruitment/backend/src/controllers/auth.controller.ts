@@ -15,11 +15,10 @@ const generateToken = (user: User): string => {
   };
   
   const secret = process.env.JWT_SECRET || 'secret';
-  const options = {
-    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  };
   
-  return jwt.sign(payload, secret, options);
+  return jwt.sign(payload, secret, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '7d',
+  } as jwt.SignOptions);
 };
 
 export const register = async (
