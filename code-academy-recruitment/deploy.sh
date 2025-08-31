@@ -227,7 +227,7 @@ clean() {
     
     detect_platform
     
-    print_warning "这将删除所有容器和镜像，但保留数据卷"
+    print_warning "这将删除所有容器、镜像和数据卷，重新初始化数据库"
     read -p "确认继续? (y/N): " confirm
     
     if [[ $confirm != "y" && $confirm != "Y" ]]; then
@@ -235,8 +235,8 @@ clean() {
         exit 0
     fi
     
-    # 停止服务
-    docker compose -f $COMPOSE_FILE down
+    # 停止服务并删除数据卷（重新初始化数据库权限）
+    docker compose -f $COMPOSE_FILE down -v
     
     # 删除镜像
     docker image rm code-academy-recruitment-backend code-academy-recruitment-frontend 2>/dev/null || true

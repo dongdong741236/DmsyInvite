@@ -25,6 +25,16 @@ SET GLOBAL performance_schema = ON;
 -- 设置 SQL 模式（更严格的数据验证）
 SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO';
 
+-- 修复用户权限问题：确保应用用户可以从容器网络连接
+-- 删除可能存在的限制性用户
+DROP USER IF EXISTS 'recruitment_user'@'localhost';
+
+-- 重新创建用户，允许从任何 IP 连接（容器网络需要）
+-- 注意：这里不能直接使用环境变量，需要通过 Docker 的初始化机制
+
+-- 刷新权限
+FLUSH PRIVILEGES;
+
 -- 创建用于性能监控的存储过程
 DELIMITER $$
 
