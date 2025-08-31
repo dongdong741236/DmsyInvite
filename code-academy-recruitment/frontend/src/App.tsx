@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import RegisterWithCode from './pages/RegisterWithCode';
 import ApplicationList from './pages/ApplicationList';
 import ApplicationFormNew from './pages/ApplicationFormNew';
+import ApplicationDetail from './pages/ApplicationDetail';
 import AdminDashboard from './pages/admin/Dashboard';
 import ConfigManagement from './pages/admin/ConfigManagement';
 import UserManagement from './pages/admin/UserManagement';
@@ -47,7 +48,7 @@ function App() {
               path="applications/:id"
               element={
                 <PrivateRoute>
-                  <div>Application Detail Page (To be implemented)</div>
+                  <ApplicationDetail />
                 </PrivateRoute>
               }
             />

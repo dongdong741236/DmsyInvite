@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useApplicationStatus } from '../hooks/useApplicationStatus';
 import {
   AcademicCapIcon,
   UserGroupIcon,
@@ -10,6 +11,7 @@ import {
 
 const Home: React.FC = () => {
   const { user } = useAuth();
+  const { hasApplications, loading: applicationLoading } = useApplicationStatus();
 
   const features = [
     {
@@ -87,17 +89,22 @@ const Home: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      {user && (
+      {user && user.isEmailVerified && !applicationLoading && (
         <section className="text-center py-12 neumorphic-card">
-          <h2 className="text-3xl font-bold mb-4">准备好了吗？</h2>
+          <h2 className="text-3xl font-bold mb-4">
+            {hasApplications ? '申请管理' : '准备好了吗？'}
+          </h2>
           <p className="text-lg text-gray-600 mb-6">
-            立即提交你的申请，开始你的代码之旅
+            {hasApplications 
+              ? '查看您的申请状态和历史记录'
+              : '立即提交你的申请，开始你的代码之旅'
+            }
           </p>
           <Link
-            to="/applications/new"
+            to={hasApplications ? "/applications" : "/applications/new"}
             className="neumorphic-button bg-primary-600 text-white hover:bg-primary-700 inline-block"
           >
-            提交申请
+            {hasApplications ? '查看我的申请' : '提交申请'}
           </Link>
         </section>
       )}

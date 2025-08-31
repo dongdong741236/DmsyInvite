@@ -24,7 +24,9 @@ const ApplicationFormNew: React.FC = () => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<ApplicationFormData>();
+  } = useForm<ApplicationFormData>({
+    mode: 'onChange',
+  });
 
   const watchedGrade = watch('grade');
   const watchedIsTransfer = watch('gradeSpecificInfo.sophomoreInfo.isTransferStudent');
@@ -73,6 +75,19 @@ const ApplicationFormNew: React.FC = () => {
     try {
       setError('');
       setLoading(true);
+
+      // 照片验证
+      if (!data.personalPhoto) {
+        setError('请上传个人照片');
+        setLoading(false);
+        return;
+      }
+      
+      if (!data.studentCardPhoto) {
+        setError('请上传一卡通照片');
+        setLoading(false);
+        return;
+      }
 
       // 大二学生特殊验证
       const sophomoreValidationError = validateSophomoreInfo(data);
@@ -314,7 +329,13 @@ const ApplicationFormNew: React.FC = () => {
               preview={true}
               description="请上传清晰的个人近照，支持 JPG、PNG 格式"
               value={watch('personalPhoto')}
-              onChange={(file) => setValue('personalPhoto', file as File)}
+              onChange={(file) => {
+                setValue('personalPhoto', file as File);
+                // 手动触发验证
+                if (file) {
+                  setError('');
+                }
+              }}
               error={errors.personalPhoto?.message}
             />
 
@@ -326,7 +347,12 @@ const ApplicationFormNew: React.FC = () => {
               preview={true}
               description="请上传清晰的一卡通照片，确保信息可见"
               value={watch('studentCardPhoto')}
-              onChange={(file) => setValue('studentCardPhoto', file as File)}
+              onChange={(file) => {
+                setValue('studentCardPhoto', file as File);
+                if (file) {
+                  setError('');
+                }
+              }}
               error={errors.studentCardPhoto?.message}
             />
           </div>
@@ -610,7 +636,10 @@ const ApplicationFormNew: React.FC = () => {
                   maxFiles={5}
                   description="上传项目截图、代码片段、证书等材料，支持多文件上传"
                   value={watch('experienceAttachments')}
-                  onChange={(files) => setValue('experienceAttachments', files as File[])}
+                  onChange={(files) => {
+                    setValue('experienceAttachments', files as File[]);
+                    console.log('佐证材料文件已选择:', files);
+                  }}
                   error={errors.experienceAttachments?.message}
                 />
               </div>
