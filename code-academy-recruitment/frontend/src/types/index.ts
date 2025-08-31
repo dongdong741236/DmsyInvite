@@ -95,8 +95,7 @@ export interface ApplicationFormData {
       isTransferStudent?: boolean;
       originalMajor?: string;
       newMajor?: string;
-      cLanguageGrade?: string;
-      cppLanguageGrade?: string;
+      programmingGrade?: string; // 合并C/C++成绩
     };
   };
 }

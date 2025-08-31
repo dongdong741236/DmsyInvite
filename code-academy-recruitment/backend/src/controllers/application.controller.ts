@@ -81,11 +81,10 @@ export const createApplication = async (
       const sophomoreInfo = req.body.gradeSpecificInfo?.sophomoreInfo;
       
       const hasTransferInfo = sophomoreInfo?.isTransferStudent && sophomoreInfo?.originalMajor;
-      const hasCLanguageGrade = sophomoreInfo?.cLanguageGrade && sophomoreInfo.cLanguageGrade !== '未修读';
-      const hasCppLanguageGrade = sophomoreInfo?.cppLanguageGrade && sophomoreInfo.cppLanguageGrade !== '未修读';
+      const hasProgrammingGrade = sophomoreInfo?.programmingGrade && sophomoreInfo.programmingGrade !== '未修读';
       
-      if (!hasTransferInfo && !hasCLanguageGrade && !hasCppLanguageGrade) {
-        throw new AppError('大二学生请至少填写以下信息之一：转专业信息、C语言成绩或C++成绩', 400);
+      if (!hasTransferInfo && !hasProgrammingGrade) {
+        throw new AppError('大二学生请至少填写以下信息之一：转专业信息或C/C++编程课程成绩', 400);
       }
     }
 

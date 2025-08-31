@@ -58,11 +58,10 @@ const ApplicationFormNew: React.FC = () => {
     
     // 检查是否至少满足一个条件
     const hasTransferInfo = sophomoreInfo?.isTransferStudent && sophomoreInfo?.originalMajor;
-    const hasCLanguageGrade = sophomoreInfo?.cLanguageGrade && sophomoreInfo.cLanguageGrade !== '未修读';
-    const hasCppLanguageGrade = sophomoreInfo?.cppLanguageGrade && sophomoreInfo.cppLanguageGrade !== '未修读';
+    const hasProgrammingGrade = sophomoreInfo?.programmingGrade && sophomoreInfo.programmingGrade !== '未修读';
     
-    if (!hasTransferInfo && !hasCLanguageGrade && !hasCppLanguageGrade) {
-      return '大二学生请至少填写以下信息之一：转专业信息、C语言成绩或C++成绩';
+    if (!hasTransferInfo && !hasProgrammingGrade) {
+      return '大二学生请至少填写以下信息之一：转专业信息或C/C++课程成绩';
     }
     
     return null;
@@ -507,50 +506,33 @@ const ApplicationFormNew: React.FC = () => {
                       <p className="font-medium mb-1">大二学生申请要求：</p>
                       <p>请至少填写以下信息之一（满足其中一项即可）：</p>
                       <ul className="list-disc list-inside mt-2 space-y-1">
-                        <li>如果是转专业学生，请填写原专业信息</li>
-                        <li>如果修读过C语言课程，请填写成绩</li>
-                        <li>如果修读过C++课程，请填写成绩</li>
+                        <li>转专业相关信息</li>
+                        <li>C/C++编程课程成绩</li>
                       </ul>
                     </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      C语言课程成绩
-                    </label>
-                    <select
-                      {...register('gradeSpecificInfo.sophomoreInfo.cLanguageGrade')}
-                      className="neumorphic-input"
-                    >
-                      <option value="">请选择</option>
-                      <option value="A">A (90-100)</option>
-                      <option value="B">B (80-89)</option>
-                      <option value="C">C (70-79)</option>
-                      <option value="D">D (60-69)</option>
-                      <option value="F">F (60以下)</option>
-                      <option value="未修读">未修读此课程</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      C++课程成绩
-                    </label>
-                    <select
-                      {...register('gradeSpecificInfo.sophomoreInfo.cppLanguageGrade')}
-                      className="neumorphic-input"
-                    >
-                      <option value="">请选择</option>
-                      <option value="A">A (90-100)</option>
-                      <option value="B">B (80-89)</option>
-                      <option value="C">C (70-79)</option>
-                      <option value="D">D (60-69)</option>
-                      <option value="F">F (60以下)</option>
-                      <option value="未修读">未修读此课程</option>
-                    </select>
-                  </div>
+                {/* C/C++课程成绩 - 独立显示 */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    C/C++编程课程成绩
+                  </label>
+                  <select
+                    {...register('gradeSpecificInfo.sophomoreInfo.programmingGrade')}
+                    className="neumorphic-input"
+                  >
+                    <option value="">请选择</option>
+                    <option value="A">A (90-100)</option>
+                    <option value="B">B (80-89)</option>
+                    <option value="C">C (70-79)</option>
+                    <option value="D">D (60-69)</option>
+                    <option value="F">F (60以下)</option>
+                    <option value="未修读">未修读相关课程</option>
+                  </select>
+                  <p className="mt-1 text-sm text-gray-500">
+                    包括C语言程序设计、C++程序设计等编程相关课程
+                  </p>
                 </div>
               </div>
             )}
