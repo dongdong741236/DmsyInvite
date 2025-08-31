@@ -21,9 +21,12 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  // 添加调试选项
+  // 添加调试选项和超时设置
   debug: true,
   logger: true,
+  connectionTimeout: 10000,  // 10秒连接超时
+  greetingTimeout: 5000,     // 5秒握手超时
+  socketTimeout: 10000,      // 10秒 socket 超时
 });
 
 console.log('邮件传输器创建完成');
