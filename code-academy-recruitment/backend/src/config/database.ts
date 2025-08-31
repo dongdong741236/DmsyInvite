@@ -8,9 +8,9 @@ import { InterviewRoom } from '../models/InterviewRoom';
 dotenv.config();
 
 export const AppDataSource = new DataSource({
-  type: 'postgres',
+  type: 'mysql',
   host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '5432'),
+  port: parseInt(process.env.DB_PORT || '3306'),
   username: process.env.DB_USER || 'recruitment_user',
   password: process.env.DB_PASSWORD || 'password',
   database: process.env.DB_NAME || 'recruitment_db',
@@ -19,16 +19,17 @@ export const AppDataSource = new DataSource({
   entities: [User, Application, Interview, InterviewRoom],
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscribers/*.ts'],
-  // PostgreSQL 特有配置
+  // MySQL 8.0 优化配置
+  charset: 'utf8mb4',
+  timezone: '+08:00',
   extra: {
     // 连接池配置
-    max: 20,
-    min: 5,
-    // 连接超时
-    connectionTimeoutMillis: 10000,
-    // 空闲超时
-    idleTimeoutMillis: 30000,
-    // 启用 SSL（生产环境推荐）
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    connectionLimit: 20,
+    acquireTimeout: 60000,
+    timeout: 60000,
+    // MySQL 8.0 特有配置
+    authPlugins: {
+      mysql_native_password: () => () => Buffer.alloc(0),
+    },
   },
 });
