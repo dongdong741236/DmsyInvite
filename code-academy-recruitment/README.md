@@ -5,7 +5,7 @@
 ## 功能特性
 
 ### 前台功能
-- 校内邮箱注册/登录（指定邮箱后缀验证）
+- 校内邮箱验证码注册/登录
 - 申请表单填写
 - 申请状态查询
 - 面试结果查看
@@ -26,104 +26,160 @@
 - **邮件服务**: Nodemailer
 - **容器化**: Docker + Docker Compose
 
-## 快速开始
+## 🚀 快速开始
 
-### 方式1: 最终部署脚本（推荐，已修复所有问题）
-
-```bash
-# 1. 克隆项目
-git clone <repository-url>
-cd code-academy-recruitment
-
-# 2. 一键部署（包含环境检查、编译测试、构建部署）
-./final-deploy.sh
-```
-
-### 方式2: 自动安装部署
+### 方法1: 一键部署（推荐）
 
 ```bash
 # 1. 克隆项目
-git clone <repository-url>
+git clone <repository-url> code-academy-recruitment
 cd code-academy-recruitment
 
-# 2. 检查环境
-./check-env.sh
-
-# 3. 自动部署（包含 Docker 安装）
-./server-setup.sh
+# 2. 首次部署
+./deploy.sh install
 ```
 
-### 方式3: 快速部署（已有 Docker 环境）
+### 方法2: 使用 Make 命令
 
 ```bash
-# 1. 克隆项目
-git clone <repository-url>
-cd code-academy-recruitment
+# 首次安装
+make install
 
-# 2. 配置环境
-cp .env.example .env
-nano .env  # 编辑必要配置
+# 更新代码
+make update
 
-# 3. 快速部署
-./quick-deploy.sh
+# 重启服务
+make restart
 ```
 
-### 方式4: 手动部署
-
-```bash
-# 1. 克隆项目
-git clone <repository-url>
-cd code-academy-recruitment
-
-# 2. 配置环境
-cp .env.example .env
-nano .env
-
-# 3. 启动服务
-docker compose up -d
-```
-
-访问地址：
-- 前端：http://localhost:43000
-- 后端API：http://localhost:45000
-- MySQL：localhost:43306
-- Redis：localhost:46379
-
-## 环境配置
+## ⚙️ 配置要求
 
 复制环境变量模板并配置：
 
 ```bash
 cp .env.example .env
+nano .env
 ```
 
-主要配置项：
-- 数据库连接信息
-- 邮件服务器配置
-- JWT密钥
-- 允许的邮箱后缀
+**必须配置的参数：**
+```bash
+# 数据库密码
+DB_PASSWORD=your_strong_password
+DB_ROOT_PASSWORD=your_root_password
 
-## 开发指南
+# Redis 密码
+REDIS_PASSWORD=your_redis_password
 
-### 前端开发
+# JWT 密钥
+JWT_SECRET=your_32_character_jwt_secret
+
+# 邮箱配置（用于验证码）
+EMAIL_HOST=smtp.your-domain.com
+EMAIL_USER=noreply@your-domain.com
+EMAIL_PASS=your_email_password
+
+# 允许的邮箱域名
+ALLOWED_EMAIL_DOMAIN=@stu.your-university.edu.cn
+```
+
+## 🌐 访问地址
+
+- **前端界面**: http://localhost:43000
+- **后端API**: http://localhost:45000
+- **MySQL数据库**: localhost:43306
+- **Redis缓存**: localhost:46379
+
+## 📧 邮箱验证码注册
+
+系统采用邮箱验证码注册方式：
+
+1. **输入邮箱** → 系统发送6位验证码
+2. **输入验证码** → 验证邮箱所有权
+3. **填写信息** → 完成注册
+
+验证码有效期10分钟，最多尝试5次。
+
+## 📋 管理命令
 
 ```bash
-cd frontend
-npm install
-npm run dev
+# 部署和更新
+./deploy.sh install     # 首次部署
+./deploy.sh update      # 更新代码
+./deploy.sh restart     # 重启服务
+./deploy.sh clean       # 清理重建
+
+# 状态监控
+./deploy.sh status      # 查看状态
+./deploy.sh logs        # 查看日志
+make health            # 健康检查
+
+# 数据管理
+make backup            # 备份数据库
+./deploy.sh stop       # 停止服务
 ```
 
-### 后端开发
+## 🔧 故障排除
 
+### 常见问题
+
+1. **端口被占用**
 ```bash
-cd backend
-npm install
-npm run dev
+sudo netstat -tlnp | grep :43000
+sudo kill -9 <PID>
 ```
 
-## 部署说明
+2. **服务启动失败**
+```bash
+./deploy.sh logs
+./deploy.sh restart
+```
 
-本系统支持ARM架构（如树莓派、Apple Silicon等）和x86架构的Docker部署。
+3. **邮件发送失败**
+```bash
+# 检查邮箱配置
+grep EMAIL_ .env
+
+# 测试邮箱验证码功能
+./test-email-verification.sh
+```
+
+4. **数据库连接失败**
+```bash
+docker exec recruitment-mysql mysqladmin ping
+./deploy.sh clean  # 重新构建
+```
+
+## 🏗️ 架构说明
+
+### 网络架构
+```
+浏览器 → Nginx (43000) → React 应用
+              ↓ /api/*
+         Backend (45000) ← Node.js API
+              ↓
+         MySQL (43306) + Redis (46379)
+```
+
+### 容器架构
+- **recruitment-frontend**: Nginx + React 构建文件
+- **recruitment-backend**: Node.js + Express API
+- **recruitment-mysql**: MySQL 8.0 数据库
+- **recruitment-redis**: Redis 缓存服务
+
+## 📱 支持的架构
+
+- **x86_64**: Intel/AMD 处理器
+- **ARM64**: Apple Silicon、树莓派4、AWS Graviton
+- **自动检测**: 脚本自动选择最优配置
+
+## 📞 技术支持
+
+如果遇到问题：
+
+1. 查看日志：`./deploy.sh logs`
+2. 检查状态：`./deploy.sh status`
+3. 健康检查：`make health`
+4. 重新部署：`./deploy.sh clean`
 
 ## License
 

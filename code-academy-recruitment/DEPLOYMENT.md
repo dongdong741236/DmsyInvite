@@ -1,193 +1,156 @@
-# 部署指南
+# 🚀 部署指南
 
 ## 系统要求
 
 - Docker 20.10+
-- Docker Compose 2.0+
-- 2GB+ 可用内存
-- 10GB+ 可用磁盘空间
-
-## 支持的架构
-
-- ARM64 (树莓派4、Apple Silicon Mac等)
-- x86_64 (Intel/AMD 处理器)
+- Docker Compose V2
+- 2GB+ 内存
+- 10GB+ 磁盘空间
 
 ## 快速部署
 
-### 1. 克隆项目
+### 1. 获取代码
 
 ```bash
-git clone <repository-url>
+# Git 克隆
+git clone <repository-url> code-academy-recruitment
 cd code-academy-recruitment
+
+# 或者 PR 分支
+git fetch origin pull/<PR-number>/head:pr-branch
+git checkout pr-branch
 ```
 
-### 2. 配置环境变量
+### 2. 配置环境
 
 ```bash
+# 复制配置模板
 cp .env.example .env
+
+# 编辑配置文件
+nano .env
 ```
 
-编辑 `.env` 文件，修改以下重要配置：
+**必须配置的参数：**
+- `DB_PASSWORD` - 数据库密码
+- `REDIS_PASSWORD` - Redis密码
+- `JWT_SECRET` - JWT密钥（32位随机字符串）
+- `EMAIL_*` - 邮箱服务器配置
+- `ALLOWED_EMAIL_DOMAIN` - 允许注册的邮箱后缀
 
-- `DB_PASSWORD`: 数据库密码
-- `REDIS_PASSWORD`: Redis密码
-- `JWT_SECRET`: JWT密钥（建议使用随机字符串）
-- `EMAIL_*`: 邮件服务器配置
-- `ALLOWED_EMAIL_DOMAIN`: 允许注册的邮箱后缀
-- `ADMIN_PASSWORD`: 默认管理员密码
-
-### 3. 运行部署脚本
+### 3. 一键部署
 
 ```bash
-./deploy.sh
+# 首次部署
+./deploy.sh install
+
+# 或使用 Make
+make install
 ```
 
-或手动执行：
+## 📋 管理命令
+
+### 基础操作
 
 ```bash
-docker-compose up -d
+./deploy.sh install     # 首次部署
+./deploy.sh update      # 更新代码
+./deploy.sh restart     # 重启服务
+./deploy.sh stop        # 停止服务
+./deploy.sh status      # 查看状态
+./deploy.sh logs        # 查看日志
+./deploy.sh clean       # 清理重建
 ```
 
-### 4. 访问系统
-
-- 前端界面: http://localhost:3000
-- 后端API: http://localhost:5000
-- 管理员账号: admin@codeacademy.edu.cn
-
-## 生产环境部署
-
-### 使用反向代理
-
-推荐使用 Nginx 作为反向代理：
-
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
-
-    location / {
-        proxy_pass http://localhost:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-
-    location /api {
-        proxy_pass http://localhost:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-    }
-}
-```
-
-### SSL 证书配置
-
-推荐使用 Let's Encrypt 免费证书：
+### Make 命令
 
 ```bash
-certbot --nginx -d yourdomain.com
+make install           # 首次部署
+make update           # 更新代码
+make restart          # 重启服务
+make status           # 查看状态
+make logs             # 查看日志
+make health           # 健康检查
+make backup           # 备份数据库
+```
+
+## 🌐 访问地址
+
+- **前端**: http://localhost:43000
+- **后端**: http://localhost:45000
+- **MySQL**: localhost:43306
+- **Redis**: localhost:46379
+
+## 📧 邮箱配置
+
+系统使用邮箱验证码注册，需要配置 SMTP 服务器：
+
+```bash
+EMAIL_HOST=smtp.your-domain.com
+EMAIL_PORT=587
+EMAIL_USER=noreply@your-domain.com
+EMAIL_PASS=your_email_password
+EMAIL_FROM=代码书院 <noreply@your-domain.com>
+```
+
+## 🔧 故障排除
+
+### 服务异常
+
+```bash
+# 查看详细状态
+./deploy.sh status
+
+# 查看错误日志
+./deploy.sh logs
+
+# 重启服务
+./deploy.sh restart
+```
+
+### 完全重置
+
+```bash
+# 清理并重新部署
+./deploy.sh clean
 ```
 
 ### 数据备份
 
-#### 备份数据库
+```bash
+# 备份数据库
+make backup
+
+# 查看备份文件
+ls backups/
+```
+
+## 🏗️ 架构支持
+
+- **x86_64**: 自动使用标准配置
+- **ARM64**: 自动使用 ARM 优化配置
+- **多架构**: 自动检测并选择最优配置
+
+## 📱 更新流程
 
 ```bash
-docker exec recruitment-mysql mysqldump -u recruitment_user -p recruitment_db > backup.sql
-```
-
-#### 恢复数据库
-
-```bash
-docker exec -i recruitment-mysql mysql -u recruitment_user -p recruitment_db < backup.sql
-```
-
-## 故障排除
-
-### 查看服务日志
-
-```bash
-# 查看所有服务日志
-docker compose logs -f
-
-# 查看特定服务日志
-docker compose logs -f backend
-docker compose logs -f frontend
-```
-
-### 重启服务
-
-```bash
-# 重启所有服务
-docker compose restart
-
-# 重启特定服务
-docker compose restart backend
-```
-
-### 清理和重建
-
-```bash
-# 停止并删除容器
-docker compose down
-
-# 清理数据卷（注意：会删除所有数据）
-docker compose down -v
-
-# 重新构建镜像
-docker compose build --no-cache
-```
-
-## 性能优化
-
-### 数据库优化
-
-编辑 `docker-compose.yml`，添加 MySQL 优化参数：
-
-```yaml
-mysql:
-  command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-buffer-pool-size=512M --max-connections=200
-```
-
-### Redis 持久化
-
-确保 Redis 数据持久化：
-
-```yaml
-redis:
-  command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
-```
-
-## 监控
-
-### 使用 Docker 统计信息
-
-```bash
-docker stats
-```
-
-### 健康检查
-
-```bash
-curl http://localhost:5000/health
-curl http://localhost:3000/health
-```
-
-## 安全建议
-
-1. 修改默认密码
-2. 限制数据库端口访问
-3. 使用 HTTPS
-4. 定期更新依赖
-5. 配置防火墙规则
-6. 定期备份数据
-
-## 更新系统
-
-```bash
-# 拉取最新代码
+# 拉取最新代码并更新
 git pull
+./deploy.sh update
 
-# 重新构建和部署
-docker compose build
-docker compose up -d
+# 或一条命令
+make update
+```
+
+## 🆘 获取帮助
+
+```bash
+# 查看帮助
+./deploy.sh help
+
+# 检查系统状态
+make health
+
+# 测试邮箱功能
+./test-email-verification.sh
 ```
