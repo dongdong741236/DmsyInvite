@@ -1,0 +1,26 @@
+# 调试版 Dockerfile - 简化配置，便于排查问题
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install all dependencies (including dev dependencies for debugging)
+RUN npm install
+
+# Copy all source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Create uploads directory
+RUN mkdir -p uploads
+
+# Expose port
+EXPOSE 5000
+
+# Start the application (run as root for debugging)
+CMD ["node", "dist/index.js"]

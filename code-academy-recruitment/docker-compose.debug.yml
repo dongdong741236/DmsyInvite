@@ -1,0 +1,63 @@
+# 调试版 Docker Compose 配置
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: recruitment-mysql-debug
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-recruitment_db}
+      MYSQL_USER: ${DB_USER:-recruitment_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-your_secure_password}
+    volumes:
+      - mysql_debug_data:/var/lib/mysql
+    ports:
+      - "43306:3306"
+    networks:
+      - recruitment-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: recruitment-redis-debug
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-your_redis_password}
+    volumes:
+      - redis_debug_data:/data
+    ports:
+      - "46379:6379"
+    networks:
+      - recruitment-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.debug
+    container_name: recruitment-backend-debug
+    restart: "no"  # 不自动重启，便于调试
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: development
+      DB_HOST: mysql
+      REDIS_HOST: redis
+    ports:
+      - "45000:5000"
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - recruitment-network
+    volumes:
+      - ./backend/uploads:/app/uploads
+    # 调试模式：显示详细输出
+    tty: true
+    stdin_open: true
+
+networks:
+  recruitment-network:
+    driver: bridge
+
+volumes:
+  mysql_debug_data:
+  redis_debug_data:
