@@ -2,12 +2,15 @@ import { AppDataSource } from '../config/database';
 import { SystemConfig } from '../models/SystemConfig';
 
 export class ConfigService {
-  private static configRepository = AppDataSource.getRepository(SystemConfig);
+  private static getRepository() {
+    return AppDataSource.getRepository(SystemConfig);
+  }
 
   // 获取配置值
   static async get(key: string, defaultValue: string = ''): Promise<string> {
     try {
-      const config = await this.configRepository.findOne({
+      const configRepository = this.getRepository();
+      const config = await configRepository.findOne({
         where: { key, isActive: true },
       });
       return config ? config.value : defaultValue;
@@ -18,25 +21,27 @@ export class ConfigService {
 
   // 设置配置值
   static async set(key: string, value: string, description?: string): Promise<void> {
-    const existingConfig = await this.configRepository.findOne({ where: { key } });
+    const configRepository = this.getRepository();
+    const existingConfig = await configRepository.findOne({ where: { key } });
     
     if (existingConfig) {
       existingConfig.value = value;
       if (description) existingConfig.description = description;
-      await this.configRepository.save(existingConfig);
+      await configRepository.save(existingConfig);
     } else {
-      const newConfig = this.configRepository.create({
+      const newConfig = configRepository.create({
         key,
         value,
         description,
       });
-      await this.configRepository.save(newConfig);
+      await configRepository.save(newConfig);
     }
   }
 
   // 获取所有配置
   static async getAll(): Promise<SystemConfig[]> {
-    return await this.configRepository.find({
+    const configRepository = this.getRepository();
+    return await configRepository.find({
       where: { isActive: true },
       order: { key: 'ASC' },
     });
@@ -80,7 +85,8 @@ export class ConfigService {
     ];
 
     for (const config of defaultConfigs) {
-      const existing = await this.configRepository.findOne({ where: { key: config.key } });
+      const configRepository = this.getRepository();
+      const existing = await configRepository.findOne({ where: { key: config.key } });
       if (!existing) {
         await this.set(config.key, config.value, config.description);
       }

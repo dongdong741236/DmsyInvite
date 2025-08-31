@@ -259,21 +259,37 @@ clean() {
 check_health() {
     print_step "健康检查"
     
+    # 检查容器状态
+    echo "容器状态:"
+    docker compose -f $COMPOSE_FILE ps
+    
     # 检查后端
+    echo ""
+    echo "后端服务检查:"
     if curl -f http://localhost:45000/health > /dev/null 2>&1; then
         print_message "后端服务正常 ✓"
     else
         print_warning "后端服务异常"
+        echo "后端容器状态:"
+        docker ps -a --filter "name=recruitment-backend" --format "table {{.Names}}\t{{.Status}}"
+        echo "后端日志（最后10行）:"
+        docker logs recruitment-backend --tail=10 2>/dev/null || echo "无法获取日志"
     fi
     
     # 检查前端
+    echo ""
+    echo "前端服务检查:"
     if curl -f http://localhost:43000/health > /dev/null 2>&1; then
         print_message "前端服务正常 ✓"
     else
         print_warning "前端服务异常"
+        echo "前端日志（最后5行）:"
+        docker logs recruitment-frontend --tail=5 2>/dev/null || echo "无法获取日志"
     fi
     
     # 检查前端代理
+    echo ""
+    echo "API 代理检查:"
     if curl -f http://localhost:43000/api/health > /dev/null 2>&1; then
         print_message "前端 API 代理正常 ✓"
     else

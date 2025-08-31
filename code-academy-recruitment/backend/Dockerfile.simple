@@ -1,0 +1,30 @@
+# 简化的调试版 Dockerfile
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build
+
+# Copy simple index file for debugging
+COPY src/index.simple.ts src/index.ts
+RUN npm run build
+
+# Create uploads directory
+RUN mkdir -p uploads
+
+# Expose port
+EXPOSE 5000
+
+# Start with more verbose output
+CMD ["node", "--trace-warnings", "dist/index.js"]
