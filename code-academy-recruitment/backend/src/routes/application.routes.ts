@@ -61,7 +61,17 @@ router.post('/upload', uploadApplicationFiles, async (req, res) => {
             // 多文件字段，返回数组
             uploadedFiles[fieldname] = files[fieldname].map(file => {
               // 提取相对于uploads目录的路径
-              const relativePath = file.path.split('/uploads/')[1] || file.filename;
+              let relativePath = file.path;
+              
+              // 移除绝对路径前缀，只保留相对于uploads的路径
+              if (relativePath.includes('/uploads/')) {
+                relativePath = relativePath.split('/uploads/')[1] || file.filename;
+              } else {
+                // 如果没有uploads前缀，使用filename构建路径
+                const subDir = file.fieldname === 'experienceAttachments' ? 'attachments' : 'others';
+                relativePath = `${subDir}/${file.filename}`;
+              }
+              
               console.log('多文件路径处理:', file.path, '->', relativePath);
               return relativePath;
             });
@@ -69,7 +79,22 @@ router.post('/upload', uploadApplicationFiles, async (req, res) => {
             // 单文件字段，返回字符串
             const file = files[fieldname][0];
             if (file) {
-              const relativePath = file.path.split('/uploads/')[1] || file.filename;
+              let relativePath = file.path;
+              
+              // 移除绝对路径前缀，只保留相对于uploads的路径
+              if (relativePath.includes('/uploads/')) {
+                relativePath = relativePath.split('/uploads/')[1] || file.filename;
+              } else {
+                // 如果没有uploads前缀，使用filename构建路径
+                let subDir = 'others';
+                if (file.fieldname === 'personalPhoto') {
+                  subDir = 'photos/personal';
+                } else if (file.fieldname === 'studentCardPhoto') {
+                  subDir = 'photos/student-cards';
+                }
+                relativePath = `${subDir}/${file.filename}`;
+              }
+              
               console.log('单文件路径处理:', file.path, '->', relativePath);
               uploadedFiles[fieldname] = relativePath;
             }
