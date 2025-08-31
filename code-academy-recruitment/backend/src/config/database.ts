@@ -23,13 +23,10 @@ export const AppDataSource = new DataSource({
   charset: 'utf8mb4',
   timezone: '+08:00',
   extra: {
-    // 连接池配置
+    // 连接池配置（使用 mysql2 支持的选项）
     connectionLimit: 20,
-    acquireTimeout: 60000,
-    timeout: 60000,
-    // MySQL 8.0 特有配置
-    authPlugins: {
-      mysql_native_password: () => () => Buffer.alloc(0),
-    },
+    queueLimit: 0,
+    reconnect: true,
+    // 移除不支持的配置选项
   },
 });

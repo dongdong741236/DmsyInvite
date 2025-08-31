@@ -28,8 +28,8 @@ RUN npm run build
 # Production stage
 FROM --platform=$TARGETPLATFORM nginx:alpine
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copy custom nginx config (simplified, no brotli)
+COPY nginx-simple.conf /etc/nginx/nginx.conf
 
 # Copy built application from builder stage
 COPY --from=builder /app/build /usr/share/nginx/html
