@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import api from '../../services/api';
 import { InterviewRoom } from '../../types';
 import {
@@ -31,12 +31,27 @@ const RoomManagement: React.FC = () => {
     handleSubmit,
     reset,
     setValue,
+    control,
     formState: { errors },
-  } = useForm<RoomFormData>();
+  } = useForm<RoomFormData>({
+    defaultValues: {
+      interviewerIds: [],
+    },
+  });
 
   useEffect(() => {
     loadRooms();
+    loadInterviewers();
   }, []);
+
+  const loadInterviewers = async () => {
+    try {
+      const response = await api.get('/admin/interviewers/active');
+      setInterviewers(response.data);
+    } catch (error) {
+      console.error('Failed to load interviewers:', error);
+    }
+  };
 
   const loadRooms = async () => {
     try {
@@ -77,7 +92,7 @@ const RoomManagement: React.FC = () => {
     setEditingRoom(room);
     setValue('name', room.name);
     setValue('location', room.location);
-    // capacity 字段已移除
+    setValue('interviewerIds', room.interviewers?.map(i => i.id) || []);
     setShowForm(true);
   };
 
@@ -97,7 +112,11 @@ const RoomManagement: React.FC = () => {
 
   const handleAddNew = () => {
     setEditingRoom(null);
-    reset();
+    reset({
+      name: '',
+      location: '',
+      interviewerIds: [],
+    });
     setShowForm(true);
   };
 
@@ -182,22 +201,35 @@ const RoomManagement: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   分配面试官
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
-                  {interviewers.map((interviewer) => (
-                    <label key={interviewer.id} className="flex items-center">
-                      <input
-                        {...register('interviewerIds')}
-                        type="checkbox"
-                        value={interviewer.id}
-                        className="mr-2"
-                      />
-                      <span className="text-sm">
-                        {interviewer.name}
-                        {interviewer.title && ` (${interviewer.title})`}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                <Controller
+                  name="interviewerIds"
+                  control={control}
+                  render={({ field: { value, onChange } }) => (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                      {interviewers.map((interviewer) => (
+                        <label key={interviewer.id} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={value?.includes(interviewer.id) || false}
+                            onChange={(e) => {
+                              const currentValue = value || [];
+                              if (e.target.checked) {
+                                onChange([...currentValue, interviewer.id]);
+                              } else {
+                                onChange(currentValue.filter((id: string) => id !== interviewer.id));
+                              }
+                            }}
+                            className="mr-2"
+                          />
+                          <span className="text-sm">
+                            {interviewer.name}
+                            {interviewer.title && ` (${interviewer.title})`}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                />
                 <p className="mt-1 text-sm text-gray-500">选择在此教室进行面试的面试官</p>
               </div>
             </div>
