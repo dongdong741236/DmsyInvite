@@ -19,9 +19,6 @@ export class InterviewRoom {
   @Column()
   location!: string;
 
-  @Column({ type: 'int' })
-  capacity!: number;
-
   @Column({ default: true })
   isActive!: boolean;
 
