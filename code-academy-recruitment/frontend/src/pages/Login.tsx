@@ -33,9 +33,10 @@ const Login: React.FC = () => {
       showSuccess('登录成功！');
       navigate(from, { replace: true });
     } catch (err: any) {
+      console.error('Login error:', err);
       const errorMessage = err.response?.data?.error || '登录失败，请检查邮箱和密码';
       setError(errorMessage);
-      showError(errorMessage, true); // 持久显示错误
+      showError(`登录失败: ${errorMessage}`, true); // 持久显示错误，添加前缀
     } finally {
       setLoading(false);
     }

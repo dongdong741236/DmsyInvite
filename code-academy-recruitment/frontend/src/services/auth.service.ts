@@ -59,6 +59,6 @@ export const authService = {
 
   logout() {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    // 不使用window.location.href，让调用方处理重定向
   },
 };

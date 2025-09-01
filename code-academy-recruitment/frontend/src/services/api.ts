@@ -28,8 +28,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      // 检查是否是认证相关请求，如果是则不重定向
+      const isAuthRequest = error.config?.url?.includes('/auth/');
+      
+      if (!isAuthRequest) {
+        // 只有在非认证请求的401错误时才重定向（token过期等）
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
