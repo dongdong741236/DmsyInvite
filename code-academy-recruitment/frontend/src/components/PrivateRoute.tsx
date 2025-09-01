@@ -5,9 +5,14 @@ import { useAuth } from '../contexts/AuthContext';
 interface PrivateRouteProps {
   children: React.ReactElement;
   adminOnly?: boolean;
+  interviewerAllowed?: boolean; // 允许面试官访问
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, adminOnly = false }) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ 
+  children, 
+  adminOnly = false, 
+  interviewerAllowed = false 
+}) => {
   const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
@@ -22,8 +27,22 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, adminOnly = false
     return <Navigate to="/login" replace />;
   }
 
-  if (adminOnly && !isAdmin) {
-    return <Navigate to="/" replace />;
+  // 检查权限
+  const isInterviewer = user.role === 'interviewer';
+  
+  if (adminOnly) {
+    // 如果需要管理员权限
+    if (interviewerAllowed) {
+      // 允许管理员或面试官访问
+      if (!isAdmin && !isInterviewer) {
+        return <Navigate to="/" replace />;
+      }
+    } else {
+      // 只允许管理员访问
+      if (!isAdmin) {
+        return <Navigate to="/" replace />;
+      }
+    }
   }
 
   return children;

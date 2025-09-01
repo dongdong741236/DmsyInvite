@@ -38,13 +38,23 @@ const Layout: React.FC = () => {
                   首页
                 </Link>
                 
-                {user && !isAdmin && (
+                {user && user.role === 'applicant' && (
                   <Link
                     to="/applications"
                     className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-gray-50"
                   >
                     <DocumentTextIcon className="w-5 h-5 mr-2" />
                     我的申请
+                  </Link>
+                )}
+                
+                {user && user.role === 'interviewer' && (
+                  <Link
+                    to="/interviewer"
+                    className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                  >
+                    <DocumentTextIcon className="w-5 h-5 mr-2" />
+                    面试管理
                   </Link>
                 )}
                 

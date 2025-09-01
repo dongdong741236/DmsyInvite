@@ -20,6 +20,8 @@ import QuestionManagement from './pages/admin/QuestionManagement';
 import RecruitmentManagement from './pages/admin/RecruitmentManagement';
 import InterviewerManagement from './pages/admin/InterviewerManagement';
 import InterviewPanel from './pages/InterviewPanel';
+import InterviewerDashboard from './pages/interviewer/InterviewerDashboard';
+import MyInterviews from './pages/interviewer/MyInterviews';
 
 function App() {
   return (
@@ -146,6 +148,34 @@ function App() {
               path="admin/interviews/:id/panel"
               element={
                 <PrivateRoute adminOnly>
+                  <InterviewPanel />
+                </PrivateRoute>
+              }
+            />
+
+            {/* 面试官专用路由 */}
+            <Route
+              path="interviewer"
+              element={
+                <PrivateRoute adminOnly interviewerAllowed>
+                  <InterviewerDashboard />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="interviewer/interviews"
+              element={
+                <PrivateRoute adminOnly interviewerAllowed>
+                  <MyInterviews />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="interviewer/interviews/:id"
+              element={
+                <PrivateRoute adminOnly interviewerAllowed>
                   <InterviewPanel />
                 </PrivateRoute>
               }
