@@ -297,7 +297,7 @@ const EmailTemplateManagement: React.FC = () => {
                 <textarea
                   {...register('htmlContent', { required: '请输入邮件内容' })}
                   rows={15}
-                  className="neumorphic-input font-mono text-sm"
+                  className="neumorphic-input code-editor"
                   placeholder="HTML内容..."
                 />
                 {errors.htmlContent && (

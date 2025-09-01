@@ -5,6 +5,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'sans': ['Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        'mono': ['Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', 'ui-monospace', 'monospace'],
+      },
       colors: {
         primary: {
           50: '#eff6ff',

@@ -1,14 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Monaspace 字体定义 */
+  @font-face {
+    font-family: 'Monaspace';
+    src: local('JetBrains Mono'), local('Monaco'), local('Consolas');
+    font-display: swap;
+  }
+  
   body {
     @apply bg-gray-100 text-gray-900;
+    font-family: 'Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', ui-sans-serif, system-ui, sans-serif;
   }
   
   * {
     @apply transition-all duration-200;
+  }
+  
+  /* 代码和输入框使用等宽字体 */
+  code, pre, textarea, input[type="text"], input[type="email"], input[type="password"] {
+    font-family: 'Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', ui-monospace, monospace;
   }
 }
 
@@ -35,5 +50,20 @@
   
   .text-gradient {
     @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
+  }
+  
+  /* 字体样式类 */
+  .font-monaspace {
+    font-family: 'Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', ui-monospace, monospace;
+  }
+  
+  .font-monaspace-sans {
+    font-family: 'Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', ui-sans-serif, system-ui, sans-serif;
+  }
+  
+  /* 代码编辑器样式 */
+  .code-editor {
+    @apply font-monaspace text-sm leading-relaxed;
+    font-feature-settings: 'liga' 1, 'calt' 1;
   }
 }
