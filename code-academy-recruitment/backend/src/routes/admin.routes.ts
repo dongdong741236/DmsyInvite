@@ -48,6 +48,7 @@ router.delete('/rooms/:id', adminController.deleteRoom);
 
 // Interview management
 router.get('/interviews', adminController.getInterviews);
+router.get('/interviews/:id', adminController.getInterview);
 router.post(
   '/interviews',
   [

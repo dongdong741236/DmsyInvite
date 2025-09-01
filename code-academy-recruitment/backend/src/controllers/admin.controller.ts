@@ -343,6 +343,30 @@ export const getInterviews = async (
   }
 };
 
+export const getInterview = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const interviewRepository = AppDataSource.getRepository(Interview);
+
+    const interview = await interviewRepository.findOne({
+      where: { id },
+      relations: ['application', 'application.user', 'room'],
+    });
+
+    if (!interview) {
+      throw new AppError('Interview not found', 404);
+    }
+
+    res.json(interview);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const scheduleInterview = async (
   req: Request,
   res: Response,
