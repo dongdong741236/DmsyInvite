@@ -21,9 +21,8 @@ interface BatchInterviewModalProps {
 interface BatchInterviewFormData {
   roomId: string;
   interviewDate: string; // 只到天
-  startTime: string;
-  endTime: string;
-  intervalMinutes: number; // 每个面试间隔分钟数
+  morningCount: number; // 上午安排人数
+  afternoonCount: number; // 下午安排人数
 }
 
 const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
@@ -46,17 +45,15 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
     reset,
   } = useForm<BatchInterviewFormData>({
     defaultValues: {
-      intervalMinutes: 30,
-      startTime: '09:00',
-      endTime: '17:00',
+      morningCount: 5,
+      afternoonCount: 5,
     },
   });
 
   const watchedRoom = watch('roomId');
   const watchedDate = watch('interviewDate');
-  const watchedStartTime = watch('startTime');
-  const watchedEndTime = watch('endTime');
-  const watchedInterval = watch('intervalMinutes');
+  const watchedMorningCount = watch('morningCount');
+  const watchedAfternoonCount = watch('afternoonCount');
 
   useEffect(() => {
     if (isOpen) {
@@ -80,26 +77,29 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
   };
 
   const calculateTimeSlots = () => {
-    if (!watchedStartTime || !watchedEndTime || !watchedInterval) return [];
-
-    const start = new Date(`2000-01-01T${watchedStartTime}:00`);
-    const end = new Date(`2000-01-01T${watchedEndTime}:00`);
-    const interval = watchedInterval;
-
+    const morningCount = watchedMorningCount || 0;
+    const afternoonCount = watchedAfternoonCount || 0;
+    
     const slots = [];
-    let current = new Date(start);
-
-    while (current < end) {
-      const next = new Date(current.getTime() + interval * 60000);
-      if (next <= end) {
-        slots.push({
-          start: current.toTimeString().slice(0, 5),
-          end: next.toTimeString().slice(0, 5),
-        });
-      }
-      current = next;
+    
+    // 上午时间段 (9:00-12:00)
+    for (let i = 0; i < morningCount; i++) {
+      slots.push({
+        period: 'morning',
+        time: '09:00-12:00',
+        label: `上午第${i + 1}组`,
+      });
     }
-
+    
+    // 下午时间段 (14:00-17:00)
+    for (let i = 0; i < afternoonCount; i++) {
+      slots.push({
+        period: 'afternoon',
+        time: '14:00-17:00',
+        label: `下午第${i + 1}组`,
+      });
+    }
+    
     return slots;
   };
 
@@ -140,7 +140,16 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
       // 为每个选择的申请安排面试时间
       const interviews = selectedApplications.map((appId, index) => {
         const slot = timeSlots[index];
-        const scheduledAt = `${data.interviewDate}T${slot.start}:00`;
+        
+        // 根据时间段分配具体时间
+        let scheduledTime;
+        if (slot.period === 'morning') {
+          scheduledTime = '09:00:00'; // 上午统一9点
+        } else {
+          scheduledTime = '14:00:00'; // 下午统一2点
+        }
+        
+        const scheduledAt = `${data.interviewDate}T${scheduledTime}`;
         
         return {
           applicationId: appId,
@@ -241,71 +250,76 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  开始时间 <span className="text-red-500">*</span>
+                  上午安排人数 <span className="text-red-500">*</span>
                 </label>
                 <input
-                  {...register('startTime', { required: '请选择开始时间' })}
-                  type="time"
+                  {...register('morningCount', { 
+                    required: '请输入上午安排人数',
+                    min: { value: 0, message: '人数不能为负数' },
+                    max: { value: 20, message: '上午最多安排20人' },
+                    valueAsNumber: true
+                  })}
+                  type="number"
+                  min="0"
+                  max="20"
                   className="neumorphic-input"
+                  placeholder="5"
                 />
-                {errors.startTime && (
-                  <p className="mt-1 text-sm text-red-600">{errors.startTime.message}</p>
+                <p className="text-xs text-gray-500 mt-1">上午时间段：09:00-12:00</p>
+                {errors.morningCount && (
+                  <p className="mt-1 text-sm text-red-600">{errors.morningCount.message}</p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  结束时间 <span className="text-red-500">*</span>
+                  下午安排人数 <span className="text-red-500">*</span>
                 </label>
                 <input
-                  {...register('endTime', { required: '请选择结束时间' })}
-                  type="time"
-                  className="neumorphic-input"
-                />
-                {errors.endTime && (
-                  <p className="mt-1 text-sm text-red-600">{errors.endTime.message}</p>
-                )}
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  面试间隔（分钟） <span className="text-red-500">*</span>
-                </label>
-                <select
-                  {...register('intervalMinutes', { 
-                    required: '请选择面试间隔',
-                    valueAsNumber: true 
+                  {...register('afternoonCount', { 
+                    required: '请输入下午安排人数',
+                    min: { value: 0, message: '人数不能为负数' },
+                    max: { value: 20, message: '下午最多安排20人' },
+                    valueAsNumber: true
                   })}
+                  type="number"
+                  min="0"
+                  max="20"
                   className="neumorphic-input"
-                >
-                  <option value="15">15分钟</option>
-                  <option value="20">20分钟</option>
-                  <option value="30">30分钟</option>
-                  <option value="45">45分钟</option>
-                  <option value="60">60分钟</option>
-                </select>
-                {errors.intervalMinutes && (
-                  <p className="mt-1 text-sm text-red-600">{errors.intervalMinutes.message}</p>
+                  placeholder="5"
+                />
+                <p className="text-xs text-gray-500 mt-1">下午时间段：14:00-17:00</p>
+                {errors.afternoonCount && (
+                  <p className="mt-1 text-sm text-red-600">{errors.afternoonCount.message}</p>
                 )}
               </div>
             </div>
 
             {/* 时间段预览 */}
-            {watchedStartTime && watchedEndTime && watchedInterval && (
+            {(watchedMorningCount > 0 || watchedAfternoonCount > 0) && (
               <div className="bg-blue-50 p-4 rounded-lg">
                 <h3 className="font-medium mb-2 flex items-center">
                   <ClockIcon className="w-5 h-5 mr-2 text-blue-600" />
-                  可安排时间段 (共{maxInterviews}个)
+                  面试安排预览 (共{maxInterviews}个名额)
                 </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-                  {timeSlots.map((slot, index) => (
-                    <div key={index} className="bg-white p-2 rounded border">
-                      {slot.start} - {slot.end}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {watchedMorningCount > 0 && (
+                    <div className="bg-white p-3 rounded border">
+                      <div className="font-medium text-green-700">上午时间段</div>
+                      <div className="text-sm text-gray-600">09:00-12:00</div>
+                      <div className="text-sm">安排 {watchedMorningCount} 人</div>
                     </div>
-                  ))}
+                  )}
+                  {watchedAfternoonCount > 0 && (
+                    <div className="bg-white p-3 rounded border">
+                      <div className="font-medium text-blue-700">下午时间段</div>
+                      <div className="text-sm text-gray-600">14:00-17:00</div>
+                      <div className="text-sm">安排 {watchedAfternoonCount} 人</div>
+                    </div>
+                  )}
                 </div>
                 <p className="text-sm text-blue-600 mt-2">
-                  请选择不超过 {maxInterviews} 个申请进行安排
+                  请选择 {maxInterviews} 个申请进行安排
                 </p>
               </div>
             )}
@@ -362,8 +376,12 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
                     return (
                       <div key={appId} className="flex items-center justify-between bg-white p-2 rounded text-sm">
                         <span>{app?.user?.name} ({app?.major})</span>
-                        <span className="text-primary-600">
-                          {watchedDate} {slot?.start} - {slot?.end}
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          slot?.period === 'morning' 
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {watchedDate} {slot?.label}
                         </span>
                       </div>
                     );
