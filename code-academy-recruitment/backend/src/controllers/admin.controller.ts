@@ -668,6 +668,31 @@ export const updateInterviewEvaluation = async (
 
     await interviewRepository.save(interview);
 
+    // 同步更新申请状态
+    if (isCompleted && interview.application) {
+      const applicationRepository = AppDataSource.getRepository(Application);
+      
+      // 重新获取申请对象，确保数据最新
+      const application = await applicationRepository.findOne({
+        where: { id: interview.application.id },
+      });
+      
+      if (application) {
+        // 根据面试结果更新申请状态
+        if (result === 'passed') {
+          application.status = ApplicationStatus.ACCEPTED;
+        } else if (result === 'failed') {
+          application.status = ApplicationStatus.REJECTED;
+        } else {
+          // 面试完成但结果待定
+          application.status = ApplicationStatus.INTERVIEWED;
+        }
+        
+        await applicationRepository.save(application);
+        console.log(`申请状态已同步更新: ${interview.application.id} -> ${application.status}`);
+      }
+    }
+
     res.json({
       message: 'Interview evaluation saved successfully',
       interview,
