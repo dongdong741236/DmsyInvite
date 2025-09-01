@@ -5,7 +5,6 @@ import { zhCN } from 'date-fns/locale';
 import api from '../services/api';
 import { Application } from '../types';
 import FileViewer from '../components/FileViewer';
-import ImageDebugger from '../components/ImageDebugger';
 import {
   DocumentTextIcon,
   ArrowLeftIcon,
@@ -176,11 +175,11 @@ const ApplicationDetail: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">个人照片</label>
-            <ImageDebugger filePath={application.personalPhoto} label="个人照片" />
+            <FileViewer filePath={application.personalPhoto} label="个人照片" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">学生证照片</label>
-            <ImageDebugger filePath={application.studentCardPhoto} label="学生证照片" />
+            <FileViewer filePath={application.studentCardPhoto} label="学生证照片" />
           </div>
         </div>
         
