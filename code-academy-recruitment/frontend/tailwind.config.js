@@ -6,9 +6,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['Inter', 'PingFang SC', 'Microsoft YaHei', '微软雅黑', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        'mono': ['JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', 'ui-monospace', 'monospace'],
-        'code': ['JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', 'monospace'],
+        'sans': ['Microsoft YaHei', '微软雅黑', 'Consolas', 'Monaco', 'Courier New', 'monospace', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        'mono': ['Consolas', 'Monaco', 'Courier New', 'monospace'],
+        'code': ['Consolas', 'Monaco', 'Courier New', 'monospace'],
       },
       colors: {
         primary: {

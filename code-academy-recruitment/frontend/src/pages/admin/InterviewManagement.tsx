@@ -339,31 +339,31 @@ const InterviewManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getResultBadge(interview.result)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex flex-wrap gap-1">
+                  <td className="px-3 py-4">
+                    <div className="flex flex-col sm:flex-row gap-1">
                       {!interview.notificationSent && (
                         <button
                           onClick={() => sendNotification(interview.id)}
-                          className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                          className="inline-flex items-center justify-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors min-w-0"
                         >
-                          <EnvelopeIcon className="w-3 h-3 mr-1" />
-                          发送通知
+                          <EnvelopeIcon className="w-3 h-3 sm:mr-1" />
+                          <span className="hidden sm:inline">通知</span>
                         </button>
                       )}
                       <button
                         onClick={() => window.open(`/admin/interviews/${interview.id}/panel`, '_blank')}
-                        className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors"
+                        className="inline-flex items-center justify-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors min-w-0"
                       >
-                        <ChatBubbleLeftRightIcon className="w-3 h-3 mr-1" />
-                        开始面试
+                        <ChatBubbleLeftRightIcon className="w-3 h-3 sm:mr-1" />
+                        <span className="hidden sm:inline">面试</span>
                       </button>
                       
                       <button
                         onClick={() => handleScoring(interview)}
-                        className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors"
+                        className="inline-flex items-center justify-center px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors min-w-0"
                       >
-                        <StarIcon className="w-3 h-3 mr-1" />
-                        {interview.isCompleted ? '查看评分' : '快速评分'}
+                        <StarIcon className="w-3 h-3 sm:mr-1" />
+                        <span className="hidden sm:inline">评分</span>
                       </button>
                     </div>
                   </td>

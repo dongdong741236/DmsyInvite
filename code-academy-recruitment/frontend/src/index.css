@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,22 +5,22 @@
 @layer base {
   body {
     @apply bg-gray-100 text-gray-900;
-    /* 中英文混合字体栈：Inter(英文) + 系统中文字体 */
-    font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', '微软雅黑', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;
+    /* 中文界面使用微软雅黑，英文使用monospace */
+    font-family: 'Microsoft YaHei', '微软雅黑', 'Consolas', 'Monaco', 'Courier New', 'monospace', 'sans-serif';
   }
   
   * {
     @apply transition-all duration-200;
   }
   
-  /* 代码和等宽内容使用编程字体 */
+  /* 代码和等宽内容 */
   code, pre {
-    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: 'Consolas', 'Monaco', 'Courier New', 'monospace';
   }
   
-  /* 输入框保持系统字体以支持中文输入 */
+  /* 输入框使用相同字体 */
   input, textarea, select {
-    font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', '微软雅黑', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;
+    font-family: 'Microsoft YaHei', '微软雅黑', 'Consolas', 'Monaco', 'Courier New', 'monospace', 'sans-serif';
   }
 }
 
@@ -54,22 +51,15 @@
   
   /* 字体样式类 */
   .font-code {
-    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-family: 'Consolas', 'Monaco', 'Courier New', 'monospace';
   }
   
-  .font-inter {
-    font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', '微软雅黑', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;
+  .font-chinese {
+    font-family: 'Microsoft YaHei', '微软雅黑', 'sans-serif';
   }
   
   /* 代码编辑器样式 */
   .code-editor {
     @apply font-code text-sm leading-relaxed;
-    font-feature-settings: 'liga' 1, 'calt' 1;
-  }
-  
-  /* 中文优化 */
-  .chinese-text {
-    @apply font-inter;
-    letter-spacing: 0.02em;
   }
 }

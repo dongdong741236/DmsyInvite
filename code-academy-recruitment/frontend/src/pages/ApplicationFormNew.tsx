@@ -345,8 +345,6 @@ const ApplicationFormNew: React.FC = () => {
                   ...prev,
                   personalPhoto: filePath as string
                 }));
-                console.log('个人照片上传完成:', filePath);
-                console.log('个人照片文件URL生成测试:', `/uploads/${filePath}`);
               }}
               error={errors.personalPhoto?.message}
             />
@@ -371,8 +369,6 @@ const ApplicationFormNew: React.FC = () => {
                   ...prev,
                   studentCardPhoto: filePath as string
                 }));
-                console.log('一卡通照片上传完成:', filePath);
-                console.log('一卡通照片文件URL生成测试:', `/uploads/${filePath}`);
               }}
               error={errors.studentCardPhoto?.message}
             />
@@ -667,7 +663,6 @@ const ApplicationFormNew: React.FC = () => {
                       ...prev,
                       experienceAttachments: filePaths as string[]
                     }));
-                    console.log('佐证材料上传完成:', filePaths);
                   }}
                   error={errors.experienceAttachments?.message}
                 />
