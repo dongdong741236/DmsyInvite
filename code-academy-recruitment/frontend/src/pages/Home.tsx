@@ -11,8 +11,10 @@ import {
 
 const Home: React.FC = () => {
   const { user } = useAuth();
-  // 只有登录用户才检查申请状态
-  const { hasApplications, loading: applicationLoading } = useApplicationStatus(!!user);
+  // 只有申请者才检查申请状态
+  const { hasApplications, loading: applicationLoading } = useApplicationStatus(
+    !!user && user.role === 'applicant'
+  );
 
   const features = [
     {
@@ -89,8 +91,8 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      {user && user.isEmailVerified && !applicationLoading && (
+      {/* CTA Section - 只对申请者显示 */}
+      {user && user.role === 'applicant' && user.isEmailVerified && !applicationLoading && (
         <section className="text-center py-12 neumorphic-card">
           <h2 className="text-3xl font-bold mb-4">
             {hasApplications ? '申请管理' : '准备好了吗？'}
@@ -106,6 +108,38 @@ const Home: React.FC = () => {
             className="neumorphic-button bg-primary-600 text-white hover:bg-primary-700 inline-block"
           >
             {hasApplications ? '查看我的申请' : '提交申请'}
+          </Link>
+        </section>
+      )}
+
+      {/* 面试官专用CTA */}
+      {user && user.role === 'interviewer' && (
+        <section className="text-center py-12 neumorphic-card">
+          <h2 className="text-3xl font-bold mb-4">面试官控制台</h2>
+          <p className="text-lg text-gray-600 mb-6">
+            查看您的面试安排，管理面试评分
+          </p>
+          <Link
+            to="/interviewer"
+            className="neumorphic-button bg-primary-600 text-white hover:bg-primary-700 inline-block"
+          >
+            进入面试管理
+          </Link>
+        </section>
+      )}
+
+      {/* 管理员专用CTA */}
+      {user && user.role === 'admin' && (
+        <section className="text-center py-12 neumorphic-card">
+          <h2 className="text-3xl font-bold mb-4">管理员控制台</h2>
+          <p className="text-lg text-gray-600 mb-6">
+            管理系统设置，查看申请数据，安排面试
+          </p>
+          <Link
+            to="/admin"
+            className="neumorphic-button bg-primary-600 text-white hover:bg-primary-700 inline-block"
+          >
+            进入管理后台
           </Link>
         </section>
       )}
