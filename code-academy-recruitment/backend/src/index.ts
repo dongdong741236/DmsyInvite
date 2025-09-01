@@ -101,6 +101,11 @@ async function startServer() {
         const { initializeDefaultQuestions } = await import('./controllers/interviewQuestion.controller');
         await initializeDefaultQuestions();
         console.log('✅ 面试问题初始化完成');
+        
+        // 初始化招新年度
+        const { RecruitmentYearService } = await import('./services/recruitmentYear.service');
+        await RecruitmentYearService.initializeDefaultYear();
+        console.log('✅ 招新年度初始化完成');
       } catch (error) {
         console.error('❌ 系统配置初始化失败:', error);
         logger.error('Failed to initialize system configurations:', error);

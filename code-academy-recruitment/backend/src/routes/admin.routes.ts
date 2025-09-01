@@ -5,6 +5,7 @@ import * as adminController from '../controllers/admin.controller';
 import * as configController from '../controllers/config.controller';
 import * as emailTemplateController from '../controllers/emailTemplate.controller';
 import * as interviewQuestionController from '../controllers/interviewQuestion.controller';
+import * as recruitmentYearController from '../controllers/recruitmentYear.controller';
 
 const router = Router();
 
@@ -151,5 +152,22 @@ router.post('/interview-questions',
 );
 router.put('/interview-questions/:id', interviewQuestionController.updateQuestion);
 router.delete('/interview-questions/:id', interviewQuestionController.deleteQuestion);
+
+// Recruitment year management
+router.get('/recruitment-years', recruitmentYearController.getYears);
+router.get('/recruitment-years/current', recruitmentYearController.getCurrentYear);
+router.post('/recruitment-years', 
+  [
+    body('year').isInt({ min: 2020, max: 2030 }).withMessage('年度必须在2020-2030之间'),
+    body('name').notEmpty().withMessage('年度名称不能为空'),
+    body('description').optional().isString(),
+    body('startDate').optional().isISO8601(),
+    body('endDate').optional().isISO8601(),
+  ],
+  validateRequest,
+  recruitmentYearController.createYear
+);
+router.put('/recruitment-years/:id/activate', recruitmentYearController.activateYear);
+router.put('/recruitment-years/:id/archive', recruitmentYearController.archiveYear);
 
 export default router;

@@ -17,6 +17,7 @@ import RoomManagement from './pages/admin/RoomManagement';
 import InterviewManagement from './pages/admin/InterviewManagement';
 import EmailTemplateManagement from './pages/admin/EmailTemplateManagement';
 import QuestionManagement from './pages/admin/QuestionManagement';
+import YearManagement from './pages/admin/YearManagement';
 import InterviewPanel from './pages/InterviewPanel';
 
 function App() {
@@ -124,6 +125,15 @@ function App() {
               element={
                 <PrivateRoute adminOnly>
                   <QuestionManagement />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="admin/years"
+              element={
+                <PrivateRoute adminOnly>
+                  <YearManagement />
                 </PrivateRoute>
               }
             />

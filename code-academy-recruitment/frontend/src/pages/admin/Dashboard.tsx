@@ -11,6 +11,7 @@ import {
   BuildingOfficeIcon,
   EnvelopeIcon,
   QuestionMarkCircleIcon,
+  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import api from '../../services/api';
 
@@ -182,6 +183,15 @@ const AdminDashboard: React.FC = () => {
           <QuestionMarkCircleIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold">面试问题</h3>
           <p className="text-gray-600 mt-2">管理面试问题模板</p>
+        </Link>
+
+        <Link
+          to="/admin/years"
+          className="neumorphic-card hover:shadow-neumorphic-hover text-center py-8"
+        >
+          <CalendarDaysIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold">年度管理</h3>
+          <p className="text-gray-600 mt-2">管理招新年度设置</p>
         </Link>
       </div>
     </div>

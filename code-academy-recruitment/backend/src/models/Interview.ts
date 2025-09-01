@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Application } from './Application';
 import { InterviewRoom } from './InterviewRoom';
+import { RecruitmentYear } from './RecruitmentYear';
 
 export enum InterviewResult {
   PASSED = 'passed',
@@ -64,6 +65,11 @@ export class Interview {
 
   @Column({ default: false })
   notificationSent!: boolean;
+
+  // 关联招新年度
+  @ManyToOne(() => RecruitmentYear, (year) => year.interviews)
+  @JoinColumn()
+  recruitmentYear!: RecruitmentYear;
 
   @CreateDateColumn()
   createdAt!: Date;

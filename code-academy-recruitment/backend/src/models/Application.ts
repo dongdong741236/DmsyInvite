@@ -6,9 +6,11 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { User } from './User';
 import { Interview } from './Interview';
+import { RecruitmentYear } from './RecruitmentYear';
 
 export enum ApplicationStatus {
   PENDING = 'pending',
@@ -97,6 +99,11 @@ export class Application {
 
   @Column({ type: 'text', nullable: true })
   reviewNotes?: string;
+
+  // 关联招新年度
+  @ManyToOne(() => RecruitmentYear, (year) => year.applications)
+  @JoinColumn()
+  recruitmentYear!: RecruitmentYear;
 
   @CreateDateColumn()
   createdAt!: Date;
