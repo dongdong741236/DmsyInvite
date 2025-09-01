@@ -176,7 +176,7 @@ export const getMyInterviewSchedule = async (
 
     const applications = await applicationRepository.find({
       where: { user: { id: userId } },
-      relations: ['interview', 'interview.room', 'interview.interviewers'],
+      relations: ['interview', 'interview.room'],
     });
 
     // 过滤出有面试安排的申请
@@ -186,8 +186,10 @@ export const getMyInterviewSchedule = async (
         applicationId: app.id,
         interviewId: app.interview!.id,
         scheduledAt: app.interview!.scheduledAt,
-        room: app.interview!.room,
-        interviewers: app.interview!.interviewers,
+        room: {
+          name: app.interview!.room?.name,
+          location: app.interview!.room?.location,
+        },
         status: app.status,
         isCompleted: app.interview!.isCompleted,
         result: app.interview!.result,

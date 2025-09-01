@@ -6,7 +6,6 @@ import {
   CalendarDaysIcon,
   ClockIcon,
   BuildingOfficeIcon,
-  UserGroupIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
   ClipboardDocumentListIcon,
@@ -20,11 +19,6 @@ interface InterviewSchedule {
     name: string;
     location: string;
   };
-  interviewers: {
-    id: string;
-    name: string;
-    title?: string;
-  }[];
   status: string;
   isCompleted: boolean;
   result?: string;
@@ -137,25 +131,7 @@ const InterviewScheduleCard: React.FC = () => {
                   </div>
                 </div>
 
-                {schedule.interviewers && schedule.interviewers.length > 0 && (
-                  <div className="flex items-center space-x-4">
-                    <UserGroupIcon className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="font-medium text-gray-900">面试官</p>
-                      <div className="flex flex-wrap gap-2">
-                        {schedule.interviewers.map((interviewer) => (
-                          <span
-                            key={interviewer.id}
-                            className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800"
-                          >
-                            {interviewer.name}
-                            {interviewer.title && ` (${interviewer.title})`}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
+
               </div>
               
               <div className="flex-shrink-0 ml-4">
