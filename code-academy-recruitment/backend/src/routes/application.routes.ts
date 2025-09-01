@@ -54,23 +54,26 @@ router.post('/upload', uploadApplicationFiles, async (req, res) => {
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     const uploadedFiles: { [key: string]: string | string[] } = {};
 
+    console.log('=== 文件上传调试 ===');
+    console.log('接收到的文件字段:', Object.keys(files || {}));
+
     if (files) {
       Object.keys(files).forEach((fieldname) => {
         if (files[fieldname] && files[fieldname].length > 0) {
+          console.log(`字段 ${fieldname} 的文件信息:`);
+          files[fieldname].forEach((file, index) => {
+            console.log(`  文件${index + 1}:`);
+            console.log(`    原始名称: ${file.originalname}`);
+            console.log(`    存储名称: ${file.filename}`);
+            console.log(`    完整路径: ${file.path}`);
+            console.log(`    目标目录: ${file.destination}`);
+          });
           if (fieldname === 'experienceAttachments') {
             // 多文件字段，返回数组
             uploadedFiles[fieldname] = files[fieldname].map(file => {
-              // 提取相对于uploads目录的路径
-              let relativePath = file.path;
-              
-              // 移除绝对路径前缀，只保留相对于uploads的路径
-              if (relativePath.includes('/uploads/')) {
-                relativePath = relativePath.split('/uploads/')[1] || file.filename;
-              } else {
-                // 如果没有uploads前缀，使用filename构建路径
-                const subDir = file.fieldname === 'experienceAttachments' ? 'attachments' : 'others';
-                relativePath = `${subDir}/${file.filename}`;
-              }
+              // 使用目标目录和文件名构建相对路径
+              const subDir = 'attachments';
+              const relativePath = `${subDir}/${file.filename}`;
               
               console.log('多文件路径处理:', file.path, '->', relativePath);
               return relativePath;
@@ -79,21 +82,15 @@ router.post('/upload', uploadApplicationFiles, async (req, res) => {
             // 单文件字段，返回字符串
             const file = files[fieldname][0];
             if (file) {
-              let relativePath = file.path;
-              
-              // 移除绝对路径前缀，只保留相对于uploads的路径
-              if (relativePath.includes('/uploads/')) {
-                relativePath = relativePath.split('/uploads/')[1] || file.filename;
-              } else {
-                // 如果没有uploads前缀，使用filename构建路径
-                let subDir = 'others';
-                if (file.fieldname === 'personalPhoto') {
-                  subDir = 'photos/personal';
-                } else if (file.fieldname === 'studentCardPhoto') {
-                  subDir = 'photos/student-cards';
-                }
-                relativePath = `${subDir}/${file.filename}`;
+              // 根据字段名确定子目录
+              let subDir = 'others';
+              if (file.fieldname === 'personalPhoto') {
+                subDir = 'photos/personal';
+              } else if (file.fieldname === 'studentCardPhoto') {
+                subDir = 'photos/student-cards';
               }
+              
+              const relativePath = `${subDir}/${file.filename}`;
               
               console.log('单文件路径处理:', file.path, '->', relativePath);
               uploadedFiles[fieldname] = relativePath;
