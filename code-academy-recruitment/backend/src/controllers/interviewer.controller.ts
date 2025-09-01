@@ -44,7 +44,7 @@ export const createInterviewer = async (
   next: NextFunction
 ) => {
   try {
-    const { name, email, phone, title, department, expertise } = req.body;
+    const { name, email, password, phone, title, department, expertise } = req.body;
     const interviewerRepository = AppDataSource.getRepository(Interviewer);
 
     // 检查邮箱是否已存在
@@ -59,6 +59,8 @@ export const createInterviewer = async (
     const interviewer = interviewerRepository.create({
       name,
       email,
+      password: password || '123456', // 默认密码
+      role: 'interviewer',
       phone,
       title,
       department,
@@ -68,9 +70,12 @@ export const createInterviewer = async (
 
     await interviewerRepository.save(interviewer);
 
+    // 返回时不包含密码
+    const { password: _, ...interviewerData } = interviewer;
+
     res.status(201).json({
       message: 'Interviewer created successfully',
-      interviewer,
+      interviewer: interviewerData,
     });
   } catch (error) {
     next(error);
@@ -84,7 +89,7 @@ export const updateInterviewer = async (
 ) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, title, department, expertise, isActive } = req.body;
+    const { name, email, password, phone, title, department, expertise, isActive } = req.body;
     const interviewerRepository = AppDataSource.getRepository(Interviewer);
 
     const interviewer = await interviewerRepository.findOne({ where: { id } });
@@ -113,11 +118,19 @@ export const updateInterviewer = async (
       isActive,
     });
 
+    // 如果提供了新密码，则更新密码
+    if (password && password.trim() !== '') {
+      interviewer.password = password;
+    }
+
     await interviewerRepository.save(interviewer);
+
+    // 返回时不包含密码
+    const { password: _, ...interviewerData } = interviewer;
 
     res.json({
       message: 'Interviewer updated successfully',
-      interviewer,
+      interviewer: interviewerData,
     });
   } catch (error) {
     next(error);
@@ -157,6 +170,33 @@ export const deleteInterviewer = async (
   }
 };
 
+export const resetInterviewerPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+    const interviewerRepository = AppDataSource.getRepository(Interviewer);
+
+    const interviewer = await interviewerRepository.findOne({ where: { id } });
+    if (!interviewer) {
+      throw new AppError('面试者不存在', 404);
+    }
+
+    // 设置新密码
+    interviewer.password = newPassword || '123456';
+    await interviewerRepository.save(interviewer);
+
+    res.json({
+      message: '密码重置成功',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // 初始化默认面试者
 export const initializeDefaultInterviewers = async (): Promise<void> => {
   console.log('开始初始化面试者...');
@@ -167,6 +207,8 @@ export const initializeDefaultInterviewers = async (): Promise<void> => {
     {
       name: '张学长',
       email: 'zhang.senior@mails.cust.edu.cn',
+      password: '123456',
+      role: 'interviewer',
       title: '技术负责人',
       department: '代码书院实验室',
       expertise: '前端开发、算法',
@@ -174,6 +216,8 @@ export const initializeDefaultInterviewers = async (): Promise<void> => {
     {
       name: '李导师',
       email: 'li.mentor@mails.cust.edu.cn',
+      password: '123456',
+      role: 'interviewer',
       title: '实验室导师',
       department: '代码书院实验室',
       expertise: '后端开发、系统设计',

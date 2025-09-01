@@ -5,8 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToMany,
+  BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import { Interview } from './Interview';
+import * as bcrypt from 'bcrypt';
 
 @Entity('interviewers')
 export class Interviewer {
@@ -18,6 +21,12 @@ export class Interviewer {
 
   @Column({ unique: true })
   email!: string;
+
+  @Column()
+  password!: string;
+
+  @Column({ default: 'interviewer' })
+  role!: string; // 'interviewer' 角色
 
   @Column({ nullable: true })
   phone?: string;
@@ -43,4 +52,22 @@ export class Interviewer {
 
   @UpdateDateColumn()
   updatedAt!: Date;
+
+  // 密码哈希处理
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    if (this.password) {
+      const isHashed = this.password.startsWith('$2b$') || this.password.startsWith('$2a$');
+      if (!isHashed) {
+        this.password = await bcrypt.hash(this.password, 10);
+        console.log('面试者密码已hash处理');
+      }
+    }
+  }
+
+  // 验证密码
+  async validatePassword(password: string): Promise<boolean> {
+    return await bcrypt.compare(password, this.password);
+  }
 }

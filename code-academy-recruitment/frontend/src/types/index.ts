@@ -2,11 +2,14 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'applicant';
-  isEmailVerified: boolean;
+  role: 'admin' | 'applicant' | 'interviewer';
+  isEmailVerified?: boolean;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  userType?: 'user' | 'interviewer';
+  title?: string;
+  department?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Application {

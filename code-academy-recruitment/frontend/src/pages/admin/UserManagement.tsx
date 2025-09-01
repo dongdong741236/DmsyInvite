@@ -240,7 +240,7 @@ const UserManagement: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {format(new Date(user.createdAt), 'yyyy-MM-dd HH:mm', { locale: zhCN })}
+                    {user.createdAt ? format(new Date(user.createdAt), 'yyyy-MM-dd HH:mm', { locale: zhCN }) : '未知'}
                   </td>
                   <td className="px-3 py-4">
                     <div className="flex flex-col sm:flex-row sm:flex-wrap gap-1">

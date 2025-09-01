@@ -121,7 +121,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
               <div className="flex items-center">
                 <CalendarIcon className="w-4 h-4 text-gray-400 mr-2" />
                 <span className="text-gray-900">
-                  {format(new Date(user.createdAt), 'yyyy-MM-dd HH:mm:ss', { locale: zhCN })}
+                  {user.createdAt ? format(new Date(user.createdAt), 'yyyy-MM-dd HH:mm:ss', { locale: zhCN }) : '未知'}
                 </span>
               </div>
             </div>
@@ -133,7 +133,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({ user, isOpen, onClose
               <div className="flex items-center">
                 <CalendarIcon className="w-4 h-4 text-gray-400 mr-2" />
                 <span className="text-gray-900">
-                  {format(new Date(user.updatedAt), 'yyyy-MM-dd HH:mm:ss', { locale: zhCN })}
+                  {user.updatedAt ? format(new Date(user.updatedAt), 'yyyy-MM-dd HH:mm:ss', { locale: zhCN }) : '未知'}
                 </span>
               </div>
             </div>

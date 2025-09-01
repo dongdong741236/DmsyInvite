@@ -11,6 +11,7 @@ import {
   UserIcon,
   EnvelopeIcon,
   PhoneIcon,
+  KeyIcon,
 } from '@heroicons/react/24/outline';
 
 interface Interviewer {
@@ -27,6 +28,7 @@ interface Interviewer {
 interface InterviewerFormData {
   name: string;
   email: string;
+  password?: string;
   phone?: string;
   title?: string;
   department?: string;
@@ -97,6 +99,7 @@ const InterviewerManagement: React.FC = () => {
     setEditingInterviewer(interviewer);
     setValue('name', interviewer.name);
     setValue('email', interviewer.email);
+    setValue('password', ''); // 编辑时清空密码字段
     setValue('phone', interviewer.phone || '');
     setValue('title', interviewer.title || '');
     setValue('department', interviewer.department || '');
@@ -116,6 +119,22 @@ const InterviewerManagement: React.FC = () => {
       loadInterviewers();
     } catch (err: any) {
       setError(err.response?.data?.error || '删除失败');
+    }
+  };
+
+  const handleResetPassword = async (id: string, name: string) => {
+    const newPassword = window.prompt(`为面试者"${name}"设置新密码（留空使用默认密码123456）:`);
+    if (newPassword === null) {
+      return; // 用户取消
+    }
+
+    try {
+      await api.post(`/admin/interviewers/${id}/reset-password`, {
+        newPassword: newPassword || '123456',
+      });
+      setMessage(`面试者"${name}"密码重置成功`);
+    } catch (err: any) {
+      setError(err.response?.data?.error || '密码重置失败');
     }
   };
 
@@ -207,6 +226,21 @@ const InterviewerManagement: React.FC = () => {
                 />
                 {errors.email && (
                   <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  登录密码 {!editingInterviewer && <span className="text-red-500">*</span>}
+                </label>
+                <input
+                  {...register('password', editingInterviewer ? {} : { required: '请输入密码' })}
+                  type="password"
+                  className="neumorphic-input"
+                  placeholder={editingInterviewer ? "留空保持原密码" : "默认密码: 123456"}
+                />
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
                 )}
               </div>
 
@@ -367,6 +401,13 @@ const InterviewerManagement: React.FC = () => {
                       >
                         <PencilIcon className="w-3 h-3 sm:mr-1" />
                         <span className="hidden sm:inline">编辑</span>
+                      </button>
+                      <button
+                        onClick={() => handleResetPassword(interviewer.id, interviewer.name)}
+                        className="inline-flex items-center justify-center px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs hover:bg-yellow-200 transition-colors"
+                      >
+                        <KeyIcon className="w-3 h-3 sm:mr-1" />
+                        <span className="hidden sm:inline">重置密码</span>
                       </button>
                       <button
                         onClick={() => handleDelete(interviewer.id, interviewer.name)}

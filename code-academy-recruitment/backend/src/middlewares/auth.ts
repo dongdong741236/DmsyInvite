@@ -2,17 +2,19 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AppDataSource } from '../config/database';
 import { User, UserRole } from '../models/User';
+import { Interviewer } from '../models/Interviewer';
 
 interface JwtPayload {
   userId: string;
   email: string;
-  role: UserRole;
+  role: UserRole | string;
+  userType?: 'user' | 'interviewer';
 }
 
 declare global {
   namespace Express {
     interface Request {
-      user?: User;
+      user?: User | Interviewer;
     }
   }
 }
@@ -35,10 +37,20 @@ export const authenticate = async (
       process.env.JWT_SECRET || 'secret'
     ) as JwtPayload;
 
-    const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({
-      where: { id: decoded.userId },
-    });
+    let user: User | Interviewer | null = null;
+
+    // 根据 userType 查找对应的用户
+    if (decoded.userType === 'interviewer') {
+      const interviewerRepository = AppDataSource.getRepository(Interviewer);
+      user = await interviewerRepository.findOne({
+        where: { id: decoded.userId },
+      });
+    } else {
+      const userRepository = AppDataSource.getRepository(User);
+      user = await userRepository.findOne({
+        where: { id: decoded.userId },
+      });
+    }
 
     if (!user) {
       res.status(401).json({ error: 'User not found' });
@@ -52,14 +64,14 @@ export const authenticate = async (
   }
 };
 
-export const authorize = (roles: UserRole[]) => {
+export const authorize = (roles: (UserRole | string)[]) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!req.user) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
 
-    if (!roles.includes(req.user.role)) {
+    if (!roles.includes(req.user.role as any)) {
       res.status(403).json({ error: 'Forbidden' });
       return;
     }

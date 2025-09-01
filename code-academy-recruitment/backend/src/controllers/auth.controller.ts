@@ -3,15 +3,17 @@ import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { AppDataSource } from '../config/database';
 import { User } from '../models/User';
+import { Interviewer } from '../models/Interviewer';
 import { AppError } from '../middlewares/errorHandler';
 import { sendVerificationCode } from '../utils/email';
 import redisClient from '../config/redis';
 
-const generateToken = (user: User): string => {
+const generateToken = (user: User | Interviewer): string => {
   const payload = {
     userId: user.id,
     email: user.email,
     role: user.role,
+    userType: user instanceof User ? 'user' : 'interviewer',
   };
   
   const secret = process.env.JWT_SECRET || 'secret';
@@ -208,9 +210,21 @@ export const login = async (
     console.log('登录密码长度:', password ? password.length : 0);
     
     const userRepository = AppDataSource.getRepository(User);
+    const interviewerRepository = AppDataSource.getRepository(Interviewer);
 
-    // Find user
-    const user = await userRepository.findOne({ where: { email } });
+    // 先尝试查找普通用户
+    let user = await userRepository.findOne({ where: { email } });
+    let isInterviewer = false;
+    
+    // 如果不是普通用户，尝试查找面试者
+    if (!user) {
+      const interviewer = await interviewerRepository.findOne({ where: { email } });
+      if (interviewer) {
+        user = interviewer as any; // 临时类型转换
+        isInterviewer = true;
+      }
+    }
+    
     if (!user) {
       console.log('❌ 用户不存在:', email);
       throw new AppError('邮箱地址不存在，请检查输入或先注册账号', 401);
@@ -218,11 +232,19 @@ export const login = async (
     
     console.log('✅ 找到用户:', user.email);
     console.log('用户角色:', user.role);
-    console.log('邮箱验证状态:', user.isEmailVerified);
+    console.log('用户类型:', isInterviewer ? '面试者' : '普通用户');
+    if (!isInterviewer) {
+      console.log('邮箱验证状态:', (user as User).isEmailVerified);
+    }
 
     // Check password
     console.log('开始验证密码...');
-    const isValidPassword = await user.comparePassword(password);
+    let isValidPassword: boolean;
+    if (isInterviewer) {
+      isValidPassword = await (user as any).validatePassword(password);
+    } else {
+      isValidPassword = await (user as User).comparePassword(password);
+    }
     console.log('密码验证结果:', isValidPassword);
     
     if (!isValidPassword) {
@@ -233,21 +255,32 @@ export const login = async (
     console.log('✅ 密码验证成功');
 
     // Generate token
-    const token = generateToken(user);
+    const token = generateToken(user as any);
 
     // Store token in Redis for session management
     await redisClient.setEx(`session:${user.id}`, 7 * 24 * 60 * 60, token);
 
+    const responseUser: any = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      userType: isInterviewer ? 'interviewer' : 'user',
+    };
+
+    if (!isInterviewer) {
+      responseUser.isEmailVerified = (user as User).isEmailVerified;
+      responseUser.isActive = (user as User).isActive;
+    } else {
+      responseUser.isActive = (user as any).isActive;
+      responseUser.title = (user as any).title;
+      responseUser.department = (user as any).department;
+    }
+
     res.json({
       message: 'Login successful',
       token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        isEmailVerified: user.isEmailVerified,
-      },
+      user: responseUser,
     });
   } catch (error) {
     next(error);
