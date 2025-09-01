@@ -163,3 +163,38 @@ export const updateApplication = async (
     next(error);
   }
 };
+
+// 获取用户的面试安排
+export const getMyInterviewSchedule = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id;
+    const applicationRepository = AppDataSource.getRepository(Application);
+
+    const applications = await applicationRepository.find({
+      where: { user: { id: userId } },
+      relations: ['interview', 'interview.room', 'interview.interviewers'],
+    });
+
+    // 过滤出有面试安排的申请
+    const interviewSchedules = applications
+      .filter(app => app.interview)
+      .map(app => ({
+        applicationId: app.id,
+        interviewId: app.interview!.id,
+        scheduledAt: app.interview!.scheduledAt,
+        room: app.interview!.room,
+        interviewers: app.interview!.interviewers,
+        status: app.status,
+        isCompleted: app.interview!.isCompleted,
+        result: app.interview!.result,
+      }));
+
+    res.json(interviewSchedules);
+  } catch (error) {
+    next(error);
+  }
+};

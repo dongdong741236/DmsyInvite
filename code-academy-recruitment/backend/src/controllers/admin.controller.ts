@@ -399,7 +399,13 @@ export const getInterview = async (
 
     const interview = await interviewRepository.findOne({
       where: { id },
-      relations: ['application', 'application.user', 'room'],
+      relations: [
+        'application', 
+        'application.user', 
+        'room', 
+        'room.interviewers',
+        'interviewers'
+      ],
     });
 
     if (!interview) {
@@ -436,7 +442,10 @@ export const scheduleInterview = async (
       throw new AppError('Interview already scheduled for this application', 400);
     }
 
-    const room = await roomRepository.findOne({ where: { id: roomId } });
+    const room = await roomRepository.findOne({ 
+      where: { id: roomId },
+      relations: ['interviewers'],
+    });
     if (!room) {
       throw new AppError('Room not found', 404);
     }
@@ -455,6 +464,7 @@ export const scheduleInterview = async (
       room,
       scheduledAt: new Date(scheduledAt),
       recruitmentYear: currentYear || undefined,
+      interviewers: room.interviewers || [], // 自动分配教室的面试官
     });
 
     await interviewRepository.save(interview);
@@ -828,6 +838,18 @@ export const createBatchInterviews = async (
         continue;
       }
 
+      // 获取房间和面试官信息
+      const roomRepository = AppDataSource.getRepository(InterviewRoom);
+      const room = await roomRepository.findOne({
+        where: { id: roomId },
+        relations: ['interviewers'],
+      });
+
+      if (!room) {
+        console.error(`Room not found: ${roomId}`);
+        continue;
+      }
+
       // 创建面试记录
       const interview = interviewRepository.create({
         application: { id: applicationId },
@@ -837,6 +859,7 @@ export const createBatchInterviews = async (
         isCompleted: false,
         notificationSent: false,
         recruitmentYear: currentYear || undefined,
+        interviewers: room.interviewers || [], // 分配教室的面试官
       });
 
       const savedInterview = await interviewRepository.save(interview);

@@ -224,7 +224,7 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
                   <option value="">请选择教室</option>
                   {rooms.map((room) => (
                     <option key={room.id} value={room.id}>
-                      {room.name} - {room.location} (容纳{room.capacity}人)
+                      {room.name} - {room.location}
                     </option>
                   ))}
                 </select>

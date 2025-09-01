@@ -45,6 +45,9 @@ router.get('/config', async (_req, res, next) => {
 // Get user's applications
 router.get('/my', applicationController.getMyApplications);
 
+// Get user's interview schedule
+router.get('/my/interviews', applicationController.getMyInterviewSchedule);
+
 // Get single application
 router.get('/:id', applicationController.getApplication);
 

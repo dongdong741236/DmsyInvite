@@ -164,34 +164,40 @@ const InterviewManagement: React.FC = () => {
           <CalendarIcon className="w-8 h-8 text-primary-600 mr-3" />
           <h1 className="text-3xl font-bold">面试管理</h1>
         </div>
-        <div className="flex space-x-4">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="neumorphic-input"
-          />
-          <button
-            onClick={() => setShowScheduleForm(true)}
-            className="neumorphic-button bg-primary-600 text-white hover:bg-primary-700 flex items-center"
-          >
-            <PlusIcon className="w-5 h-5 mr-2" />
-            单个安排
-          </button>
-          <button
-            onClick={() => setShowBatchModal(true)}
-            className="neumorphic-button bg-green-600 text-white hover:bg-green-700 flex items-center"
-          >
-            <UserGroupIcon className="w-5 h-5 mr-2" />
-            批量安排
-          </button>
-          <button
-            onClick={() => setShowResultModal(true)}
-            className="neumorphic-button bg-purple-600 text-white hover:bg-purple-700 flex items-center"
-          >
-            <PaperAirplaneIcon className="w-5 h-5 mr-2" />
-            发送结果通知
-          </button>
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex items-center space-x-2">
+            <label className="text-sm font-medium text-gray-700">筛选日期:</label>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+          
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setShowScheduleForm(true)}
+              className="inline-flex items-center px-3 py-1.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm"
+            >
+              <PlusIcon className="w-4 h-4 mr-1" />
+              单个安排
+            </button>
+            <button
+              onClick={() => setShowBatchModal(true)}
+              className="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors shadow-sm"
+            >
+              <UserGroupIcon className="w-4 h-4 mr-1" />
+              批量安排
+            </button>
+            <button
+              onClick={() => setShowResultModal(true)}
+              className="inline-flex items-center px-3 py-1.5 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors shadow-sm"
+            >
+              <PaperAirplaneIcon className="w-4 h-4 mr-1" />
+              发送结果
+            </button>
+          </div>
         </div>
       </div>
 
@@ -247,7 +253,7 @@ const InterviewManagement: React.FC = () => {
                   <option value="">请选择教室</option>
                   {rooms.map((room) => (
                     <option key={room.id} value={room.id}>
-                      {room.name} - {room.location} (容纳{room.capacity}人)
+                      {room.name} - {room.location}
                     </option>
                   ))}
                 </select>

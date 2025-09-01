@@ -77,7 +77,7 @@ const RoomManagement: React.FC = () => {
     setEditingRoom(room);
     setValue('name', room.name);
     setValue('location', room.location);
-    setValue('capacity', room.capacity);
+    // capacity 字段已移除
     setShowForm(true);
   };
 
@@ -178,24 +178,27 @@ const RoomManagement: React.FC = () => {
                 )}
               </div>
 
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  容纳人数 <span className="text-red-500">*</span>
+                  分配面试官
                 </label>
-                <input
-                  {...register('capacity', {
-                    required: '请输入容纳人数',
-                    min: { value: 1, message: '容纳人数至少为1' },
-                    valueAsNumber: true,
-                  })}
-                  type="number"
-                  min="1"
-                  className="neumorphic-input"
-                  placeholder="10"
-                />
-                {errors.capacity && (
-                  <p className="mt-1 text-sm text-red-600">{errors.capacity.message}</p>
-                )}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                  {interviewers.map((interviewer) => (
+                    <label key={interviewer.id} className="flex items-center">
+                      <input
+                        {...register('interviewerIds')}
+                        type="checkbox"
+                        value={interviewer.id}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">
+                        {interviewer.name}
+                        {interviewer.title && ` (${interviewer.title})`}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+                <p className="mt-1 text-sm text-gray-500">选择在此教室进行面试的面试官</p>
               </div>
             </div>
 
@@ -235,7 +238,7 @@ const RoomManagement: React.FC = () => {
                   位置
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  容纳人数
+                  面试官
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   状态
@@ -255,7 +258,7 @@ const RoomManagement: React.FC = () => {
                     {room.location}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {room.capacity} 人
+                    {room.interviewers?.length || 0} 位面试官
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {room.isActive ? (
