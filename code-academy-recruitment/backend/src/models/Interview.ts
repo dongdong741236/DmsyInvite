@@ -66,10 +66,10 @@ export class Interview {
   @Column({ default: false })
   notificationSent!: boolean;
 
-  // 关联招新年度
-  @ManyToOne(() => RecruitmentYear, (year) => year.interviews)
+  // 关联招新年度（可选，保持向后兼容）
+  @ManyToOne(() => RecruitmentYear, (year) => year.interviews, { nullable: true })
   @JoinColumn()
-  recruitmentYear!: RecruitmentYear;
+  recruitmentYear?: RecruitmentYear;
 
   @CreateDateColumn()
   createdAt!: Date;

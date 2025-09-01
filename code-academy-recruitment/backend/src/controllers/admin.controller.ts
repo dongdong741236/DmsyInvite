@@ -396,10 +396,20 @@ export const scheduleInterview = async (
       throw new AppError('Room not found', 404);
     }
 
+    // 获取当前活跃年度
+    let currentYear = null;
+    try {
+      const { RecruitmentYearService } = await import('../services/recruitmentYear.service');
+      currentYear = await RecruitmentYearService.getCurrentYear();
+    } catch (error) {
+      console.log('获取当前年度失败:', error);
+    }
+
     const interview = interviewRepository.create({
       application,
       room,
       scheduledAt: new Date(scheduledAt),
+      recruitmentYear: currentYear || undefined,
     });
 
     await interviewRepository.save(interview);
@@ -720,6 +730,16 @@ export const createBatchInterviews = async (
     console.log('=== 批量创建面试 ===');
     console.log('面试数据:', interviews);
 
+    // 获取当前活跃年度
+    let currentYear = null;
+    try {
+      const { RecruitmentYearService } = await import('../services/recruitmentYear.service');
+      currentYear = await RecruitmentYearService.getCurrentYear();
+      console.log('批量面试关联年度:', currentYear?.year, currentYear?.name);
+    } catch (error) {
+      console.log('获取当前年度失败:', error);
+    }
+
     const createdInterviews = [];
 
     for (const interviewData of interviews) {
@@ -759,6 +779,7 @@ export const createBatchInterviews = async (
         result: InterviewResult.PENDING,
         isCompleted: false,
         notificationSent: false,
+        recruitmentYear: currentYear || undefined,
       });
 
       const savedInterview = await interviewRepository.save(interview);

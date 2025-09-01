@@ -81,6 +81,18 @@ export const createApplication = async (
     console.log('=== 创建申请 ===');
     console.log('接收到的数据:', applicationData);
 
+    // 获取当前活跃年度
+    try {
+      const { RecruitmentYearService } = await import('../services/recruitmentYear.service');
+      const currentYear = await RecruitmentYearService.getCurrentYear();
+      if (currentYear) {
+        applicationData.recruitmentYear = { id: currentYear.id };
+        console.log('申请关联到年度:', currentYear.year, currentYear.name);
+      }
+    } catch (error) {
+      console.log('获取当前年度失败，申请将不关联年度:', error);
+    }
+
     // 大二学生特殊验证
     if (applicationData.grade === '大二') {
       const sophomoreInfo = applicationData.gradeSpecificInfo?.sophomoreInfo;

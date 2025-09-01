@@ -100,10 +100,10 @@ export class Application {
   @Column({ type: 'text', nullable: true })
   reviewNotes?: string;
 
-  // 关联招新年度
-  @ManyToOne(() => RecruitmentYear, (year) => year.applications)
+  // 关联招新年度（可选，保持向后兼容）
+  @ManyToOne(() => RecruitmentYear, (year) => year.applications, { nullable: true })
   @JoinColumn()
-  recruitmentYear!: RecruitmentYear;
+  recruitmentYear?: RecruitmentYear;
 
   @CreateDateColumn()
   createdAt!: Date;
