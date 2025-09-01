@@ -1,29 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  /* Monaspace 字体定义 */
-  @font-face {
-    font-family: 'Monaspace';
-    src: local('JetBrains Mono'), local('Monaco'), local('Consolas');
-    font-display: swap;
-  }
-  
   body {
     @apply bg-gray-100 text-gray-900;
-    font-family: 'Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', ui-sans-serif, system-ui, sans-serif;
+    /* 中英文混合字体栈：Inter(英文) + 系统中文字体 */
+    font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', '微软雅黑', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;
   }
   
   * {
     @apply transition-all duration-200;
   }
   
-  /* 代码和输入框使用等宽字体 */
-  code, pre, textarea, input[type="text"], input[type="email"], input[type="password"] {
-    font-family: 'Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', ui-monospace, monospace;
+  /* 代码和等宽内容使用编程字体 */
+  code, pre {
+    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+  }
+  
+  /* 输入框保持系统字体以支持中文输入 */
+  input, textarea, select {
+    font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', '微软雅黑', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;
   }
 }
 
@@ -53,17 +53,23 @@
   }
   
   /* 字体样式类 */
-  .font-monaspace {
-    font-family: 'Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', ui-monospace, monospace;
+  .font-code {
+    font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
   }
   
-  .font-monaspace-sans {
-    font-family: 'Monaspace', 'JetBrains Mono', 'Monaco', 'Consolas', ui-sans-serif, system-ui, sans-serif;
+  .font-inter {
+    font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', '微软雅黑', 'Hiragino Sans GB', 'Heiti SC', 'WenQuanYi Micro Hei', sans-serif;
   }
   
   /* 代码编辑器样式 */
   .code-editor {
-    @apply font-monaspace text-sm leading-relaxed;
+    @apply font-code text-sm leading-relaxed;
     font-feature-settings: 'liga' 1, 'calt' 1;
+  }
+  
+  /* 中文优化 */
+  .chinese-text {
+    @apply font-inter;
+    letter-spacing: 0.02em;
   }
 }
