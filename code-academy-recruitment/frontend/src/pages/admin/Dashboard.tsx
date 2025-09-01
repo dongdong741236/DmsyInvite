@@ -10,6 +10,7 @@ import {
   CogIcon,
   BuildingOfficeIcon,
   EnvelopeIcon,
+  QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
 import api from '../../services/api';
 
@@ -119,7 +120,7 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       {/* 快速操作 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <Link
           to="/admin/applications"
           className="neumorphic-card hover:shadow-neumorphic-hover text-center py-8"
@@ -172,6 +173,15 @@ const AdminDashboard: React.FC = () => {
           <EnvelopeIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold">邮件模板</h3>
           <p className="text-gray-600 mt-2">管理邮件通知模板</p>
+        </Link>
+
+        <Link
+          to="/admin/questions"
+          className="neumorphic-card hover:shadow-neumorphic-hover text-center py-8"
+        >
+          <QuestionMarkCircleIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold">面试问题</h3>
+          <p className="text-gray-600 mt-2">管理面试问题模板</p>
         </Link>
       </div>
     </div>

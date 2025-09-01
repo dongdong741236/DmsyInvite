@@ -16,6 +16,7 @@ import ApplicationManagement from './pages/admin/ApplicationManagement';
 import RoomManagement from './pages/admin/RoomManagement';
 import InterviewManagement from './pages/admin/InterviewManagement';
 import EmailTemplateManagement from './pages/admin/EmailTemplateManagement';
+import QuestionManagement from './pages/admin/QuestionManagement';
 import InterviewPanel from './pages/InterviewPanel';
 
 function App() {
@@ -114,6 +115,15 @@ function App() {
               element={
                 <PrivateRoute adminOnly>
                   <EmailTemplateManagement />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="admin/questions"
+              element={
+                <PrivateRoute adminOnly>
+                  <QuestionManagement />
                 </PrivateRoute>
               }
             />
