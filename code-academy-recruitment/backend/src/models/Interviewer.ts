@@ -9,6 +9,7 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import { Interview } from './Interview';
+import { InterviewRoom } from './InterviewRoom';
 import * as bcrypt from 'bcryptjs';
 
 @Entity('interviewers')
@@ -46,6 +47,10 @@ export class Interviewer {
   // 参与的面试（多对多关系）
   @ManyToMany(() => Interview, (interview) => interview.interviewers)
   interviews!: Interview[];
+
+  // 负责的教室（多对多关系）
+  @ManyToMany(() => InterviewRoom, (room) => room.interviewers)
+  rooms!: InterviewRoom[];
 
   @CreateDateColumn()
   createdAt!: Date;

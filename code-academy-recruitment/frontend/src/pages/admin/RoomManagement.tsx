@@ -14,10 +14,12 @@ import {
 interface RoomFormData {
   name: string;
   location: string;
+  interviewerIds: string[];
 }
 
 const RoomManagement: React.FC = () => {
   const [rooms, setRooms] = useState<InterviewRoom[]>([]);
+  const [interviewers, setInterviewers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingRoom, setEditingRoom] = useState<InterviewRoom | null>(null);

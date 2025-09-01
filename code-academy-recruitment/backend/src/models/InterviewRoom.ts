@@ -5,8 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Interview } from './Interview';
+import { Interviewer } from './Interviewer';
 
 @Entity('interview_rooms')
 export class InterviewRoom {
@@ -24,6 +27,15 @@ export class InterviewRoom {
 
   @OneToMany(() => Interview, (interview) => interview.room)
   interviews!: Interview[];
+
+  // 教室内的面试官（多对多关系）
+  @ManyToMany(() => Interviewer, { cascade: true })
+  @JoinTable({
+    name: 'room_interviewers',
+    joinColumn: { name: 'room_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'interviewer_id', referencedColumnName: 'id' },
+  })
+  interviewers!: Interviewer[];
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -66,6 +66,12 @@ export interface InterviewRoom {
   name: string;
   location: string;
   isActive: boolean;
+  interviewers?: {
+    id: string;
+    name: string;
+    email: string;
+    title?: string;
+  }[];
 }
 
 export interface LoginData {

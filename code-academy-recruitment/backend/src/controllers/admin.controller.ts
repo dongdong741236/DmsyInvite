@@ -4,6 +4,7 @@ import { User, UserRole } from '../models/User';
 import { Application, ApplicationStatus } from '../models/Application';
 import { Interview, InterviewResult } from '../models/Interview';
 import { InterviewRoom } from '../models/InterviewRoom';
+import { Interviewer } from '../models/Interviewer';
 import { AppError } from '../middlewares/errorHandler';
 import { sendInterviewNotification as sendInterviewEmail, sendResultNotification as sendResultEmail, sendPasswordResetNotification } from '../utils/email';
 
@@ -214,6 +215,7 @@ export const getRooms = async (
   try {
     const roomRepository = AppDataSource.getRepository(InterviewRoom);
     const rooms = await roomRepository.find({
+      relations: ['interviewers'],
       order: { name: 'ASC' },
     });
 
@@ -229,13 +231,32 @@ export const createRoom = async (
   next: NextFunction
 ) => {
   try {
+    const { name, location, interviewerIds } = req.body;
     const roomRepository = AppDataSource.getRepository(InterviewRoom);
-    const room = roomRepository.create(req.body);
+    const interviewerRepository = AppDataSource.getRepository(Interviewer);
+
+    const room = roomRepository.create({
+      name,
+      location,
+    });
+
+    // 如果指定了面试官，则关联
+    if (interviewerIds && interviewerIds.length > 0) {
+      const interviewers = await interviewerRepository.findByIds(interviewerIds);
+      room.interviewers = interviewers;
+    }
+
     await roomRepository.save(room);
+
+    // 返回包含面试官信息的房间
+    const savedRoom = await roomRepository.findOne({
+      where: { id: room.id },
+      relations: ['interviewers'],
+    });
 
     res.status(201).json({
       message: 'Room created successfully',
-      room,
+      room: savedRoom,
     });
   } catch (error) {
     next(error);
@@ -249,19 +270,43 @@ export const updateRoom = async (
 ) => {
   try {
     const { id } = req.params;
+    const { name, location, interviewerIds } = req.body;
     const roomRepository = AppDataSource.getRepository(InterviewRoom);
+    const interviewerRepository = AppDataSource.getRepository(Interviewer);
 
-    const room = await roomRepository.findOne({ where: { id } });
+    const room = await roomRepository.findOne({ 
+      where: { id },
+      relations: ['interviewers'],
+    });
     if (!room) {
       throw new AppError('Room not found', 404);
     }
 
-    Object.assign(room, req.body);
+    // 更新基本信息
+    room.name = name;
+    room.location = location;
+
+    // 更新面试官分配
+    if (interviewerIds !== undefined) {
+      if (interviewerIds.length > 0) {
+        const interviewers = await interviewerRepository.findByIds(interviewerIds);
+        room.interviewers = interviewers;
+      } else {
+        room.interviewers = [];
+      }
+    }
+
     await roomRepository.save(room);
+
+    // 返回包含面试官信息的房间
+    const updatedRoom = await roomRepository.findOne({
+      where: { id },
+      relations: ['interviewers'],
+    });
 
     res.json({
       message: 'Room updated successfully',
-      room,
+      room: updatedRoom,
     });
   } catch (error) {
     next(error);
