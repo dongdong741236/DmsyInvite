@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { AppDataSource } from '../config/database';
 import { Interview } from '../models/Interview';
+import { InterviewQuestion } from '../models/InterviewQuestion';
 import { Request, Response, NextFunction } from 'express';
 
 const router = Router();
@@ -197,6 +198,22 @@ router.put('/interviews/:id/evaluation', async (req: Request, res: Response, nex
       message: '面试评价更新成功',
       interview,
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 获取面试题库（只读）
+router.get('/questions', async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const questionRepository = AppDataSource.getRepository(InterviewQuestion);
+    
+    const questions = await questionRepository.find({
+      where: { isActive: true },
+      order: { category: 'ASC', sortOrder: 'ASC' },
+    });
+
+    res.json(questions);
   } catch (error) {
     next(error);
   }
