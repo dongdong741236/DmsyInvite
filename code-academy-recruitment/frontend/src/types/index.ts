@@ -65,7 +65,6 @@ export interface InterviewRoom {
   id: string;
   name: string;
   location: string;
-  capacity: number;
   isActive: boolean;
 }
 

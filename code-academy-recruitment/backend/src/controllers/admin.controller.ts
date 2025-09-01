@@ -481,6 +481,18 @@ export const sendInterviewNotification = async (
       throw new AppError('Interview not found', 404);
     }
 
+    if (!interview.application) {
+      throw new AppError('Interview application not found', 400);
+    }
+
+    if (!interview.application.user) {
+      throw new AppError('Interview application user not found', 400);
+    }
+
+    if (!interview.room) {
+      throw new AppError('Interview room not found', 400);
+    }
+
     await sendInterviewEmail(
       interview.application.user.email,
       interview.application.user.name,

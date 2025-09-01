@@ -14,7 +14,6 @@ import {
 interface RoomFormData {
   name: string;
   location: string;
-  capacity: number;
 }
 
 const RoomManagement: React.FC = () => {
