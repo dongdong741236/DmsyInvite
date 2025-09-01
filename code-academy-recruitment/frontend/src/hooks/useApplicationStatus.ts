@@ -2,14 +2,18 @@ import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Application } from '../types';
 
-export const useApplicationStatus = () => {
+export const useApplicationStatus = (enabled: boolean = true) => {
   const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(enabled);
   const [hasApplications, setHasApplications] = useState(false);
 
   useEffect(() => {
-    loadApplications();
-  }, []);
+    if (enabled) {
+      loadApplications();
+    } else {
+      setLoading(false);
+    }
+  }, [enabled]);
 
   const loadApplications = async () => {
     try {

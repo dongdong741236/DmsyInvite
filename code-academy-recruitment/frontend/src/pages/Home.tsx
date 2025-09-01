@@ -11,7 +11,8 @@ import {
 
 const Home: React.FC = () => {
   const { user } = useAuth();
-  const { hasApplications, loading: applicationLoading } = useApplicationStatus();
+  // 只有登录用户才检查申请状态
+  const { hasApplications, loading: applicationLoading } = useApplicationStatus(!!user);
 
   const features = [
     {
