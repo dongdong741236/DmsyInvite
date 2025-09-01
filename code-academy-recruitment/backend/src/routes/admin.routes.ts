@@ -3,6 +3,7 @@ import { body } from 'express-validator';
 import { validateRequest } from '../middlewares/validation';
 import * as adminController from '../controllers/admin.controller';
 import * as configController from '../controllers/config.controller';
+import * as emailTemplateController from '../controllers/emailTemplate.controller';
 
 const router = Router();
 
@@ -117,5 +118,20 @@ router.put('/configs',
   configController.updateConfigs
 );
 router.get('/recruitment-status', configController.getRecruitmentStatus);
+
+// Email template management
+router.get('/email-templates', emailTemplateController.getTemplates);
+router.get('/email-templates/:type', emailTemplateController.getTemplate);
+router.put('/email-templates/:type', 
+  [
+    body('name').notEmpty().withMessage('模板名称不能为空'),
+    body('subject').notEmpty().withMessage('邮件主题不能为空'),
+    body('htmlContent').notEmpty().withMessage('邮件内容不能为空'),
+    body('isActive').isBoolean().withMessage('状态必须是布尔值'),
+  ],
+  validateRequest,
+  emailTemplateController.updateTemplate
+);
+router.post('/email-templates/:type/preview', emailTemplateController.previewTemplate);
 
 export default router;

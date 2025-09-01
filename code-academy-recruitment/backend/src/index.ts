@@ -91,6 +91,11 @@ async function startServer() {
         await ConfigService.initializeDefaults();
         console.log('✅ 系统配置初始化完成');
         logger.info('System configurations initialized');
+        
+        // 初始化邮件模板
+        const { EmailTemplateService } = await import('./services/emailTemplate.service');
+        await EmailTemplateService.initializeDefaultTemplates();
+        console.log('✅ 邮件模板初始化完成');
       } catch (error) {
         console.error('❌ 系统配置初始化失败:', error);
         logger.error('Failed to initialize system configurations:', error);

@@ -9,6 +9,7 @@ import {
   ClockIcon,
   CogIcon,
   BuildingOfficeIcon,
+  EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 import api from '../../services/api';
 
@@ -162,6 +163,15 @@ const AdminDashboard: React.FC = () => {
           <CogIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold">系统配置</h3>
           <p className="text-gray-600 mt-2">纳新开关和时间设置</p>
+        </Link>
+
+        <Link
+          to="/admin/email-templates"
+          className="neumorphic-card hover:shadow-neumorphic-hover text-center py-8"
+        >
+          <EnvelopeIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold">邮件模板</h3>
+          <p className="text-gray-600 mt-2">管理邮件通知模板</p>
         </Link>
       </div>
     </div>

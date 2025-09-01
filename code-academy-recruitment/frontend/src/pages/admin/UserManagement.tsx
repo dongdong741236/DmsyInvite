@@ -242,14 +242,14 @@ const UserManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {format(new Date(user.createdAt), 'yyyy-MM-dd HH:mm', { locale: zhCN })}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex flex-wrap gap-1">
+                  <td className="px-3 py-4">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap gap-1">
                       <button
                         onClick={() => handleViewUser(user)}
-                        className="inline-flex items-center px-2 py-1 bg-primary-100 text-primary-700 rounded text-xs hover:bg-primary-200 transition-colors"
+                        className="inline-flex items-center justify-center px-2 py-1 bg-primary-100 text-primary-700 rounded text-xs hover:bg-primary-200 transition-colors min-w-0"
                       >
-                        <EyeIcon className="w-3 h-3 mr-1" />
-                        查看详情
+                        <EyeIcon className="w-3 h-3 sm:mr-1" />
+                        <span className="hidden sm:inline">查看</span>
                       </button>
                       
                       {user.role !== 'admin' && (
@@ -257,35 +257,35 @@ const UserManagement: React.FC = () => {
                           {user.isActive ? (
                             <button
                               onClick={() => handleToggleUserStatus(user.id, true)}
-                              className="inline-flex items-center px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs hover:bg-yellow-200 transition-colors"
+                              className="inline-flex items-center justify-center px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs hover:bg-yellow-200 transition-colors min-w-0"
                             >
-                              <LockClosedIcon className="w-3 h-3 mr-1" />
-                              禁用
+                              <LockClosedIcon className="w-3 h-3 sm:mr-1" />
+                              <span className="hidden sm:inline">禁用</span>
                             </button>
                           ) : (
                             <button
                               onClick={() => handleToggleUserStatus(user.id, false)}
-                              className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors"
+                              className="inline-flex items-center justify-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors min-w-0"
                             >
-                              <LockOpenIcon className="w-3 h-3 mr-1" />
-                              启用
+                              <LockOpenIcon className="w-3 h-3 sm:mr-1" />
+                              <span className="hidden sm:inline">启用</span>
                             </button>
                           )}
                           
                           <button
                             onClick={() => handleResetPassword(user.id, user.name)}
-                            className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                            className="inline-flex items-center justify-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors min-w-0"
                           >
-                            <LockOpenIcon className="w-3 h-3 mr-1" />
-                            重置密码
+                            <LockOpenIcon className="w-3 h-3 sm:mr-1" />
+                            <span className="hidden sm:inline">重置</span>
                           </button>
                           
                           <button
                             onClick={() => handleDeleteUser(user.id, user.name)}
-                            className="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors"
+                            className="inline-flex items-center justify-center px-2 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors min-w-0"
                           >
-                            <TrashIcon className="w-3 h-3 mr-1" />
-                            删除
+                            <TrashIcon className="w-3 h-3 sm:mr-1" />
+                            <span className="hidden sm:inline">删除</span>
                           </button>
                         </>
                       )}
