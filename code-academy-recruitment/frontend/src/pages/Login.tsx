@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { LoginData } from '../types';
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
@@ -9,6 +10,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
+  const { showError, showSuccess } = useToast();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -27,9 +29,13 @@ const Login: React.FC = () => {
       setError('');
       setLoading(true);
       await login(data.email, data.password);
+      
+      showSuccess('登录成功！');
       navigate(from, { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.error || '登录失败，请检查邮箱和密码');
+      const errorMessage = err.response?.data?.error || '登录失败，请检查邮箱和密码';
+      setError(errorMessage);
+      showError(errorMessage, true); // 持久显示错误
     } finally {
       setLoading(false);
     }

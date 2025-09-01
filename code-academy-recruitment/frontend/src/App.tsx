@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import Layout from './components/Layout';
 import PrivateRoute from './components/PrivateRoute';
 import Home from './pages/Home';
@@ -23,7 +24,8 @@ import InterviewPanel from './pages/InterviewPanel';
 function App() {
   return (
     <Router>
-      <AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
@@ -150,7 +152,8 @@ function App() {
             />
           </Route>
         </Routes>
-      </AuthProvider>
+        </AuthProvider>
+      </ToastProvider>
     </Router>
   );
 }

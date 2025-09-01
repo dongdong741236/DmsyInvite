@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useToast } from '../../contexts/ToastContext';
 import api from '../../services/api';
 import {
   UserGroupIcon,
@@ -43,6 +44,7 @@ const InterviewerManagement: React.FC = () => {
   const [editingInterviewer, setEditingInterviewer] = useState<Interviewer | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const { showError, showSuccess } = useToast();
 
   const {
     register,
@@ -65,9 +67,11 @@ const InterviewerManagement: React.FC = () => {
       setLoading(true);
       const response = await api.get<Interviewer[]>('/admin/interviewers');
       setInterviewers(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load interviewers:', error);
-      setError('加载面试者失败');
+      const errorMessage = '加载面试者失败';
+      setError(errorMessage);
+      showError(errorMessage, true);
     } finally {
       setLoading(false);
     }
@@ -80,10 +84,10 @@ const InterviewerManagement: React.FC = () => {
 
       if (editingInterviewer) {
         await api.put(`/admin/interviewers/${editingInterviewer.id}`, data);
-        setMessage('面试者更新成功');
+        showSuccess('面试者更新成功');
       } else {
         await api.post('/admin/interviewers', data);
-        setMessage('面试者创建成功');
+        showSuccess('面试者创建成功');
       }
 
       setShowForm(false);
@@ -91,7 +95,9 @@ const InterviewerManagement: React.FC = () => {
       reset();
       loadInterviewers();
     } catch (err: any) {
-      setError(err.response?.data?.error || '操作失败');
+      const errorMessage = err.response?.data?.error || '操作失败';
+      setError(errorMessage);
+      showError(errorMessage, true); // 持久显示错误
     }
   };
 
@@ -115,10 +121,12 @@ const InterviewerManagement: React.FC = () => {
 
     try {
       await api.delete(`/admin/interviewers/${id}`);
-      setMessage('面试者删除成功');
+      showSuccess('面试者删除成功');
       loadInterviewers();
     } catch (err: any) {
-      setError(err.response?.data?.error || '删除失败');
+      const errorMessage = err.response?.data?.error || '删除失败';
+      setError(errorMessage);
+      showError(errorMessage, true);
     }
   };
 
@@ -132,9 +140,11 @@ const InterviewerManagement: React.FC = () => {
       await api.post(`/admin/interviewers/${id}/reset-password`, {
         newPassword: newPassword || '123456',
       });
-      setMessage(`面试者"${name}"密码重置成功`);
+      showSuccess(`面试者"${name}"密码重置成功`);
     } catch (err: any) {
-      setError(err.response?.data?.error || '密码重置失败');
+      const errorMessage = err.response?.data?.error || '密码重置失败';
+      setError(errorMessage);
+      showError(errorMessage, true);
     }
   };
 
