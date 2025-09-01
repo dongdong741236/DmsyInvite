@@ -9,7 +9,7 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import { Interview } from './Interview';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Entity('interviewers')
 export class Interviewer {
