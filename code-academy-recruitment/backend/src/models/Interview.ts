@@ -6,11 +6,14 @@ import {
   UpdateDateColumn,
   OneToOne,
   ManyToOne,
+  ManyToMany,
   JoinColumn,
+  JoinTable,
 } from 'typeorm';
 import { Application } from './Application';
 import { InterviewRoom } from './InterviewRoom';
 import { RecruitmentYear } from './RecruitmentYear';
+import { Interviewer } from './Interviewer';
 
 export enum InterviewResult {
   PASSED = 'passed',
@@ -70,6 +73,15 @@ export class Interview {
   @ManyToOne(() => RecruitmentYear, (year) => year.interviews, { nullable: true })
   @JoinColumn()
   recruitmentYear?: RecruitmentYear;
+
+  // 面试者（多对多关系）
+  @ManyToMany(() => Interviewer, (interviewer) => interviewer.interviews)
+  @JoinTable({
+    name: 'interview_interviewers',
+    joinColumn: { name: 'interview_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'interviewer_id', referencedColumnName: 'id' },
+  })
+  interviewers!: Interviewer[];
 
   @CreateDateColumn()
   createdAt!: Date;

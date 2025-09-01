@@ -6,6 +6,7 @@ import * as configController from '../controllers/config.controller';
 import * as emailTemplateController from '../controllers/emailTemplate.controller';
 import * as interviewQuestionController from '../controllers/interviewQuestion.controller';
 import * as recruitmentYearController from '../controllers/recruitmentYear.controller';
+import * as interviewerController from '../controllers/interviewer.controller';
 
 const router = Router();
 
@@ -169,5 +170,24 @@ router.post('/recruitment-years',
 );
 router.put('/recruitment-years/:id/activate', recruitmentYearController.activateYear);
 router.put('/recruitment-years/:id/archive', recruitmentYearController.archiveYear);
+
+// Interviewer management
+router.get('/interviewers', interviewerController.getInterviewers);
+router.get('/interviewers/active', interviewerController.getActiveInterviewers);
+router.post('/interviewers', 
+  [
+    body('name').notEmpty().withMessage('姓名不能为空'),
+    body('email').isEmail().withMessage('请输入有效的邮箱地址'),
+    body('phone').optional().isMobilePhone('zh-CN'),
+    body('title').optional().isString(),
+    body('department').optional().isString(),
+    body('expertise').optional().isString(),
+    body('isActive').optional().isBoolean(),
+  ],
+  validateRequest,
+  interviewerController.createInterviewer
+);
+router.put('/interviewers/:id', interviewerController.updateInterviewer);
+router.delete('/interviewers/:id', interviewerController.deleteInterviewer);
 
 export default router;

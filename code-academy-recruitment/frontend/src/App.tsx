@@ -18,6 +18,7 @@ import InterviewManagement from './pages/admin/InterviewManagement';
 import EmailTemplateManagement from './pages/admin/EmailTemplateManagement';
 import QuestionManagement from './pages/admin/QuestionManagement';
 import YearManagement from './pages/admin/YearManagement';
+import InterviewerManagement from './pages/admin/InterviewerManagement';
 import InterviewPanel from './pages/InterviewPanel';
 
 function App() {
@@ -134,6 +135,15 @@ function App() {
               element={
                 <PrivateRoute adminOnly>
                   <YearManagement />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="admin/interviewers"
+              element={
+                <PrivateRoute adminOnly>
+                  <InterviewerManagement />
                 </PrivateRoute>
               }
             />

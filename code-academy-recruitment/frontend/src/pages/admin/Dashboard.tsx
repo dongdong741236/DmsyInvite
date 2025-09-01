@@ -193,6 +193,15 @@ const AdminDashboard: React.FC = () => {
           <h3 className="text-lg font-semibold">年度管理</h3>
           <p className="text-gray-600 mt-2">管理招新年度设置</p>
         </Link>
+
+        <Link
+          to="/admin/interviewers"
+          className="neumorphic-card hover:shadow-neumorphic-hover text-center py-8"
+        >
+          <UserGroupIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold">面试者管理</h3>
+          <p className="text-gray-600 mt-2">管理面试官信息</p>
+        </Link>
       </div>
     </div>
   );

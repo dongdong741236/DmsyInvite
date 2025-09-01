@@ -57,7 +57,13 @@ export const createApplication = async (
 ) => {
   try {
     const userId = req.user!.id;
+    const user = req.user!;
     const applicationRepository = AppDataSource.getRepository(Application);
+
+    // 禁止管理员提交申请
+    if (user.role === 'admin') {
+      throw new AppError('管理员不能提交申请', 403);
+    }
 
     // 检查申请是否开放
     const { open, reason } = await ConfigService.isApplicationOpen(req.body.grade);
