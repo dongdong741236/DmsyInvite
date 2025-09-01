@@ -37,6 +37,13 @@ const ApplicationDetail: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get<Application>(`/applications/${applicationId}`);
+      
+      console.log('=== 申请详情数据调试 ===');
+      console.log('完整申请数据:', response.data);
+      console.log('个人照片路径:', response.data.personalPhoto);
+      console.log('学生证照片路径:', response.data.studentCardPhoto);
+      console.log('佐证材料路径:', response.data.experienceAttachments);
+      
       setApplication(response.data);
     } catch (err: any) {
       setError(err.response?.data?.error || '获取申请详情失败');
