@@ -159,12 +159,12 @@ const AdminDashboard: React.FC = () => {
         </Link>
 
         <Link
-          to="/admin/config"
+          to="/admin/recruitment"
           className="neumorphic-card hover:shadow-neumorphic-hover text-center py-8"
         >
-          <CogIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold">系统配置</h3>
-          <p className="text-gray-600 mt-2">纳新开关和时间设置</p>
+          <CalendarDaysIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold">招新管理</h3>
+          <p className="text-gray-600 mt-2">管理年度和招新配置</p>
         </Link>
 
         <Link
@@ -183,15 +183,6 @@ const AdminDashboard: React.FC = () => {
           <QuestionMarkCircleIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
           <h3 className="text-lg font-semibold">面试问题</h3>
           <p className="text-gray-600 mt-2">管理面试问题模板</p>
-        </Link>
-
-        <Link
-          to="/admin/years"
-          className="neumorphic-card hover:shadow-neumorphic-hover text-center py-8"
-        >
-          <CalendarDaysIcon className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold">年度管理</h3>
-          <p className="text-gray-600 mt-2">管理招新年度设置</p>
         </Link>
 
         <Link

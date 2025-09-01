@@ -170,6 +170,7 @@ router.post('/recruitment-years',
 );
 router.put('/recruitment-years/:id/activate', recruitmentYearController.activateYear);
 router.put('/recruitment-years/:id/archive', recruitmentYearController.archiveYear);
+router.put('/recruitment-years/:id/config', recruitmentYearController.updateYearConfig);
 
 // Interviewer management
 router.get('/interviewers', interviewerController.getInterviewers);

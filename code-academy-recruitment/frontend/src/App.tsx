@@ -10,14 +10,13 @@ import ApplicationList from './pages/ApplicationList';
 import ApplicationFormNew from './pages/ApplicationFormNew';
 import ApplicationDetail from './pages/ApplicationDetail';
 import AdminDashboard from './pages/admin/Dashboard';
-import ConfigManagement from './pages/admin/ConfigManagement';
 import UserManagement from './pages/admin/UserManagement';
 import ApplicationManagement from './pages/admin/ApplicationManagement';
 import RoomManagement from './pages/admin/RoomManagement';
 import InterviewManagement from './pages/admin/InterviewManagement';
 import EmailTemplateManagement from './pages/admin/EmailTemplateManagement';
 import QuestionManagement from './pages/admin/QuestionManagement';
-import YearManagement from './pages/admin/YearManagement';
+import RecruitmentManagement from './pages/admin/RecruitmentManagement';
 import InterviewerManagement from './pages/admin/InterviewerManagement';
 import InterviewPanel from './pages/InterviewPanel';
 
@@ -67,14 +66,7 @@ function App() {
               }
             />
             
-            <Route
-              path="admin/config"
-              element={
-                <PrivateRoute adminOnly>
-                  <ConfigManagement />
-                </PrivateRoute>
-              }
-            />
+
             
             <Route
               path="admin/users"
@@ -131,10 +123,10 @@ function App() {
             />
             
             <Route
-              path="admin/years"
+              path="admin/recruitment"
               element={
                 <PrivateRoute adminOnly>
-                  <YearManagement />
+                  <RecruitmentManagement />
                 </PrivateRoute>
               }
             />

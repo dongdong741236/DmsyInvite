@@ -94,12 +94,44 @@ export class RecruitmentYearService {
         endDate: new Date(`${currentYear}-12-31`),
         isActive: true,
         isArchived: false,
+        recruitmentConfig: {
+          freshmanApplicationOpen: true,
+          sophomoreApplicationOpen: true,
+          freshmanDeadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30天后
+          sophomoreDeadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          allowedEmailDomains: ['mails.cust.edu.cn', 'stu.cust.edu.cn'],
+          maxApplicationsPerUser: 1,
+          requireEmailVerification: true,
+          defaultInterviewDuration: 30,
+          enableBatchInterview: true,
+          autoSendNotifications: true,
+          notificationEmailFrom: process.env.EMAIL_USER || 'noreply@cust.edu.cn',
+        },
       });
       
       await repository.save(defaultYear);
       console.log(`✅ 默认招新年度创建完成: ${currentYear}年`);
     } else {
-      console.log(`✅ 招新年度已存在: ${currentYear}年`);
+      // 确保配置存在
+      if (!existingYear.recruitmentConfig) {
+        existingYear.recruitmentConfig = {
+          freshmanApplicationOpen: true,
+          sophomoreApplicationOpen: true,
+          freshmanDeadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          sophomoreDeadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          allowedEmailDomains: ['mails.cust.edu.cn', 'stu.cust.edu.cn'],
+          maxApplicationsPerUser: 1,
+          requireEmailVerification: true,
+          defaultInterviewDuration: 30,
+          enableBatchInterview: true,
+          autoSendNotifications: true,
+          notificationEmailFrom: process.env.EMAIL_USER || 'noreply@cust.edu.cn',
+        };
+        await repository.save(existingYear);
+        console.log(`✅ 招新年度配置初始化: ${existingYear.name}`);
+      } else {
+        console.log(`✅ 招新年度已存在: ${currentYear}年`);
+      }
     }
   }
 }

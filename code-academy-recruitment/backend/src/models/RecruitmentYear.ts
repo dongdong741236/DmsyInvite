@@ -35,6 +35,33 @@ export class RecruitmentYear {
   @Column({ default: false })
   isArchived!: boolean; // 是否已归档
 
+  // 纳新配置
+  @Column({ type: 'json', nullable: true })
+  recruitmentConfig?: {
+    // 申请开放设置
+    freshmanApplicationOpen: boolean;
+    sophomoreApplicationOpen: boolean;
+    
+    // 申请截止时间
+    freshmanDeadline?: string;
+    sophomoreDeadline?: string;
+    
+    // 邮箱域名限制
+    allowedEmailDomains: string[];
+    
+    // 其他配置
+    maxApplicationsPerUser: number;
+    requireEmailVerification: boolean;
+    
+    // 面试相关配置
+    defaultInterviewDuration: number; // 分钟
+    enableBatchInterview: boolean;
+    
+    // 通知配置
+    autoSendNotifications: boolean;
+    notificationEmailFrom: string;
+  };
+
   // 关联的申请记录
   @OneToMany(() => Application, (application) => application.recruitmentYear)
   applications!: Application[];
