@@ -44,6 +44,14 @@ export class Interview {
     overall?: number;
   };
 
+  @Column({ type: 'json', nullable: true })
+  questionAnswers?: {
+    questionId: string;
+    question: string;
+    answer: string;
+    score?: number;
+  }[];
+
   @Column({
     type: 'enum',
     enum: InterviewResult,

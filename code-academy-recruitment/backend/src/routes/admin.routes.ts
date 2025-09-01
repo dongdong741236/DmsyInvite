@@ -4,6 +4,7 @@ import { validateRequest } from '../middlewares/validation';
 import * as adminController from '../controllers/admin.controller';
 import * as configController from '../controllers/config.controller';
 import * as emailTemplateController from '../controllers/emailTemplate.controller';
+import * as interviewQuestionController from '../controllers/interviewQuestion.controller';
 
 const router = Router();
 
@@ -133,5 +134,21 @@ router.put('/email-templates/:type',
   emailTemplateController.updateTemplate
 );
 router.post('/email-templates/:type/preview', emailTemplateController.previewTemplate);
+
+// Interview question management
+router.get('/interview-questions', interviewQuestionController.getQuestions);
+router.get('/interview-questions/all', interviewQuestionController.getAllQuestions);
+router.post('/interview-questions', 
+  [
+    body('question').notEmpty().withMessage('问题内容不能为空'),
+    body('category').isIn(['technical', 'behavioral', 'motivation', 'general']).withMessage('无效的问题类别'),
+    body('description').optional().isString(),
+    body('sortOrder').optional().isInt(),
+  ],
+  validateRequest,
+  interviewQuestionController.createQuestion
+);
+router.put('/interview-questions/:id', interviewQuestionController.updateQuestion);
+router.delete('/interview-questions/:id', interviewQuestionController.deleteQuestion);
 
 export default router;

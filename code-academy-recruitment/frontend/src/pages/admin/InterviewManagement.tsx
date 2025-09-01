@@ -18,6 +18,7 @@ import {
   StarIcon,
   UserGroupIcon,
   PaperAirplaneIcon,
+  ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
 
 interface InterviewsResponse {
@@ -350,11 +351,19 @@ const InterviewManagement: React.FC = () => {
                         </button>
                       )}
                       <button
+                        onClick={() => window.open(`/admin/interviews/${interview.id}/panel`, '_blank')}
+                        className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors"
+                      >
+                        <ChatBubbleLeftRightIcon className="w-3 h-3 mr-1" />
+                        开始面试
+                      </button>
+                      
+                      <button
                         onClick={() => handleScoring(interview)}
                         className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs hover:bg-purple-200 transition-colors"
                       >
                         <StarIcon className="w-3 h-3 mr-1" />
-                        {interview.isCompleted ? '查看评分' : '面试评分'}
+                        {interview.isCompleted ? '查看评分' : '快速评分'}
                       </button>
                     </div>
                   </td>

@@ -6,6 +6,7 @@ import { Interview } from '../models/Interview';
 import { InterviewRoom } from '../models/InterviewRoom';
 import { SystemConfig } from '../models/SystemConfig';
 import { EmailTemplate } from '../models/EmailTemplate';
+import { InterviewQuestion } from '../models/InterviewQuestion';
 
 dotenv.config();
 
@@ -18,7 +19,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'recruitment_db',
   synchronize: true,  // 始终同步，确保表结构正确
   logging: true,      // 开启详细日志
-  entities: [User, Application, Interview, InterviewRoom, SystemConfig, EmailTemplate],
+  entities: [User, Application, Interview, InterviewRoom, SystemConfig, EmailTemplate, InterviewQuestion],
   migrations: ['src/migrations/*.ts'],
   subscribers: ['src/subscribers/*.ts'],
   // MySQL 8.0 基础配置，无额外选项避免警告

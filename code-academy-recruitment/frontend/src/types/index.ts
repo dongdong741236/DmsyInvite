@@ -45,6 +45,12 @@ export interface Interview {
     motivation?: number;
     overall?: number;
   };
+  questionAnswers?: {
+    questionId: string;
+    question: string;
+    answer: string;
+    score?: number;
+  }[];
   result: 'passed' | 'failed' | 'pending';
   isCompleted: boolean;
   notificationSent: boolean;
