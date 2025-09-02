@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { In } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { User, UserRole } from '../models/User';
 import { Application, ApplicationStatus } from '../models/Application';
@@ -231,7 +232,12 @@ export const createRoom = async (
   next: NextFunction
 ) => {
   try {
+    console.log('=== 创建教室请求 ===');
+    console.log('请求体:', req.body);
+    
     const { name, location, interviewerIds } = req.body;
+    console.log('解析参数:', { name, location, interviewerIds });
+    
     const roomRepository = AppDataSource.getRepository(InterviewRoom);
     const interviewerRepository = AppDataSource.getRepository(Interviewer);
 
@@ -239,26 +245,37 @@ export const createRoom = async (
       name,
       location,
     });
+    console.log('创建教室实体:', room);
 
     // 如果指定了面试官，则关联
     if (interviewerIds && interviewerIds.length > 0) {
-      const interviewers = await interviewerRepository.findByIds(interviewerIds);
+      console.log('查找面试官:', interviewerIds);
+      const interviewers = await interviewerRepository.find({
+        where: { id: In(interviewerIds) },
+      });
+      console.log('找到面试官:', interviewers.length, '个');
       room.interviewers = interviewers;
+    } else {
+      console.log('未指定面试官或面试官列表为空');
     }
 
+    console.log('保存教室...');
     await roomRepository.save(room);
+    console.log('教室保存成功');
 
     // 返回包含面试官信息的房间
     const savedRoom = await roomRepository.findOne({
       where: { id: room.id },
       relations: ['interviewers'],
     });
+    console.log('返回教室信息:', savedRoom);
 
     res.status(201).json({
       message: 'Room created successfully',
       room: savedRoom,
     });
   } catch (error) {
+    console.error('创建教室失败:', error);
     next(error);
   }
 };
@@ -289,7 +306,9 @@ export const updateRoom = async (
     // 更新面试官分配
     if (interviewerIds !== undefined) {
       if (interviewerIds.length > 0) {
-        const interviewers = await interviewerRepository.findByIds(interviewerIds);
+        const interviewers = await interviewerRepository.find({
+          where: { id: In(interviewerIds) },
+        });
         room.interviewers = interviewers;
       } else {
         room.interviewers = [];

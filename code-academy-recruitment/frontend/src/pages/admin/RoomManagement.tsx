@@ -68,14 +68,20 @@ const RoomManagement: React.FC = () => {
 
   const onSubmit = async (data: RoomFormData) => {
     try {
+      console.log('=== 提交教室表单 ===');
+      console.log('表单数据:', data);
+      
       setError('');
       setMessage('');
 
       if (editingRoom) {
+        console.log('更新教室:', editingRoom.id);
         await api.put(`/admin/rooms/${editingRoom.id}`, data);
         setMessage('教室更新成功');
       } else {
-        await api.post('/admin/rooms', data);
+        console.log('创建新教室');
+        const response = await api.post('/admin/rooms', data);
+        console.log('创建响应:', response.data);
         setMessage('教室创建成功');
       }
 
@@ -84,7 +90,9 @@ const RoomManagement: React.FC = () => {
       reset();
       loadRooms();
     } catch (err: any) {
-      setError(err.response?.data?.error || '操作失败');
+      console.error('教室操作失败:', err);
+      const errorMessage = err.response?.data?.error || '操作失败';
+      setError(errorMessage);
     }
   };
 
