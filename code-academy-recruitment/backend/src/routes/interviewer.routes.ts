@@ -183,13 +183,8 @@ router.put('/interviews/:id/evaluation', async (req: Request, res: Response, nex
       });
       
       if (application) {
-        if (result === 'passed') {
-          application.status = ApplicationStatus.ACCEPTED;
-        } else if (result === 'failed') {
-          application.status = ApplicationStatus.REJECTED;
-        } else {
-          application.status = ApplicationStatus.INTERVIEWED;
-        }
+        // 面试完成但不立即更新最终状态，等待通知后再更新
+        application.status = ApplicationStatus.INTERVIEWED;
         await applicationRepository.save(application);
       }
     }

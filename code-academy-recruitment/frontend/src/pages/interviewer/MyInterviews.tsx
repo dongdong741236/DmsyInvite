@@ -15,7 +15,7 @@ import {
 
 interface Interview {
   id: string;
-  scheduledTime: string;
+  scheduledAt: string;
   application: {
     id: string;
     user: {
@@ -198,11 +198,11 @@ const MyInterviews: React.FC = () => {
                     <div className="text-right">
                       <div className="flex items-center text-sm text-gray-900 mb-1">
                         <CalendarDaysIcon className="w-4 h-4 text-gray-400 mr-1" />
-                        {format(new Date(interview.scheduledTime), 'MM月dd日', { locale: zhCN })}
+                        {format(new Date(interview.scheduledAt), 'MM月dd日', { locale: zhCN })}
                       </div>
                       <div className="flex items-center text-sm text-gray-600 mb-1">
                         <ClockIcon className="w-4 h-4 text-gray-400 mr-1" />
-                        {format(new Date(interview.scheduledTime), 'HH:mm', { locale: zhCN })}
+                        {format(new Date(interview.scheduledAt), 'HH:mm', { locale: zhCN })}
                       </div>
                       <div className="flex items-center text-sm text-gray-600">
                         <BuildingOfficeIcon className="w-4 h-4 text-gray-400 mr-1" />

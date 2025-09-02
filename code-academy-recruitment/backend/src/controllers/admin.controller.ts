@@ -603,7 +603,7 @@ export const sendResultNotification = async (
 
     const application = await applicationRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'interview'],
     });
 
     if (!application) {
@@ -617,8 +617,16 @@ export const sendResultNotification = async (
       feedback
     );
 
+    // 更新申请状态
     application.status = accepted ? ApplicationStatus.ACCEPTED : ApplicationStatus.REJECTED;
     await applicationRepository.save(application);
+
+    // 更新面试通知状态
+    if (application.interview) {
+      const interviewRepository = AppDataSource.getRepository(Interview);
+      application.interview.notificationSent = true;
+      await interviewRepository.save(application.interview);
+    }
 
     res.json({
       message: 'Result notification sent successfully',
@@ -779,18 +787,10 @@ export const updateInterviewEvaluation = async (
       });
       
       if (application) {
-        // 根据面试结果更新申请状态
-        if (result === 'passed') {
-          application.status = ApplicationStatus.ACCEPTED;
-        } else if (result === 'failed') {
-          application.status = ApplicationStatus.REJECTED;
-        } else {
-          // 面试完成但结果待定
-          application.status = ApplicationStatus.INTERVIEWED;
-        }
-        
+        // 面试完成但不立即更新最终状态，等待通知后再更新
+        application.status = ApplicationStatus.INTERVIEWED;
         await applicationRepository.save(application);
-        console.log(`申请状态已同步更新: ${interview.application.id} -> ${application.status}`);
+        console.log(`申请状态已更新为已面试: ${interview.application.id} -> ${application.status}`);
       }
     }
 
