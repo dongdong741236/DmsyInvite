@@ -13,21 +13,18 @@
 - 添加了结果过滤逻辑
 - 当 `notificationSent` 为 false 时，删除以下敏感字段：
   - `result` - 面试结果
-  - `score` - 总分
   - `evaluationScores` - 详细评分
   - `interviewerNotes` - 面试官备注
-  - `feedback` - 反馈信息
   - `questionAnswers` - 问题答案
 
 ```typescript
 // 如果面试结果未发送通知，隐藏敏感信息
 if (application.interview && !application.interview.notificationSent) {
-  delete application.interview.result;
-  delete application.interview.score;
-  delete application.interview.evaluationScores;
-  delete application.interview.interviewerNotes;
-  delete application.interview.feedback;
-  delete application.interview.questionAnswers;
+  const interview = application.interview as any;
+  delete interview.result;
+  delete interview.evaluationScores;
+  delete interview.interviewerNotes;
+  delete interview.questionAnswers;
 }
 ```
 

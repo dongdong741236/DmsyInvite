@@ -23,12 +23,13 @@ export const getMyApplications = async (
     applications.forEach(application => {
       if (application.interview && !application.interview.notificationSent) {
         // 清除面试结果相关的敏感信息
-        delete application.interview.result;
-        delete application.interview.score;
-        delete application.interview.evaluationScores;
-        delete application.interview.interviewerNotes;
-        delete application.interview.feedback;
-        delete application.interview.questionAnswers;
+        // 使用类型断言来处理TypeScript的严格检查
+        const interview = application.interview as any;
+        delete interview.result;
+        delete interview.evaluationScores;
+        delete interview.interviewerNotes;
+        delete interview.questionAnswers;
+        // 注意: score 和 feedback 字段在 Interview 模型中不存在
       }
     });
 
@@ -60,12 +61,13 @@ export const getApplication = async (
     // 如果面试结果未发送通知，隐藏敏感信息
     if (application.interview && !application.interview.notificationSent) {
       // 清除面试结果相关的敏感信息
-      delete application.interview.result;
-      delete application.interview.score;
-      delete application.interview.evaluationScores;
-      delete application.interview.interviewerNotes;
-      delete application.interview.feedback;
-      delete application.interview.questionAnswers;
+      // 使用类型断言来处理TypeScript的严格检查
+      const interview = application.interview as any;
+      delete interview.result;
+      delete interview.evaluationScores;
+      delete interview.interviewerNotes;
+      delete interview.questionAnswers;
+      // 注意: score 和 feedback 字段在 Interview 模型中不存在
     }
 
     res.json(application);
