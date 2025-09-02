@@ -348,11 +348,13 @@ const ApplicationDetail: React.FC = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">面试结果</label>
                   <p className="text-gray-900">
-                    {application.interview.result === 'passed' ? '通过' : 
-                     application.interview.result === 'failed' ? '未通过' : '待评分'}
+                    {application.interview.notificationSent && application.interview.result
+                      ? (application.interview.result === 'passed' ? '通过' : 
+                         application.interview.result === 'failed' ? '未通过' : '待评分')
+                      : '面试已完成，等待结果通知'}
                   </p>
                 </div>
-                {application.interview.interviewerNotes && (
+                {application.interview.notificationSent && application.interview.interviewerNotes && (
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">面试官备注</label>
                     <div className="bg-gray-50 p-3 rounded-lg">

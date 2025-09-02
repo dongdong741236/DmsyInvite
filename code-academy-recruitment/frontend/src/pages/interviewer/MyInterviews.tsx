@@ -48,10 +48,13 @@ const MyInterviews: React.FC = () => {
   const loadInterviews = async () => {
     try {
       setLoading(true);
+      console.log('=== 面试官加载面试列表 ===');
       const response = await api.get('/interviewer/interviews');
+      console.log('面试官面试数据:', response.data);
       setInterviews(response.data);
     } catch (error) {
       console.error('Failed to load interviews:', error);
+      console.error('面试官API错误详情:', error);
     } finally {
       setLoading(false);
     }
@@ -226,10 +229,19 @@ const MyInterviews: React.FC = () => {
         ) : (
           <div className="text-center py-12">
             <CalendarDaysIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">
+            <p className="text-gray-500 mb-4">
               {filter === 'all' ? '暂无面试安排' : 
                filter === 'pending' ? '暂无待面试' : '暂无已完成的面试'}
             </p>
+            {filter === 'all' && interviews.length === 0 && (
+              <div className="text-sm text-gray-400 space-y-2">
+                <p>可能的原因：</p>
+                <p>• 您还没有被分配到任何面试</p>
+                <p>• 管理员还没有创建教室并分配您为面试官</p>
+                <p>• 还没有申请者的面试被安排到您负责的教室</p>
+                <p className="mt-4 text-primary-600">请联系管理员确认面试官分配状态</p>
+              </div>
+            )}
           </div>
         )}
       </div>

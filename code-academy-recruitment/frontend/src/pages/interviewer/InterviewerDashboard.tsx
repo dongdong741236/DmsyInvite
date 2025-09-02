@@ -57,15 +57,20 @@ const InterviewerDashboard: React.FC = () => {
     try {
       setLoading(true);
       
+      console.log('=== 面试官仪表板加载数据 ===');
+      
       // 获取面试官的面试统计
       const statsResponse = await api.get('/interviewer/stats');
+      console.log('面试官统计数据:', statsResponse.data);
       setStats(statsResponse.data);
 
       // 获取今天的面试安排
       const todayResponse = await api.get('/interviewer/interviews/today');
+      console.log('今日面试数据:', todayResponse.data);
       setTodayInterviews(todayResponse.data);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);
+      console.error('面试官仪表板API错误:', error);
     } finally {
       setLoading(false);
     }
