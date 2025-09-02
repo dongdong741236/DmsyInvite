@@ -561,10 +561,12 @@ export const sendInterviewNotification = async (
     }
 
     if (!interview.application) {
-      throw new AppError('Interview application not found', 400);
+      console.error(`Interview ${id} has no application. The application relation is NULL.`);
+      throw new AppError('Interview application not found. This interview may have a data integrity issue.', 400);
     }
 
     if (!interview.application.user) {
+      console.error(`Interview ${id} application has no user.`);
       throw new AppError('Interview application user not found', 400);
     }
 

@@ -5,6 +5,7 @@ import interviewRoutes from './interview.routes';
 import adminRoutes from './admin.routes';
 import interviewerRoutes from './interviewer.routes';
 import interviewResultRoutes from './interviewResult.routes';
+import dataFixRoutes from './dataFix.routes';
 import { authenticate, authorize } from '../middlewares/auth';
 import { UserRole } from '../models/User';
 
@@ -25,5 +26,8 @@ router.use('/admin', authenticate, authorize([UserRole.ADMIN]), adminRoutes);
 
 // Interviewer routes
 router.use('/interviewer', authenticate, authorize(['interviewer']), interviewerRoutes);
+
+// Data fix routes (admin only)
+router.use('/data-fix', dataFixRoutes);
 
 export default router;
