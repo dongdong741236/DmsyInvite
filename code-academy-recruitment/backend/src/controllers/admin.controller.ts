@@ -484,7 +484,7 @@ export const scheduleInterview = async (
     }
 
     const interview = interviewRepository.create({
-      application,
+      application: { id: applicationId } as Application, // 使用ID引用而不是整个对象
       room,
       scheduledAt: new Date(scheduledAt),
       recruitmentYear: currentYear || undefined,
