@@ -143,7 +143,12 @@ const InterviewResults: React.FC = () => {
       // 更新本地数据
       setResults(results.map(r => 
         r.id === id 
-          ? { ...r, ...data }
+          ? { 
+              ...r, 
+              evaluationScores: data.evaluationScores,
+              interviewerNotes: data.interviewerNotes,
+              result: data.result as 'passed' | 'failed' | 'pending'
+            }
           : r
       ));
       
