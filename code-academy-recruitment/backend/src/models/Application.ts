@@ -34,6 +34,9 @@ export class Application {
   studentId!: string;
 
   @Column()
+  campusCardId!: string; // 一卡通号
+
+  @Column()
   phone!: string;
 
   @Column()

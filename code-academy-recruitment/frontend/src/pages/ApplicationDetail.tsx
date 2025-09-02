@@ -145,10 +145,14 @@ const ApplicationDetail: React.FC = () => {
           <UserIcon className="w-6 h-6 mr-2 text-primary-600" />
           基本信息
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">学号</label>
             <p className="text-gray-900">{application.studentId}</p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">一卡通号</label>
+            <p className="text-gray-900">{application.campusCardId}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">手机号</label>

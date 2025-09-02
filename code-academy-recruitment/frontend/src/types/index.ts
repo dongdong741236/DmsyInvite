@@ -15,6 +15,7 @@ export interface User {
 export interface Application {
   id: string;
   studentId: string;
+  campusCardId: string;
   phone: string;
   major: string;
   grade: string;
@@ -85,6 +86,7 @@ export interface RegisterData extends LoginData {
 
 export interface ApplicationFormData {
   studentId: string;
+  campusCardId: string;
   phone: string;
   major: string;
   grade: string;

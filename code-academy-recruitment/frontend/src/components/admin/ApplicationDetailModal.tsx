@@ -105,6 +105,10 @@ const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
                 <p className="text-gray-900">{application.studentId}</p>
               </div>
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">一卡通号</label>
+                <p className="text-gray-900">{application.campusCardId}</p>
+              </div>
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">手机号</label>
                 <div className="flex items-center">
                   <PhoneIcon className="w-4 h-4 text-gray-400 mr-2" />

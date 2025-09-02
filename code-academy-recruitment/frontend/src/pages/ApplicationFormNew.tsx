@@ -263,6 +263,27 @@ const ApplicationFormNew: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
+                一卡通号 <span className="text-red-500">*</span>
+              </label>
+              <input
+                {...register('campusCardId', {
+                  required: '请输入一卡通号',
+                  pattern: {
+                    value: /^\d{8,16}$/,
+                    message: '请输入有效的一卡通号（8-16位数字）',
+                  },
+                })}
+                type="text"
+                className="neumorphic-input"
+                placeholder="1234567890"
+              />
+              {errors.campusCardId && (
+                <p className="mt-1 text-sm text-red-600">{errors.campusCardId.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 手机号 <span className="text-red-500">*</span>
               </label>
               <input

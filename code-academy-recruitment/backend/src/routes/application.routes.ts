@@ -115,6 +115,7 @@ router.post(
   '/',
   [
     body('studentId').notEmpty().withMessage('学号不能为空'),
+    body('campusCardId').notEmpty().withMessage('一卡通号不能为空'),
     body('phone').isMobilePhone('zh-CN').withMessage('请输入有效的手机号'),
     body('major').notEmpty().withMessage('专业不能为空'),
     body('grade').isIn(['大一', '大二']).withMessage('只接受大一、大二学生申请'),
@@ -136,6 +137,7 @@ router.put(
   '/:id',
   [
     body('studentId').optional().notEmpty(),
+    body('campusCardId').optional().notEmpty(),
     body('phone').optional().isMobilePhone('zh-CN'),
     body('major').optional().notEmpty(),
     body('grade').optional().notEmpty(),
