@@ -27,7 +27,7 @@ export interface Application {
   motivation: string;
   portfolio?: string;
   gradeSpecificInfo?: any;
-  status: 'pending' | 'reviewing' | 'interview_scheduled' | 'interviewed' | 'accepted' | 'rejected';
+  status: 'pending' | 'reviewing' | 'approved' | 'interview_scheduled' | 'interviewed' | 'accepted' | 'rejected';
   reviewNotes?: string;
   interview?: Interview;
   user?: User;

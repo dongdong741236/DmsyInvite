@@ -28,9 +28,10 @@ const ApplicationDetailModal: React.FC<ApplicationDetailModalProps> = ({
   if (!isOpen || !application) return null;
 
   const getStatusBadge = (status: Application['status']) => {
-    const statusConfig = {
+    const statusConfig: Record<Application['status'], { color: string; text: string }> = {
       pending: { color: 'bg-yellow-100 text-yellow-800', text: '待审核' },
       reviewing: { color: 'bg-blue-100 text-blue-800', text: '审核中' },
+      approved: { color: 'bg-green-100 text-green-800', text: '审核通过' },
       interview_scheduled: { color: 'bg-purple-100 text-purple-800', text: '已安排面试' },
       interviewed: { color: 'bg-indigo-100 text-indigo-800', text: '已面试' },
       accepted: { color: 'bg-green-100 text-green-800', text: '已录取' },
