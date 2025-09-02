@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import api from '../../services/api';
 import { Interview, InterviewRoom, Application } from '../../types';
 import InterviewScoringModal from '../../components/admin/InterviewScoringModal';
-import BatchInterviewModal from '../../components/admin/BatchInterviewModal';
+import SimpleBatchInterviewModal from '../../components/admin/SimpleBatchInterviewModal';
 import ResultConfirmationModal from '../../components/admin/ResultConfirmationModal';
 import {
   CalendarIcon,
@@ -430,7 +430,7 @@ const InterviewManagement: React.FC = () => {
       />
 
       {/* 批量安排面试模态框 */}
-      <BatchInterviewModal
+      <SimpleBatchInterviewModal
         isOpen={showBatchModal}
         onClose={() => setShowBatchModal(false)}
         onSuccess={() => {

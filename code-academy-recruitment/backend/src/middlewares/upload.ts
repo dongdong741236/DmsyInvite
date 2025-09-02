@@ -30,9 +30,9 @@ const storage = multer.diskStorage({
     cb(null, fullPath);
   },
   filename: (_req, file, cb) => {
-    // 生成唯一文件名
+    // 生成唯一文件名，处理中文文件名
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
+    const ext = path.extname(Buffer.from(file.originalname, 'latin1').toString('utf8'));
     cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
   },
 });
