@@ -461,6 +461,11 @@ export const scheduleInterview = async (
       throw new AppError('Interview already scheduled for this application', 400);
     }
 
+    // 只有审核通过的申请才能安排面试
+    if (application.status !== ApplicationStatus.APPROVED) {
+      throw new AppError('只有审核通过的申请才能安排面试', 400);
+    }
+
     const room = await roomRepository.findOne({ 
       where: { id: roomId },
       relations: ['interviewers'],
@@ -842,8 +847,9 @@ export const createBatchInterviews = async (
         continue;
       }
 
-      if (application.status !== ApplicationStatus.REVIEWING) {
-        console.error(`Application ${applicationId} is not in reviewing status`);
+      // 只有审核通过的申请才能安排面试
+      if (application.status !== ApplicationStatus.APPROVED) {
+        console.error(`Application ${applicationId} status is ${application.status}, expected approved`);
         continue;
       }
 

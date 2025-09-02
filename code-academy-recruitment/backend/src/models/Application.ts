@@ -15,6 +15,7 @@ import { RecruitmentYear } from './RecruitmentYear';
 export enum ApplicationStatus {
   PENDING = 'pending',
   REVIEWING = 'reviewing',
+  APPROVED = 'approved', // 审核通过，可安排面试
   INTERVIEW_SCHEDULED = 'interview_scheduled',
   INTERVIEWED = 'interviewed',
   ACCEPTED = 'accepted',

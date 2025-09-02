@@ -64,7 +64,7 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
   const loadData = async () => {
     try {
       const [appsResponse, roomsResponse] = await Promise.all([
-        api.get('/admin/applications', { params: { status: 'reviewing', limit: 100 } }),
+        api.get('/admin/applications', { params: { status: 'approved', limit: 100 } }),
         api.get('/admin/rooms'),
       ]);
 
@@ -111,10 +111,6 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
       if (prev.includes(appId)) {
         return prev.filter(id => id !== appId);
       } else {
-        if (prev.length >= maxInterviews) {
-          setError(`当前时间安排最多只能安排 ${maxInterviews} 个面试`);
-          return prev;
-        }
         return [...prev, appId];
       }
     });
@@ -127,10 +123,7 @@ const BatchInterviewModal: React.FC<BatchInterviewModalProps> = ({
       return;
     }
 
-    if (selectedApplications.length > maxInterviews) {
-      setError(`选择的申请数量超过可安排时间段数量（${maxInterviews}个）`);
-      return;
-    }
+    // 移除人数限制，允许无限制批量安排
 
     try {
       setLoading(true);

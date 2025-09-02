@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { zhCN } from 'date-fns/locale';
+import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
 import { Application, Interview } from '../types';
 import FileViewer from '../components/FileViewer';
@@ -43,6 +44,7 @@ interface InterviewFormData {
 const InterviewPanel: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [interview, setInterview] = useState<Interview | null>(null);
   const [application, setApplication] = useState<Application | null>(null);
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
@@ -80,7 +82,14 @@ const InterviewPanel: React.FC = () => {
   const loadInterviewData = async (interviewId: string) => {
     try {
       setLoading(true);
-      const response = await api.get<Interview>(`/admin/interviews/${interviewId}`);
+      
+      // 根据用户角色选择不同的API
+      const apiUrl = user?.role === 'interviewer' 
+        ? `/interviewer/interviews/${interviewId}`
+        : `/admin/interviews/${interviewId}`;
+      
+      console.log('加载面试数据, 用户角色:', user?.role, 'API:', apiUrl);
+      const response = await api.get<Interview>(apiUrl);
       const interviewData = response.data;
       
       setInterview(interviewData);
@@ -139,7 +148,12 @@ const InterviewPanel: React.FC = () => {
       setError('');
       setMessage('');
 
-      await api.put(`/admin/interviews/${interview.id}/evaluation`, {
+      // 根据用户角色选择不同的API
+      const apiUrl = user?.role === 'interviewer' 
+        ? `/interviewer/interviews/${interview.id}/evaluation`
+        : `/admin/interviews/${interview.id}/evaluation`;
+      
+      await api.put(apiUrl, {
         evaluationScores: {
           technical: data.technical,
           communication: data.communication,

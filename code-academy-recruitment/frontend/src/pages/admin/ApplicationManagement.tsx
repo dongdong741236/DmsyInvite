@@ -242,26 +242,38 @@ const ApplicationManagement: React.FC = () => {
                       </button>
                       
                       {application.status === 'pending' && (
+                        <button
+                          onClick={() => updateApplicationStatus(application.id, 'reviewing')}
+                          className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
+                        >
+                          开始审核
+                        </button>
+                      )}
+                      
+                      {application.status === 'reviewing' && (
                         <>
                           <button
-                            onClick={() => updateApplicationStatus(application.id, 'reviewing')}
-                            className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs hover:bg-blue-200 transition-colors"
-                          >
-                            开始审核
-                          </button>
-                          <button
-                            onClick={() => updateApplicationStatus(application.id, 'accepted')}
+                            onClick={() => updateApplicationStatus(application.id, 'approved')}
                             className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors"
                           >
-                            直接录取
+                            审核通过
                           </button>
                           <button
                             onClick={() => updateApplicationStatus(application.id, 'rejected')}
                             className="inline-flex items-center px-2 py-1 bg-red-100 text-red-700 rounded text-xs hover:bg-red-200 transition-colors"
                           >
-                            拒绝申请
+                            审核拒绝
                           </button>
                         </>
+                      )}
+                      
+                      {(application.status === 'pending' || application.status === 'reviewing') && (
+                        <button
+                          onClick={() => updateApplicationStatus(application.id, 'accepted')}
+                          className="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 rounded text-xs hover:bg-green-200 transition-colors"
+                        >
+                          直接录取
+                        </button>
                       )}
                     </div>
                   </td>

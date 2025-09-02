@@ -93,7 +93,7 @@ const InterviewManagement: React.FC = () => {
   const loadPendingApplications = async () => {
     try {
       const response = await api.get('/admin/applications', {
-        params: { status: 'reviewing', limit: 100 },
+        params: { status: 'approved', limit: 100 },
       });
       setApplications(response.data.applications || []);
     } catch (error) {
