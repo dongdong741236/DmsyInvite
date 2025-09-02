@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-100 text-gray-900;
+    /* 中文界面使用微软雅黑，英文使用monospace */
+    font-family: 'Microsoft YaHei', '微软雅黑', 'Consolas', 'Monaco', 'Courier New', 'monospace', 'sans-serif';
+  }
+  
+  * {
+    @apply transition-all duration-200;
+  }
+  
+  /* 代码和等宽内容 */
+  code, pre {
+    font-family: 'Consolas', 'Monaco', 'Courier New', 'monospace';
+  }
+  
+  /* 输入框使用相同字体 */
+  input, textarea, select {
+    font-family: 'Microsoft YaHei', '微软雅黑', 'Consolas', 'Monaco', 'Courier New', 'monospace', 'sans-serif';
+  }
+}
+
+@layer components {
+  .neumorphic {
+    @apply bg-gray-100 rounded-xl shadow-neumorphic;
+  }
+  
+  .neumorphic-inset {
+    @apply bg-gray-100 rounded-xl shadow-neumorphic-inset;
+  }
+  
+  .neumorphic-button {
+    @apply px-6 py-3 rounded-xl bg-gray-100 shadow-neumorphic hover:shadow-neumorphic-hover active:shadow-neumorphic-inset transform hover:scale-[0.98] active:scale-95;
+  }
+  
+  .neumorphic-input {
+    @apply w-full px-4 py-3 rounded-lg bg-gray-100 shadow-neumorphic-inset focus:outline-none focus:ring-2 focus:ring-primary-400;
+  }
+  
+  .neumorphic-card {
+    @apply p-6 rounded-2xl bg-gray-100 shadow-neumorphic;
+  }
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent;
+  }
+  
+  /* 字体样式类 */
+  .font-code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', 'monospace';
+  }
+  
+  .font-chinese {
+    font-family: 'Microsoft YaHei', '微软雅黑', 'sans-serif';
+  }
+  
+  /* 代码编辑器样式 */
+  .code-editor {
+    @apply font-code text-sm leading-relaxed;
+  }
+}
