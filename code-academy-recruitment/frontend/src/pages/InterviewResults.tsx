@@ -173,7 +173,7 @@ const InterviewResults: React.FC = () => {
   };
 
   const handleSendSingle = async (id: string) => {
-    if (!confirm('确定要发送结果通知吗？')) return;
+    if (!window.confirm('确定要发送结果通知吗？')) return;
 
     try {
       setSendingNotification(true);
@@ -201,7 +201,7 @@ const InterviewResults: React.FC = () => {
       return;
     }
 
-    if (!confirm(`确定要向 ${selectedIds.length} 个申请者发送结果通知吗？`)) {
+    if (!window.confirm(`确定要向 ${selectedIds.length} 个申请者发送结果通知吗？`)) {
       return;
     }
 
