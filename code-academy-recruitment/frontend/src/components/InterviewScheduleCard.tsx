@@ -22,6 +22,7 @@ interface InterviewSchedule {
   status: string;
   isCompleted: boolean;
   result?: string;
+  notificationSent?: boolean;
 }
 
 const InterviewScheduleCard: React.FC = () => {
@@ -46,28 +47,39 @@ const InterviewScheduleCard: React.FC = () => {
 
   const getStatusBadge = (schedule: InterviewSchedule) => {
     if (schedule.isCompleted) {
-      switch (schedule.result) {
-        case 'passed':
-          return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-              <CheckCircleIcon className="w-3 h-3 mr-1" />
-              面试通过
-            </span>
-          );
-        case 'failed':
-          return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-              <ExclamationTriangleIcon className="w-3 h-3 mr-1" />
-              面试未通过
-            </span>
-          );
-        default:
-          return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-              <CheckCircleIcon className="w-3 h-3 mr-1" />
-              面试已完成
-            </span>
-          );
+      // 只有管理员发送通知后才显示具体结果
+      if (schedule.notificationSent && schedule.result) {
+        switch (schedule.result) {
+          case 'passed':
+            return (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <CheckCircleIcon className="w-3 h-3 mr-1" />
+                面试通过
+              </span>
+            );
+          case 'failed':
+            return (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                <ExclamationTriangleIcon className="w-3 h-3 mr-1" />
+                面试未通过
+              </span>
+            );
+          default:
+            return (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <CheckCircleIcon className="w-3 h-3 mr-1" />
+                面试已完成
+              </span>
+            );
+        }
+      } else {
+        // 面试完成但未通知结果
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <CheckCircleIcon className="w-3 h-3 mr-1" />
+            面试已完成
+          </span>
+        );
       }
     } else {
       return (

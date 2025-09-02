@@ -193,6 +193,7 @@ export const getMyInterviewSchedule = async (
         status: app.status,
         isCompleted: app.interview!.isCompleted,
         result: app.interview!.result,
+        notificationSent: app.interview!.notificationSent,
       }));
 
     res.json(interviewSchedules);

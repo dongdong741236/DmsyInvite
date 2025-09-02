@@ -68,7 +68,7 @@ const Home: React.FC = () => {
           </div>
         )}
         
-        {user && !user.isEmailVerified && (
+        {user && user.role === 'applicant' && !user.isEmailVerified && (
           <div className="neumorphic-card max-w-2xl mx-auto bg-yellow-50 border-yellow-200">
             <p className="text-yellow-800">
               请先验证您的邮箱地址，查看邮箱中的验证邮件。
@@ -92,7 +92,7 @@ const Home: React.FC = () => {
       </section>
 
       {/* CTA Section - 只对申请者显示 */}
-      {user && user.role === 'applicant' && user.isEmailVerified && !applicationLoading && (
+      {user && user.role === 'applicant' && (user.isEmailVerified !== false) && !applicationLoading && (
         <section className="text-center py-12 neumorphic-card">
           <h2 className="text-3xl font-bold mb-4">
             {hasApplications ? '申请管理' : '准备好了吗？'}

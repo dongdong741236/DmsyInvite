@@ -124,7 +124,12 @@ const InterviewPanel: React.FC = () => {
 
   const loadQuestions = async () => {
     try {
-      const response = await api.get<InterviewQuestion[]>('/admin/interview-questions');
+      // 根据用户角色选择不同的API
+      const apiUrl = user?.role === 'interviewer' 
+        ? '/interviewer/questions'
+        : '/admin/interview-questions';
+      
+      const response = await api.get<InterviewQuestion[]>(apiUrl);
       setQuestions(response.data);
       
       // 初始化问题回答
