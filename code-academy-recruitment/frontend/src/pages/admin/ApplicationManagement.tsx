@@ -74,18 +74,26 @@ const ApplicationManagement: React.FC = () => {
 
   const updateApplicationStatus = async (id: string, status: string, reviewNotes?: string) => {
     try {
+      console.log('=== 更新申请状态 ===');
+      console.log('申请ID:', id);
+      console.log('新状态:', status);
+      console.log('审核备注:', reviewNotes);
+      
       setError('');
       setMessage('');
       
-      await api.put(`/admin/applications/${id}/status`, {
+      const response = await api.put(`/admin/applications/${id}/status`, {
         status,
         reviewNotes,
       });
       
+      console.log('状态更新响应:', response.data);
       setMessage('申请状态更新成功');
       // 重新加载数据
       loadApplications();
     } catch (err: any) {
+      console.error('状态更新失败:', err);
+      console.error('错误详情:', err.response?.data);
       setError(err.response?.data?.error || '更新申请状态失败');
     }
   };

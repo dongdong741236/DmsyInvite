@@ -26,7 +26,7 @@ router.get('/applications/:id', adminController.getApplication);
 router.put(
   '/applications/:id/status',
   [
-    body('status').isIn(['pending', 'reviewing', 'interview_scheduled', 'interviewed', 'accepted', 'rejected']),
+    body('status').isIn(['pending', 'reviewing', 'approved', 'interview_scheduled', 'interviewed', 'accepted', 'rejected']),
     body('reviewNotes').optional().isString(),
   ],
   validateRequest,
