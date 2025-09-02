@@ -37,6 +37,15 @@ const InterviewScheduleCard: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get<InterviewSchedule[]>('/applications/my/interviews');
+      console.log('Interview schedules data:', response.data);
+      // 调试：检查返回的数据
+      response.data.forEach((schedule, index) => {
+        console.log(`Schedule ${index}:`, {
+          notificationSent: schedule.notificationSent,
+          result: schedule.result,
+          isCompleted: schedule.isCompleted
+        });
+      });
       setSchedules(response.data);
     } catch (error) {
       console.error('Failed to load interview schedules:', error);
@@ -48,7 +57,7 @@ const InterviewScheduleCard: React.FC = () => {
   const getStatusBadge = (schedule: InterviewSchedule) => {
     if (schedule.isCompleted) {
       // 只有管理员发送通知后才显示具体结果
-      if (schedule.notificationSent && schedule.result) {
+      if (schedule.notificationSent === true && schedule.result) {
         switch (schedule.result) {
           case 'passed':
             return (
@@ -66,18 +75,18 @@ const InterviewScheduleCard: React.FC = () => {
             );
           default:
             return (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                <CheckCircleIcon className="w-3 h-3 mr-1" />
-                面试已完成
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                <ClockIcon className="w-3 h-3 mr-1" />
+                等待结果通知
               </span>
             );
         }
       } else {
         // 面试完成但未通知结果
         return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            <CheckCircleIcon className="w-3 h-3 mr-1" />
-            面试已完成
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            <ClockIcon className="w-3 h-3 mr-1" />
+            等待结果通知
           </span>
         );
       }

@@ -1,9 +1,11 @@
-# 面试结果隐私保护修复
+# 面试系统修复记录
 
 ## 问题描述
 
 1. **面试官页面白屏问题**：`/interviewer/interviews` 页面可能出现白屏
 2. **隐私问题**：用户可以在通知发送前看到面试结果
+3. **佐证文件不显示**：面试过程中面试官看不到申请者的佐证文件
+4. **面试结果泄露**：申请者页面可能提前显示"面试通过"
 
 ## 修复内容
 
@@ -36,17 +38,24 @@ if (application.interview && !application.interview.notificationSent) {
 - 只在 `notificationSent` 为 true 时返回 `result` 字段
 - 其他情况下 `result` 返回 undefined
 
-### 2. 前端修复 (frontend/src/pages/interviewer/MyInterviews.tsx)
+### 2. 前端修复
 
-#### 错误处理改进
+#### MyInterviews.tsx (面试官页面)
 - 添加了 `error` 状态管理
 - 捕获并显示API错误信息
 - 提供重新加载按钮
-
-#### UI改进
 - 添加错误显示界面，避免白屏
-- 显示具体错误信息帮助调试
-- 保留原有的"无面试安排"提示信息
+
+#### InterviewPanel.tsx (面试面板)
+- 添加佐证文件显示
+- 显示项目经验附件列表
+- 显示作品集链接
+
+#### InterviewScheduleCard.tsx (面试安排卡片)
+- 修复结果显示逻辑
+- 严格检查 `notificationSent === true`
+- 未通知时显示"等待结果通知"而非具体结果
+- 添加调试日志帮助排查问题
 
 ## 安全性保证
 

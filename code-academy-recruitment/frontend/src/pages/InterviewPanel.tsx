@@ -351,6 +351,37 @@ const InterviewPanel: React.FC = () => {
                   <FileViewer filePath={application.studentCardPhoto} label="学生证" />
                 </div>
               </div>
+              
+              {/* 佐证文件 */}
+              {application.experienceAttachments && application.experienceAttachments.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="font-medium text-gray-700 mb-2">项目经验佐证文件</h4>
+                  <div className="space-y-2">
+                    {application.experienceAttachments.map((file, index) => (
+                      <FileViewer 
+                        key={index} 
+                        filePath={file} 
+                        label={`佐证文件 ${index + 1}`} 
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* 作品集链接 */}
+              {application.portfolio && (
+                <div className="mt-4">
+                  <h4 className="font-medium text-gray-700 mb-2">作品集链接</h4>
+                  <a 
+                    href={application.portfolio} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary-600 hover:text-primary-700 underline"
+                  >
+                    {application.portfolio}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
