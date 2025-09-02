@@ -19,6 +19,20 @@ export const getMyApplications = async (
       order: { createdAt: 'DESC' },
     });
 
+    // 过滤未发送通知的面试结果
+    applications.forEach(application => {
+      if (application.interview && !application.interview.notificationSent) {
+        // 创建一个新的对象，只包含允许的字段
+        application.interview = {
+          ...application.interview,
+          result: undefined as any,  // 隐藏结果
+          evaluationScores: undefined,
+          interviewerNotes: undefined,
+          questionAnswers: undefined,
+        };
+      }
+    });
+
     res.json(applications);
   } catch (error) {
     next(error);
@@ -42,6 +56,18 @@ export const getApplication = async (
 
     if (!application) {
       throw new AppError('Application not found', 404);
+    }
+
+    // 如果面试结果未发送通知，隐藏敏感信息
+    if (application.interview && !application.interview.notificationSent) {
+      // 创建一个新的对象，只包含允许的字段
+      application.interview = {
+        ...application.interview,
+        result: undefined as any,  // 隐藏结果
+        evaluationScores: undefined,
+        interviewerNotes: undefined,
+        questionAnswers: undefined,
+      };
     }
 
     res.json(application);
@@ -182,19 +208,39 @@ export const getMyInterviewSchedule = async (
     // 过滤出有面试安排的申请
     const interviewSchedules = applications
       .filter(app => app.interview)
-      .map(app => ({
-        applicationId: app.id,
-        interviewId: app.interview!.id,
-        scheduledAt: app.interview!.scheduledAt,
-        room: {
-          name: app.interview!.room?.name,
-          location: app.interview!.room?.location,
-        },
-        status: app.status,
-        isCompleted: app.interview!.isCompleted,
-        result: app.interview!.result,
-        notificationSent: app.interview!.notificationSent,
-      }));
+      .map(app => {
+        // 严格检查notificationSent字段
+        const notificationSent = app.interview!.notificationSent === true;
+        
+        // 调试日志
+        console.log(`[getMyInterviewSchedule] Interview ${app.interview!.id}:`, {
+          notificationSent: app.interview!.notificationSent,
+          notificationSentType: typeof app.interview!.notificationSent,
+          result: app.interview!.result,
+          willReturnResult: notificationSent
+        });
+        
+        const schedule: any = {
+          applicationId: app.id,
+          interviewId: app.interview!.id,
+          scheduledAt: app.interview!.scheduledAt,
+          room: {
+            name: app.interview!.room?.name,
+            location: app.interview!.room?.location,
+          },
+          status: app.status,
+          isCompleted: app.interview!.isCompleted,
+          notificationSent: app.interview!.notificationSent,
+        };
+        
+        // 只有在明确发送通知后才添加result字段
+        if (notificationSent === true) {
+          schedule.result = app.interview!.result;
+        }
+        // 不设置result字段，让它保持undefined
+        
+        return schedule;
+      });
 
     res.json(interviewSchedules);
   } catch (error) {

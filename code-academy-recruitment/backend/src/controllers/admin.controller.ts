@@ -484,7 +484,7 @@ export const scheduleInterview = async (
     }
 
     const interview = interviewRepository.create({
-      application,
+      application: { id: applicationId } as Application, // 使用ID引用而不是整个对象
       room,
       scheduledAt: new Date(scheduledAt),
       recruitmentYear: currentYear || undefined,
@@ -561,10 +561,12 @@ export const sendInterviewNotification = async (
     }
 
     if (!interview.application) {
-      throw new AppError('Interview application not found', 400);
+      console.error(`Interview ${id} has no application. The application relation is NULL.`);
+      throw new AppError('Interview application not found. This interview may have a data integrity issue.', 400);
     }
 
     if (!interview.application.user) {
+      console.error(`Interview ${id} application has no user.`);
       throw new AppError('Interview application user not found', 400);
     }
 
@@ -580,8 +582,9 @@ export const sendInterviewNotification = async (
       interview.room.location
     );
 
-    interview.notificationSent = true;
-    await interviewRepository.save(interview);
+    // 注意：不要设置 notificationSent，这个字段是给结果通知用的
+    // interview.notificationSent = true;  // 移除这行
+    // await interviewRepository.save(interview);  // 移除这行
 
     res.json({
       message: 'Interview notification sent successfully',
@@ -758,7 +761,7 @@ export const updateInterviewEvaluation = async (
 ) => {
   try {
     const { id } = req.params;
-    const { evaluationScores, interviewerNotes, result, isCompleted } = req.body;
+    const { evaluationScores, interviewerNotes, result, isCompleted, questionAnswers } = req.body;
     const interviewRepository = AppDataSource.getRepository(Interview);
 
     const interview = await interviewRepository.findOne({
@@ -774,6 +777,11 @@ export const updateInterviewEvaluation = async (
     interview.interviewerNotes = interviewerNotes;
     interview.result = result;
     interview.isCompleted = isCompleted;
+    
+    // 保存问题答案
+    if (questionAnswers) {
+      interview.questionAnswers = questionAnswers;
+    }
 
     await interviewRepository.save(interview);
 

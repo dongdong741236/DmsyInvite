@@ -25,6 +25,16 @@ interface InterviewSchedule {
   notificationSent?: boolean;
 }
 
+// 安全过滤函数
+const sanitizeSchedule = (schedule: InterviewSchedule): InterviewSchedule => {
+  // 如果未发送通知，移除result字段
+  if (schedule.notificationSent !== true) {
+    const { result, ...safeSchedule } = schedule;
+    return safeSchedule as InterviewSchedule;
+  }
+  return schedule;
+};
+
 const InterviewScheduleCard: React.FC = () => {
   const [schedules, setSchedules] = useState<InterviewSchedule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +47,36 @@ const InterviewScheduleCard: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get<InterviewSchedule[]>('/applications/my/interviews');
-      setSchedules(response.data);
+      console.log('Raw interview schedules data:', response.data);
+      
+      // 在前端也过滤一次，确保安全
+      const filteredSchedules = response.data.map(schedule => {
+        // 额外的安全检查：如果是面试安排通知（不是结果通知），强制清除结果
+        // 判断逻辑：如果 notificationSent 为 true 但申请状态不是最终状态，说明是错误的标记
+        const isFinalStatus = ['accepted', 'rejected'].includes(schedule.status);
+        
+        if (schedule.notificationSent && !isFinalStatus) {
+          console.warn(`[Data Issue] Interview ${schedule.interviewId} has notificationSent=true but status=${schedule.status}, clearing result`);
+          schedule.notificationSent = false;  // 修正标记
+        }
+        
+        const sanitized = sanitizeSchedule(schedule);
+        if (schedule.notificationSent !== true && schedule.result) {
+          console.warn(`[Security] Filtered out result for interview ${schedule.interviewId}: notificationSent=${schedule.notificationSent}, result was ${schedule.result}`);
+        }
+        return sanitized;
+      });
+      
+      // 调试：检查过滤后的数据
+      filteredSchedules.forEach((schedule, index) => {
+        console.log(`Filtered Schedule ${index}:`, {
+          notificationSent: schedule.notificationSent,
+          result: schedule.result,
+          isCompleted: schedule.isCompleted
+        });
+      });
+      
+      setSchedules(filteredSchedules);
     } catch (error) {
       console.error('Failed to load interview schedules:', error);
     } finally {
@@ -46,48 +85,62 @@ const InterviewScheduleCard: React.FC = () => {
   };
 
   const getStatusBadge = (schedule: InterviewSchedule) => {
-    if (schedule.isCompleted) {
-      // 只有管理员发送通知后才显示具体结果
-      if (schedule.notificationSent && schedule.result) {
-        switch (schedule.result) {
-          case 'passed':
-            return (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                <CheckCircleIcon className="w-3 h-3 mr-1" />
-                面试通过
-              </span>
-            );
-          case 'failed':
-            return (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                <ExclamationTriangleIcon className="w-3 h-3 mr-1" />
-                面试未通过
-              </span>
-            );
-          default:
-            return (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                <CheckCircleIcon className="w-3 h-3 mr-1" />
-                面试已完成
-              </span>
-            );
-        }
-      } else {
-        // 面试完成但未通知结果
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            <CheckCircleIcon className="w-3 h-3 mr-1" />
-            面试已完成
-          </span>
-        );
-      }
-    } else {
+    // 未完成面试
+    if (!schedule.isCompleted) {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
           <ClockIcon className="w-3 h-3 mr-1" />
           待面试
         </span>
       );
+    }
+    
+    // 面试已完成，检查是否已发送通知
+    // 使用严格相等检查，确保notificationSent必须是true
+    const canShowResult = schedule.notificationSent === true;
+    
+    // 调试日志
+    console.log('Status badge check:', {
+      interviewId: schedule.interviewId,
+      notificationSent: schedule.notificationSent,
+      result: schedule.result,
+      canShowResult
+    });
+    
+    if (!canShowResult) {
+      // 未发送通知，显示等待状态
+      return (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          <ClockIcon className="w-3 h-3 mr-1" />
+          等待结果通知
+        </span>
+      );
+    }
+    
+    // 已发送通知，根据结果显示状态
+    switch (schedule.result) {
+      case 'passed':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <CheckCircleIcon className="w-3 h-3 mr-1" />
+            面试通过
+          </span>
+        );
+      case 'failed':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            <ExclamationTriangleIcon className="w-3 h-3 mr-1" />
+            面试未通过
+          </span>
+        );
+      default:
+        // 已发送通知但结果为空或其他值
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            <ClockIcon className="w-3 h-3 mr-1" />
+            等待结果通知
+          </span>
+        );
     }
   };
 
