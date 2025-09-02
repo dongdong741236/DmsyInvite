@@ -7,6 +7,7 @@ import {
   UserIcon,
   ArrowRightOnRectangleIcon,
   CogIcon,
+  ClipboardDocumentCheckIcon,
 } from '@heroicons/react/24/outline';
 
 const Layout: React.FC = () => {
@@ -55,6 +56,16 @@ const Layout: React.FC = () => {
                   >
                     <DocumentTextIcon className="w-5 h-5 mr-2" />
                     面试管理
+                  </Link>
+                )}
+                
+                {(isAdmin || isInterviewer) && (
+                  <Link
+                    to="/interview/results"
+                    className="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:text-primary-600 hover:bg-gray-50"
+                  >
+                    <ClipboardDocumentCheckIcon className="w-5 h-5 mr-2" />
+                    面试结果
                   </Link>
                 )}
                 

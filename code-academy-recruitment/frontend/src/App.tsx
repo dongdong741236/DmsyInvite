@@ -24,6 +24,7 @@ import InterviewerDashboard from './pages/interviewer/InterviewerDashboard';
 import MyInterviews from './pages/interviewer/MyInterviews';
 import InterviewSchedule from './pages/interviewer/InterviewSchedule';
 import QuestionBank from './pages/interviewer/QuestionBank';
+import InterviewResults from './pages/InterviewResults';
 
 function App() {
   return (
@@ -197,6 +198,15 @@ function App() {
               element={
                 <PrivateRoute adminOnly interviewerAllowed>
                   <QuestionBank />
+                </PrivateRoute>
+              }
+            />
+            
+            <Route
+              path="interview/results"
+              element={
+                <PrivateRoute adminOnly interviewerAllowed>
+                  <InterviewResults />
                 </PrivateRoute>
               }
             />
