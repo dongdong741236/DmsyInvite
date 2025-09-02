@@ -682,8 +682,15 @@ const ApplicationFormNew: React.FC = () => {
                   onUploadComplete={(filePaths) => {
                     setUploadedFiles(prev => ({
                       ...prev,
-                      experienceAttachments: filePaths as string[]
+                      experienceAttachments: [
+                        ...(prev.experienceAttachments || []),
+                        ...(Array.isArray(filePaths) ? filePaths : [filePaths])
+                      ]
                     }));
+                    console.log('佐证材料上传完成，当前所有文件:', [
+                      ...(uploadedFiles.experienceAttachments || []),
+                      ...(Array.isArray(filePaths) ? filePaths : [filePaths])
+                    ]);
                   }}
                   error={errors.experienceAttachments?.message}
                 />
