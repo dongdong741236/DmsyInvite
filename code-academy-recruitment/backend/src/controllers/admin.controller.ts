@@ -758,7 +758,7 @@ export const updateInterviewEvaluation = async (
 ) => {
   try {
     const { id } = req.params;
-    const { evaluationScores, interviewerNotes, result, isCompleted } = req.body;
+    const { evaluationScores, interviewerNotes, result, isCompleted, questionAnswers } = req.body;
     const interviewRepository = AppDataSource.getRepository(Interview);
 
     const interview = await interviewRepository.findOne({
@@ -774,6 +774,11 @@ export const updateInterviewEvaluation = async (
     interview.interviewerNotes = interviewerNotes;
     interview.result = result;
     interview.isCompleted = isCompleted;
+    
+    // 保存问题答案
+    if (questionAnswers) {
+      interview.questionAnswers = questionAnswers;
+    }
 
     await interviewRepository.save(interview);
 
