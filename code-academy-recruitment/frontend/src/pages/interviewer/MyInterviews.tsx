@@ -40,6 +40,7 @@ const MyInterviews: React.FC = () => {
   const [interviews, setInterviews] = useState<Interview[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
     loadInterviews();
@@ -48,13 +49,15 @@ const MyInterviews: React.FC = () => {
   const loadInterviews = async () => {
     try {
       setLoading(true);
+      setError('');
       console.log('=== 面试官加载面试列表 ===');
       const response = await api.get('/interviewer/interviews');
       console.log('面试官面试数据:', response.data);
       setInterviews(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load interviews:', error);
       console.error('面试官API错误详情:', error);
+      setError(error.response?.data?.error || error.response?.data?.message || '加载面试列表失败，请刷新重试');
     } finally {
       setLoading(false);
     }
@@ -106,6 +109,24 @@ const MyInterviews: React.FC = () => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="neumorphic-card p-8 max-w-md text-center">
+          <ExclamationTriangleIcon className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2 text-gray-900">加载失败</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => loadInterviews()}
+            className="neumorphic-button bg-primary-600 text-white px-6 py-2"
+          >
+            重新加载
+          </button>
+        </div>
       </div>
     );
   }

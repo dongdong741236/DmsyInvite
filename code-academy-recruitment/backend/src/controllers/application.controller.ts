@@ -19,6 +19,19 @@ export const getMyApplications = async (
       order: { createdAt: 'DESC' },
     });
 
+    // 过滤未发送通知的面试结果
+    applications.forEach(application => {
+      if (application.interview && !application.interview.notificationSent) {
+        // 清除面试结果相关的敏感信息
+        delete application.interview.result;
+        delete application.interview.score;
+        delete application.interview.evaluationScores;
+        delete application.interview.interviewerNotes;
+        delete application.interview.feedback;
+        delete application.interview.questionAnswers;
+      }
+    });
+
     res.json(applications);
   } catch (error) {
     next(error);
@@ -42,6 +55,17 @@ export const getApplication = async (
 
     if (!application) {
       throw new AppError('Application not found', 404);
+    }
+
+    // 如果面试结果未发送通知，隐藏敏感信息
+    if (application.interview && !application.interview.notificationSent) {
+      // 清除面试结果相关的敏感信息
+      delete application.interview.result;
+      delete application.interview.score;
+      delete application.interview.evaluationScores;
+      delete application.interview.interviewerNotes;
+      delete application.interview.feedback;
+      delete application.interview.questionAnswers;
     }
 
     res.json(application);
@@ -192,7 +216,8 @@ export const getMyInterviewSchedule = async (
         },
         status: app.status,
         isCompleted: app.interview!.isCompleted,
-        result: app.interview!.result,
+        // 只有发送通知后才返回结果
+        result: app.interview!.notificationSent ? app.interview!.result : undefined,
         notificationSent: app.interview!.notificationSent,
       }));
 
