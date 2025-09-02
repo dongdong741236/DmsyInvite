@@ -208,20 +208,27 @@ export const getMyInterviewSchedule = async (
     // 过滤出有面试安排的申请
     const interviewSchedules = applications
       .filter(app => app.interview)
-      .map(app => ({
-        applicationId: app.id,
-        interviewId: app.interview!.id,
-        scheduledAt: app.interview!.scheduledAt,
-        room: {
-          name: app.interview!.room?.name,
-          location: app.interview!.room?.location,
-        },
-        status: app.status,
-        isCompleted: app.interview!.isCompleted,
-        // 只有发送通知后才返回结果
-        result: app.interview!.notificationSent ? app.interview!.result : undefined,
-        notificationSent: app.interview!.notificationSent,
-      }));
+      .map(app => {
+        const notificationSent = app.interview!.notificationSent === true;
+        
+        // 调试日志
+        console.log(`Interview ${app.interview!.id}: notificationSent=${app.interview!.notificationSent}, result=${app.interview!.result}`);
+        
+        return {
+          applicationId: app.id,
+          interviewId: app.interview!.id,
+          scheduledAt: app.interview!.scheduledAt,
+          room: {
+            name: app.interview!.room?.name,
+            location: app.interview!.room?.location,
+          },
+          status: app.status,
+          isCompleted: app.interview!.isCompleted,
+          // 严格检查：只有明确发送通知后才返回结果
+          result: notificationSent ? app.interview!.result : undefined,
+          notificationSent: app.interview!.notificationSent,
+        };
+      });
 
     res.json(interviewSchedules);
   } catch (error) {

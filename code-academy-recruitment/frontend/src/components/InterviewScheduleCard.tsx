@@ -55,48 +55,62 @@ const InterviewScheduleCard: React.FC = () => {
   };
 
   const getStatusBadge = (schedule: InterviewSchedule) => {
-    if (schedule.isCompleted) {
-      // 只有管理员发送通知后才显示具体结果
-      if (schedule.notificationSent === true && schedule.result) {
-        switch (schedule.result) {
-          case 'passed':
-            return (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                <CheckCircleIcon className="w-3 h-3 mr-1" />
-                面试通过
-              </span>
-            );
-          case 'failed':
-            return (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                <ExclamationTriangleIcon className="w-3 h-3 mr-1" />
-                面试未通过
-              </span>
-            );
-          default:
-            return (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                <ClockIcon className="w-3 h-3 mr-1" />
-                等待结果通知
-              </span>
-            );
-        }
-      } else {
-        // 面试完成但未通知结果
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            <ClockIcon className="w-3 h-3 mr-1" />
-            等待结果通知
-          </span>
-        );
-      }
-    } else {
+    // 未完成面试
+    if (!schedule.isCompleted) {
       return (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
           <ClockIcon className="w-3 h-3 mr-1" />
           待面试
         </span>
       );
+    }
+    
+    // 面试已完成，检查是否已发送通知
+    // 使用严格相等检查，确保notificationSent必须是true
+    const canShowResult = schedule.notificationSent === true;
+    
+    // 调试日志
+    console.log('Status badge check:', {
+      interviewId: schedule.interviewId,
+      notificationSent: schedule.notificationSent,
+      result: schedule.result,
+      canShowResult
+    });
+    
+    if (!canShowResult) {
+      // 未发送通知，显示等待状态
+      return (
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+          <ClockIcon className="w-3 h-3 mr-1" />
+          等待结果通知
+        </span>
+      );
+    }
+    
+    // 已发送通知，根据结果显示状态
+    switch (schedule.result) {
+      case 'passed':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <CheckCircleIcon className="w-3 h-3 mr-1" />
+            面试通过
+          </span>
+        );
+      case 'failed':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            <ExclamationTriangleIcon className="w-3 h-3 mr-1" />
+            面试未通过
+          </span>
+        );
+      default:
+        // 已发送通知但结果为空或其他值
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            <ClockIcon className="w-3 h-3 mr-1" />
+            等待结果通知
+          </span>
+        );
     }
   };
 
