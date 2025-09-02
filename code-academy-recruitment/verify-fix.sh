@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# 验证面试结果隐私保护修复
+
+echo "=== 验证面试结果隐私保护 ==="
+echo ""
+echo "修复内容："
+echo "1. 用户在通知发送前无法看到面试结果"
+echo "2. 面试官页面错误处理改进"
+echo ""
+echo "验证方法："
+echo "1. 登录普通用户账号"
+echo "2. 查看有面试安排的申请"
+echo "3. 确认在通知发送前看不到以下信息："
+echo "   - 面试结果(result)"
+echo "   - 评分详情(evaluationScores)"
+echo "   - 面试官备注(interviewerNotes)"
+echo "   - 问题答案(questionAnswers)"
+echo ""
+echo "受影响的API："
+echo "- GET /api/applications/my"
+echo "- GET /api/applications/:id"
+echo "- GET /api/applications/my/interviews"
+echo ""
+echo "使用 './deploy.sh update' 重新部署"

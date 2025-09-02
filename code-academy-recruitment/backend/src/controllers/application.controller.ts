@@ -22,14 +22,14 @@ export const getMyApplications = async (
     // 过滤未发送通知的面试结果
     applications.forEach(application => {
       if (application.interview && !application.interview.notificationSent) {
-        // 清除面试结果相关的敏感信息
-        // 使用类型断言来处理TypeScript的严格检查
-        const interview = application.interview as any;
-        delete interview.result;
-        delete interview.evaluationScores;
-        delete interview.interviewerNotes;
-        delete interview.questionAnswers;
-        // 注意: score 和 feedback 字段在 Interview 模型中不存在
+        // 创建一个新的对象，只包含允许的字段
+        application.interview = {
+          ...application.interview,
+          result: undefined as any,  // 隐藏结果
+          evaluationScores: undefined,
+          interviewerNotes: undefined,
+          questionAnswers: undefined,
+        };
       }
     });
 
@@ -60,14 +60,14 @@ export const getApplication = async (
 
     // 如果面试结果未发送通知，隐藏敏感信息
     if (application.interview && !application.interview.notificationSent) {
-      // 清除面试结果相关的敏感信息
-      // 使用类型断言来处理TypeScript的严格检查
-      const interview = application.interview as any;
-      delete interview.result;
-      delete interview.evaluationScores;
-      delete interview.interviewerNotes;
-      delete interview.questionAnswers;
-      // 注意: score 和 feedback 字段在 Interview 模型中不存在
+      // 创建一个新的对象，只包含允许的字段
+      application.interview = {
+        ...application.interview,
+        result: undefined as any,  // 隐藏结果
+        evaluationScores: undefined,
+        interviewerNotes: undefined,
+        questionAnswers: undefined,
+      };
     }
 
     res.json(application);
