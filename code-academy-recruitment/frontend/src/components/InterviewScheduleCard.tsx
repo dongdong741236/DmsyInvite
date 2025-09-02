@@ -51,6 +51,15 @@ const InterviewScheduleCard: React.FC = () => {
       
       // 在前端也过滤一次，确保安全
       const filteredSchedules = response.data.map(schedule => {
+        // 额外的安全检查：如果是面试安排通知（不是结果通知），强制清除结果
+        // 判断逻辑：如果 notificationSent 为 true 但申请状态不是最终状态，说明是错误的标记
+        const isFinalStatus = ['accepted', 'rejected'].includes(schedule.status);
+        
+        if (schedule.notificationSent && !isFinalStatus) {
+          console.warn(`[Data Issue] Interview ${schedule.interviewId} has notificationSent=true but status=${schedule.status}, clearing result`);
+          schedule.notificationSent = false;  // 修正标记
+        }
+        
         const sanitized = sanitizeSchedule(schedule);
         if (schedule.notificationSent !== true && schedule.result) {
           console.warn(`[Security] Filtered out result for interview ${schedule.interviewId}: notificationSent=${schedule.notificationSent}, result was ${schedule.result}`);

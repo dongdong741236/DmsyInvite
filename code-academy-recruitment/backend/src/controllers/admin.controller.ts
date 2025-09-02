@@ -580,8 +580,9 @@ export const sendInterviewNotification = async (
       interview.room.location
     );
 
-    interview.notificationSent = true;
-    await interviewRepository.save(interview);
+    // 注意：不要设置 notificationSent，这个字段是给结果通知用的
+    // interview.notificationSent = true;  // 移除这行
+    // await interviewRepository.save(interview);  // 移除这行
 
     res.json({
       message: 'Interview notification sent successfully',
