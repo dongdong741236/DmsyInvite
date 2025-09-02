@@ -13,6 +13,9 @@ import {
 const Layout: React.FC = () => {
   const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
+  
+  // 检查是否是面试官
+  const isInterviewer = user?.role === 'interviewer';
 
   const handleLogout = () => {
     logout();
