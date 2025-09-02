@@ -132,7 +132,7 @@ router.get('/interviews/:id', async (req: Request, res: Response, next: NextFunc
 router.put('/interviews/:id/evaluation', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { score, feedback, result, questionAnswers } = req.body;
+    const { evaluationScores, interviewerNotes, result, questionAnswers, isCompleted } = req.body;
     const interviewerId = req.user!.id;
     const interviewRepository = AppDataSource.getRepository(Interview);
 
@@ -156,18 +156,18 @@ router.put('/interviews/:id/evaluation', async (req: Request, res: Response, nex
     }
 
     // 更新面试结果
-    if (score !== undefined) {
-      interview.evaluationScores = {
-        ...interview.evaluationScores,
-        overall: score,
-      };
+    if (evaluationScores) {
+      interview.evaluationScores = evaluationScores;
     }
-    if (feedback) {
-      interview.interviewerNotes = feedback;
+    if (interviewerNotes) {
+      interview.interviewerNotes = interviewerNotes;
     }
-    interview.result = result;
-    interview.isCompleted = true;
-    
+    if (result) {
+      interview.result = result;
+    }
+    if (isCompleted !== undefined) {
+      interview.isCompleted = isCompleted;
+    }
     if (questionAnswers) {
       interview.questionAnswers = questionAnswers;
     }
