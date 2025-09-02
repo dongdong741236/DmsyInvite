@@ -6,6 +6,7 @@
 2. **隐私问题**：用户可以在通知发送前看到面试结果
 3. **佐证文件不显示**：面试过程中面试官看不到申请者的佐证文件
 4. **面试结果泄露**：申请者页面可能提前显示"面试通过"
+5. **面试安排组件问题**：InterviewScheduleCard仍可能显示未授权的结果
 
 ## 修复内容
 
@@ -52,10 +53,13 @@ if (application.interview && !application.interview.notificationSent) {
 - 显示作品集链接
 
 #### InterviewScheduleCard.tsx (面试安排卡片)
-- 修复结果显示逻辑
-- 严格检查 `notificationSent === true`
-- 未通知时显示"等待结果通知"而非具体结果
-- 添加调试日志帮助排查问题
+- 多层防护机制：
+  1. 后端不返回未授权的result
+  2. 前端数据加载时过滤result
+  3. 显示逻辑严格检查notificationSent
+- 添加 `sanitizeSchedule` 函数确保数据安全
+- 警告日志记录任何安全过滤操作
+- 重构状态显示逻辑，更清晰可维护
 
 ## 安全性保证
 

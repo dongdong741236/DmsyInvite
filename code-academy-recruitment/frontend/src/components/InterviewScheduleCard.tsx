@@ -25,6 +25,16 @@ interface InterviewSchedule {
   notificationSent?: boolean;
 }
 
+// 安全过滤函数
+const sanitizeSchedule = (schedule: InterviewSchedule): InterviewSchedule => {
+  // 如果未发送通知，移除result字段
+  if (schedule.notificationSent !== true) {
+    const { result, ...safeSchedule } = schedule;
+    return safeSchedule as InterviewSchedule;
+  }
+  return schedule;
+};
+
 const InterviewScheduleCard: React.FC = () => {
   const [schedules, setSchedules] = useState<InterviewSchedule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,16 +47,27 @@ const InterviewScheduleCard: React.FC = () => {
     try {
       setLoading(true);
       const response = await api.get<InterviewSchedule[]>('/applications/my/interviews');
-      console.log('Interview schedules data:', response.data);
-      // 调试：检查返回的数据
-      response.data.forEach((schedule, index) => {
-        console.log(`Schedule ${index}:`, {
+      console.log('Raw interview schedules data:', response.data);
+      
+      // 在前端也过滤一次，确保安全
+      const filteredSchedules = response.data.map(schedule => {
+        const sanitized = sanitizeSchedule(schedule);
+        if (schedule.notificationSent !== true && schedule.result) {
+          console.warn(`[Security] Filtered out result for interview ${schedule.interviewId}: notificationSent=${schedule.notificationSent}, result was ${schedule.result}`);
+        }
+        return sanitized;
+      });
+      
+      // 调试：检查过滤后的数据
+      filteredSchedules.forEach((schedule, index) => {
+        console.log(`Filtered Schedule ${index}:`, {
           notificationSent: schedule.notificationSent,
           result: schedule.result,
           isCompleted: schedule.isCompleted
         });
       });
-      setSchedules(response.data);
+      
+      setSchedules(filteredSchedules);
     } catch (error) {
       console.error('Failed to load interview schedules:', error);
     } finally {

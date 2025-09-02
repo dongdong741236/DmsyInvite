@@ -209,12 +209,18 @@ export const getMyInterviewSchedule = async (
     const interviewSchedules = applications
       .filter(app => app.interview)
       .map(app => {
+        // 严格检查notificationSent字段
         const notificationSent = app.interview!.notificationSent === true;
         
         // 调试日志
-        console.log(`Interview ${app.interview!.id}: notificationSent=${app.interview!.notificationSent}, result=${app.interview!.result}`);
+        console.log(`[getMyInterviewSchedule] Interview ${app.interview!.id}:`, {
+          notificationSent: app.interview!.notificationSent,
+          notificationSentType: typeof app.interview!.notificationSent,
+          result: app.interview!.result,
+          willReturnResult: notificationSent
+        });
         
-        return {
+        const schedule: any = {
           applicationId: app.id,
           interviewId: app.interview!.id,
           scheduledAt: app.interview!.scheduledAt,
@@ -224,10 +230,16 @@ export const getMyInterviewSchedule = async (
           },
           status: app.status,
           isCompleted: app.interview!.isCompleted,
-          // 严格检查：只有明确发送通知后才返回结果
-          result: notificationSent ? app.interview!.result : undefined,
           notificationSent: app.interview!.notificationSent,
         };
+        
+        // 只有在明确发送通知后才添加result字段
+        if (notificationSent === true) {
+          schedule.result = app.interview!.result;
+        }
+        // 不设置result字段，让它保持undefined
+        
+        return schedule;
       });
 
     res.json(interviewSchedules);
