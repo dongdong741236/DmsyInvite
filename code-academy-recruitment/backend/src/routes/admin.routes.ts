@@ -38,9 +38,9 @@ router.get('/rooms', adminController.getRooms);
 router.post(
   '/rooms',
   [
-    body('name').notEmpty(),
-    body('location').notEmpty(),
-    body('capacity').isInt({ min: 1 }),
+    body('name').notEmpty().withMessage('教室名称不能为空'),
+    body('location').notEmpty().withMessage('教室位置不能为空'),
+    body('interviewerIds').optional().isArray(),
   ],
   validateRequest,
   adminController.createRoom

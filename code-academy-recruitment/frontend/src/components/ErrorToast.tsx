@@ -88,7 +88,7 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 max-w-md w-full transition-all duration-300 transform ${
+      className={`fixed top-4 right-4 z-50 max-w-sm w-full mx-4 sm:mx-0 sm:max-w-md transition-all duration-300 transform ${
         isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
       }`}
     >
